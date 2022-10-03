@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babylonjs": "^5.26.1"
+    "babylonjs": "^5.26.1",
+    "unique-username-generator": "^1.1.1",
+    "uuid": "^9.0.0"
   }
 }
