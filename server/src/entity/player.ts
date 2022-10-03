@@ -1,19 +1,27 @@
 import { Vector3 } from "babylonjs"
+import { v4 as uuidv4 } from 'uuid';
+import { generateUsername } from "unique-username-generator";
 
 export class Player{
 
     private _name: string;
     private _health: number;
-    private _level: number;
+    private _exp: number;
     private _position: Vector3;
     private _id: string;
 
-    constructor(name: string, health: number, level: number, position: Vector3, id: string){
-        this._name = name;
-        this._health = health;
-        this._level = level;
-        this._position = position;
-        this._id = id;
+    constructor(
+        name: string|undefined, 
+        health: number|undefined, 
+        exp: number|undefined, 
+        position: Vector3|undefined, 
+        id: string|undefined
+    ){
+        this._name = name || generateUsername();
+        this._health = health || 100;
+        this._exp = exp || 0;
+        this._position = position || new Vector3(0, 0, 0);
+        this._id = id || uuidv4();
     }
 
     public get position(): Vector3{
@@ -43,6 +51,16 @@ export class Player{
         this._health = new_health;
     }
 
+    public get exp(): number{
+        return this._exp;
+    }
 
+    public set exp(new_exp: number){
+        this._exp = new_exp;
+    }
+
+    public get id(): string{
+        return this._id;
+    }
 
 }
