@@ -12,16 +12,18 @@ export namespace Router {
   }
 
   export function routeMessage(msg:any, client:WebSocket, playerId:string) {
-    if (messageMap.map[msg.type] !== undefined) {
+    if (messageMap[msg.type] !== undefined) {
       messageMap[msg.type](msg.msg, playerId, client, msg.origin, msg.id)
     }
   }
 
   function recieveInteraction(data:any, playerId:string) {
-    world.applyMovement
+    // world.applyMovement
   }
 
   function sendPong() {}
 
-  function initPlayer() {}
+  function initPlayer() {
+
+  }
 }

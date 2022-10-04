@@ -1,38 +1,50 @@
 import { Server } from 'ws'
 import { World } from './world'
+import { Player } from './entity/player'
+import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
+import { Router } from './router'
+import { Logger } from './logger'
 
 export class SocketServer {
   static readonly PORT: number = 2000
   private server: Server
   private port: number
   private world: World
+  private logger: Logger
   private players: Map<any, any>
 
   constructor() {
     this.players = new Map()
+    this.world = new World()
+    this.logger = new Logger('Socket')
+    this.server = new Server({ port: SocketServer.PORT })
+    this.port = SocketServer.PORT
 
     this.init()
     this.listen()
   }
 
   private init() {
-    this.world = new World()
     this.world.init()
-
-    this.server = new Server({ port: SocketServer.PORT })
   }
 
-  public setPlayerId(client:any, id:string) {
-    this.players.set(client, id)
+  public setPlayer(client:any, player:Player) {
+    this.players.set(client, player)
   }
   
   private listen() {
-    console.log('Start listening on port: ' + SocketServer.PORT)
+    this.logger.progress('Start listening on port: ' + SocketServer.PORT)
 
     this.server.on('connection', (client: any) => {
       // save client
-      console.log('client connected')
-      this.players.set(client, null)
+      this.logger.log('Client connected')
+      if(!this.players.has(client)) {
+        this.setPlayer(client, new Player())
+        client.send(JSON.stringify({
+          player: this.players.get(client),
+          players: this.players.size 
+        }))
+      }
 
       // basic starter functiosn
       client.on('message', (message:any) => {
@@ -44,16 +56,16 @@ export class SocketServer {
       })
 
       client.on('close', () => {
-        console.log('client connection closed')
+        this.logger.log('Client connection closed')
         let id = this.players.get(client)
-        this.world.removePlayer(id)
+        // this.world.removePlayer(id)
         this.players.delete(client)
 
         // close with router
       })
 
       client.on('error', () => {
-        console.log('clienht connection threw an error')
+        this.logger.error('Client connection threw an error')
       })
     })
   }
