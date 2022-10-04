@@ -11,17 +11,16 @@ export class Player{
     private _id: string;
 
     constructor(
-        name: string|undefined, 
-        health: number|undefined, 
-        exp: number|undefined, 
-        position: Vector3|undefined, 
-        id: string|undefined
+        name?: string|undefined, 
+        health?: number|undefined, 
+        exp?: number|undefined, 
+        position?: Vector3|undefined, 
     ){
         this._name = name || generateUsername();
         this._health = health || 100;
         this._exp = exp || 0;
         this._position = position || new Vector3(0, 0, 0);
-        this._id = id || uuidv4();
+        this._id = uuidv4();
     }
 
     public get position(): Vector3{
