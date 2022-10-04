@@ -34,24 +34,39 @@ export class Logger{
         this._section = section;
     }
 
+    private _gettime(): string{
+        let time: Date = new Date();
+        return `${time.toLocaleDateString()} ${time.toLocaleTimeString('en-GB')}` 
+    }
+
     public log(message: any): void{
-        console.log(`[${this._section}]: ${color.Reset}${message}${color.Reset}`)
+        console.log(`${color.BgCyan}[${this._gettime()}]${color.Reset} ${color.FgMagenta}[${this._section}]: ${color.Reset}${message}${color.Reset}`)
     }
 
     public warn(message: any): void{
-        console.log(`[${this._section}]: ${color.FgYellow}${message}${color.Reset}`)
+        console.log(`${color.BgCyan}[${this._gettime()}]${color.Reset} ${color.FgMagenta}[${this._section}]: ${color.FgYellow}${message}${color.Reset}`)
     }
 
     public error(message: any): void{
-        console.log(`[${this._section}]: ${color.FgRed}${message}${color.Reset}`)
+        console.log(`${color.BgCyan}[${this._gettime()}]${color.Reset} ${color.FgMagenta}[${this._section}]: ${color.FgRed}${message}${color.Reset}`)
     }
 
     public pass(message: any): void{
-        console.log(`[${this._section}]: ${color.FgGreen}${message}${color.Reset}`)
+        console.log(`${color.BgCyan}[${this._gettime()}]${color.Reset} ${color.FgMagenta}[${this._section}]: ${color.FgGreen}${message}${color.Reset}`)
     }
 
     public progress(message: any): void{
-        console.log(`[${this._section}]: ${color.FgCyan}${message}${color.Reset}`)
+        console.log(`${color.BgCyan}[${this._gettime()}]${color.Reset} ${color.FgMagenta}[${this._section}]: ${color.FgCyan}${message}${color.Reset}`)
+    }
+
+    public interval_logger(ms: number, callback: Function): void{
+
+        let recursion: Function = ()=>{
+            callback();
+            setTimeout(recursion, ms);
+        }
+
+        setTimeout(recursion, ms);
     }
 
 }
