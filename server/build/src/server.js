@@ -11,7 +11,6 @@ var SocketServer = /** @class */ (function () {
         this.world = new world_1.World();
         this.logger = new logger_1.Logger('Socket');
         this.server = new ws_1.Server({ port: SocketServer.PORT });
-        this.port = SocketServer.PORT;
         this.init();
         this.listen();
     }

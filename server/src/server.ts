@@ -8,7 +8,6 @@ import { Logger } from './logger'
 export class SocketServer {
   static readonly PORT: number = 2000
   private server: Server
-  private port: number
   private world: World
   private logger: Logger
   private players: Map<any, any>
@@ -18,7 +17,6 @@ export class SocketServer {
     this.world = new World()
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
-    this.port = SocketServer.PORT
 
     this.init()
     this.listen()
