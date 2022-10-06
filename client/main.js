@@ -6,7 +6,7 @@ const createScene = function () {
   // This creates and positions a free camera (non-mesh)
   const camera = new BABYLON.FreeCamera(
     "camera1",
-    new BABYLON.Vector3(0, 5, -10),
+    new BABYLON.Vector3(0, 4, -10),
     scene
   );
   // This targets the camera to scene origin
@@ -21,20 +21,17 @@ const createScene = function () {
   );
   // Default intensity is 1. Let's dim the light a small amount
   light.intensity = 0.7;
-  // Our built-in 'sphere' shape.
-  const sphere = BABYLON.MeshBuilder.CreateSphere(
-    "sphere",
-    { diameter: 2, segments: 32 },
-    scene
-  );
-  // Move the sphere upward 1/2 its height
-  sphere.position.y = 1;
   // Our built-in 'ground' shape.
-  const ground = BABYLON.MeshBuilder.CreateGround(
+  /*  const ground = BABYLON.MeshBuilder.CreateGround(
     "ground",
-    { width: 6, height: 6 },
+    { width: 20, height: 15 },
     scene
-  );
+  ); */
+  var mapSubX = 1000; // point number on X axis
+  var mapSubZ = 800; // point number on Z axis
+  var seed = 0.3; // seed
+  var noiseScale = 0.03; // noise frequency
+  var elevationScale = 6.0;
   return scene;
 };
 const scene = createScene(); //Call the createScene function
