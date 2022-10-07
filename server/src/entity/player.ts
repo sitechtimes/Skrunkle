@@ -11,11 +11,11 @@ export class Player{
     private _id: string;
 
     constructor(
-        name: string|undefined, 
-        health: number|undefined, 
-        exp: number|undefined, 
-        position: Vector3|undefined, 
-        id: string|undefined
+        name?: string|undefined, 
+        health?: number|undefined, 
+        exp?: number|undefined, 
+        position?: Vector3|undefined, 
+        id?: string|undefined
     ){
         this._name = name || generateUsername();
         this._health = health || 100;

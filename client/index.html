@@ -28,6 +28,10 @@
 
 	<canvas id="renderCanvas"></canvas>
 
+    <script>
+        const testSocket = new WebSocket("ws://localhost:2000")
+    </script>
+<!-- 
 	<script>
     const canvas = document.getElementById("renderCanvas"); // Get the canvas element
     const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
@@ -61,7 +65,7 @@
     window.addEventListener("resize", function () {
             engine.resize();
     });
-	</script>
+	</script> -->
 
    </body>
 
