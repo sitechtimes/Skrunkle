@@ -3,6 +3,7 @@ import { World } from './world'
 import { Player } from './entity/player'
 import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
+import { Packet, PacketType } from "./packet"
 import { Logger } from './logger'
 
 export class SocketServer {
@@ -38,10 +39,17 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         this.setPlayer(client, new Player())
-        client.send(JSON.stringify({
-          player: this.players.get(client),
-          players: this.players.size 
-        }))
+        client.send(
+          JSON.stringify(
+            new Packet(
+              PacketType.info, 
+              {
+                player: this.players.get(client),
+                players: this.players.size 
+              }
+            )
+          )
+        )
       }
 
       // basic starter functiosn
