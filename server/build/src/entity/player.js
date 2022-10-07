@@ -5,7 +5,7 @@ var babylonjs_1 = require("babylonjs");
 var uuid_1 = require("uuid");
 var unique_username_generator_1 = require("unique-username-generator");
 var Player = /** @class */ (function () {
-    function Player(name, health, exp, position) {
+    function Player(name, health, exp, position, id) {
         this._name = name || (0, unique_username_generator_1.generateUsername)();
         this._health = health || 100;
         this._exp = exp || 0;

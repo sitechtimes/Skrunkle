@@ -4,6 +4,7 @@ exports.SocketServer = void 0;
 var ws_1 = require("ws");
 var world_1 = require("./world");
 var player_1 = require("./entity/player");
+var packet_1 = require("./packet");
 var logger_1 = require("./logger");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
@@ -28,10 +29,10 @@ var SocketServer = /** @class */ (function () {
             _this.logger.log('Client connected');
             if (!_this.players.has(client)) {
                 _this.setPlayer(client, new player_1.Player());
-                client.send(JSON.stringify({
+                client.send(JSON.stringify(new packet_1.Packet(packet_1.PacketType.info, {
                     player: _this.players.get(client),
                     players: _this.players.size
-                }));
+                })));
             }
             // basic starter functiosn
             client.on('message', function (message) {
