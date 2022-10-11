@@ -7,6 +7,11 @@ const createScene = function () {
     { diameter: 5, segments: 32 },
     scene
   );
+  const box = new BABYLON.MeshBuilder.CreateBox("box", {
+    width: 5,
+    length: 5,
+    depth: 5,
+  });
   var camera = new BABYLON.FreeCamera(
     "camera",
     new BABYLON.Vector3(0, 25, 0),
@@ -16,19 +21,6 @@ const createScene = function () {
     diameter: 1,
     segments: 3,
   });
-
-  var mirrorMaterial = new BABYLON.StandardMaterial("texture4", scene);
-
-  mirrorMaterial.reflectionTexture = new BABYLON.MirrorTexture(
-    "mirror",
-    512,
-    scene,
-    true
-  ); //Create a mirror texture
-
-  mirrorMaterial.reflectionTexture.renderList = [cylinder, ground0];
-  mirrorMaterial.reflectionTexture.level = 1; //Select the level (0.0 > 1.0) of the reflection
-  sphere.material = mirrorMaterial;
   camera.attachControl(canvas, true);
   camera.keysUp = [87];
   camera.keysDown = [83];
@@ -47,7 +39,10 @@ const createScene = function () {
   camera._needMoveForGravity = true;
   camera.position.y = 1;
   camera.position.y = 3;
-  sphere.position.y = 4;
+  sphere.position.y = 8;
+  box.position.y = 2;
+  box.collisionsEnabled = true;
+  box.checkCollisions = true;
   // var followBehavior = new BABYLON.FollowBehavior();
   // followBehavior.attach(cylinder);
   // followBehavior.maximumDistance = -1;
@@ -174,13 +169,14 @@ const createScene = function () {
     if (grav > -0.4) {
       grav -= 0.05;
     }
+    cylinder.position = camera.position;
+    camera.fov = 90;
   };
 
   scene.registerBeforeRender(function () {
     update();
   });
-  cylinder.position = camera.position;
-  camera.fov = 360;
+
   return scene;
 };
 const scene = createScene(); //Call the createScene function
