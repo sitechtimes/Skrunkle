@@ -2,12 +2,17 @@ const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
 const createScene = function () {
   const scene = new BABYLON.Scene(engine);
-  const sphere = BABYLON.MeshBuilder.CreateSphere(
-    "sphere",
-    { diameter: 5, segments: 32 },
-    scene
-  );
   const box = new BABYLON.MeshBuilder.CreateBox("box", {
+    width: 5,
+    length: 5,
+    depth: 5,
+  });
+  const box2 = new BABYLON.MeshBuilder.CreateBox("box2", {
+    width: 5,
+    length: 5,
+    depth: 5,
+  });
+  const box3 = new BABYLON.MeshBuilder.CreateBox("box2", {
     width: 5,
     length: 5,
     depth: 5,
@@ -21,6 +26,16 @@ const createScene = function () {
     diameter: 1,
     segments: 3,
   });
+  scene.ambientColor = new BABYLON.Color3(96, 67, 95);
+  var contrastMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
+
+  contrastMaterial.diffuseColor = new BABYLON.Color3(128, 0, 0);
+  contrastMaterial.specularColor = new BABYLON.Color3(128, 0, 0);
+  contrastMaterial.emissiveColor = new BABYLON.Color3(128, 0, 0);
+  contrastMaterial.ambientColor = new BABYLON.Color3(128, 0, 0);
+  box.material = contrastMaterial;
+  box2.material = contrastMaterial;
+  box3.material = contrastMaterial;
   camera.attachControl(canvas, true);
   camera.keysUp = [87];
   camera.keysDown = [83];
@@ -37,12 +52,19 @@ const createScene = function () {
   camera.applyGravity = true;
   camera.ellipsoid = new BABYLON.Vector3(0.25, 1.5, 0.25);
   camera._needMoveForGravity = true;
-  camera.position.y = 1;
   camera.position.y = 3;
-  sphere.position.y = 8;
+  camera.position.x = 3;
   box.position.y = 2;
   box.collisionsEnabled = true;
   box.checkCollisions = true;
+  box2.position.y = 4;
+  box2.position.z = 8;
+  box2.collisionsEnabled = true;
+  box2.checkCollisions = true;
+  box3.position.y = 10;
+  box3.position.z = 8;
+  box3.collisionsEnabled = true;
+  box3.checkCollisions = true;
   // var followBehavior = new BABYLON.FollowBehavior();
   // followBehavior.attach(cylinder);
   // followBehavior.maximumDistance = -1;
@@ -67,7 +89,6 @@ const createScene = function () {
         if (wj == true) {
           grav = 0.7;
           wj = false;
-          spood += 0.5;
         }
         break;
 
@@ -84,10 +105,6 @@ const createScene = function () {
 
       case 16: // Shift
         speed = 2.5;
-        break;
-
-      case 82: // R
-        care = true;
         break;
     }
   };
@@ -162,6 +179,12 @@ const createScene = function () {
     camera.speed = speed + spood;
     camera.onCollide = function (colMesh) {
       if (colMesh.uniqueId === ground0.uniqueId) {
+        wj = true;
+      }
+      if (colMesh.uniqueId === box.uniqueId) {
+        wj = true;
+      }
+      if (colMesh.uniqueId === box2.uniqueId) {
         wj = true;
       }
     };
