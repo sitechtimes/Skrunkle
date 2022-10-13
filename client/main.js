@@ -188,3 +188,7 @@ engine.runRenderLoop(function () {
 window.addEventListener("resize", function () {
   engine.resize();
 });
+
+import { initiate } from "./src/js/terrain";
+
+initiate();
