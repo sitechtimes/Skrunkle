@@ -4,6 +4,8 @@ exports.SocketServer = void 0;
 var ws_1 = require("ws");
 var world_1 = require("./world");
 var player_1 = require("./entity/player");
+var babylonjs_1 = require("babylonjs");
+var packet_1 = require("./packet");
 var logger_1 = require("./logger");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
@@ -28,17 +30,25 @@ var SocketServer = /** @class */ (function () {
             _this.logger.log('Client connected');
             if (!_this.players.has(client)) {
                 _this.setPlayer(client, new player_1.Player());
-                client.send(JSON.stringify({
-                    player: _this.players.get(client),
-                    players: _this.players.size
-                }));
+                client.send(JSON.stringify(new packet_1.Packet(packet_1.PacketType.info, [{
+                        player: _this.players.get(client),
+                        players: _this.players.size
+                    }])));
             }
             // basic starter functiosn
             client.on('message', function (message) {
                 if (_this.players.has(client)) {
                     var playerId = _this.players.get(client);
                     var msg = JSON.parse(message);
-                    // do something in router
+                    var player = _this.players.get(client);
+                    switch (msg.type) {
+                        case "movement":
+                            player.position(new babylonjs_1.Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z));
+                            break;
+                        default:
+                            _this.logger.error("Unknown socket message from client");
+                            break;
+                    }
                 }
             });
             client.on('close', function () {

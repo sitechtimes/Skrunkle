@@ -3,6 +3,7 @@ import { World } from './world'
 import { Player } from './entity/player'
 import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
+import { Packet, PacketType } from './packet'
 import { Logger } from './logger'
 
 export class SocketServer {
@@ -38,10 +39,17 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         this.setPlayer(client, new Player())
-        client.send(JSON.stringify({
-          player: this.players.get(client),
-          players: this.players.size 
-        }))
+        client.send(
+          JSON.stringify(
+            new Packet(
+              PacketType.info, 
+              [{
+                player: this.players.get(client),
+                players: this.players.size 
+              }]
+            )
+          )
+        )
       }
 
       // basic starter functiosn
@@ -49,7 +57,17 @@ export class SocketServer {
         if (this.players.has(client)) {
           let playerId = this.players.get(client)
           let msg = JSON.parse(message)
-          // do something in router
+
+          let player = this.players.get(client)
+          
+          switch (msg.type) {
+            case "movement":
+              player.position(new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z))
+              break
+            default:
+              this.logger.error("Unknown socket message from client")
+              break
+          }
         }
       })
 
