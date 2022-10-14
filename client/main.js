@@ -28,7 +28,6 @@ const createScene = function () {
   });
   scene.ambientColor = new BABYLON.Color3(96, 67, 95);
   var contrastMaterial = new BABYLON.StandardMaterial("myMaterial", scene);
-
   contrastMaterial.diffuseColor = new BABYLON.Color3(128, 0, 0);
   contrastMaterial.specularColor = new BABYLON.Color3(128, 0, 0);
   contrastMaterial.emissiveColor = new BABYLON.Color3(128, 0, 0);
@@ -45,7 +44,7 @@ const createScene = function () {
   camera.fov = 1.5;
   camera.minZ = 0;
   camera.angularSensibility = 500;
-  camera.speed = 2.5;
+  camera.speed = 2;
   scene.gravity = new BABYLON.Vector3(0, -0.6, 0);
   scene.collisionsEnabled = true;
   camera.checkCollisions = true;
@@ -83,31 +82,6 @@ const createScene = function () {
     new BABYLON.Vector3(0, 1, 0),
     scene
   );
-  var onKeyDown = function (event) {
-    switch (event.keyCode) {
-      case 32: // Space
-        if (wj == true) {
-          grav = 0.7;
-          wj = false;
-        }
-        break;
-
-      case 16: // Shift
-        speed = 5;
-        break;
-    }
-  };
-
-  var onKeyUp = function (event) {
-    switch (event.keyCode) {
-      case 32: // Space
-        break;
-
-      case 16: // Shift
-        speed = 2.5;
-        break;
-    }
-  };
 
   canvas.addEventListener("keydown", onKeyDown, false);
   canvas.addEventListener("keyup", onKeyUp, false);
@@ -133,7 +107,6 @@ const createScene = function () {
       canvas.removeEventListener("mousemove", mousemoveCallback, false);
     }
   }
-  var wj = true;
   var grav = -0.6;
   var speed = 2.5;
   var spood = 0;
@@ -143,7 +116,7 @@ const createScene = function () {
         if (wj == true) {
           grav = 0.7;
           wj = false;
-          spood += 0.5;
+          camera.speed = 0;
         }
         break;
 
@@ -155,15 +128,15 @@ const createScene = function () {
 
   var onKeyUp = function (event) {
     switch (event.keyCode) {
-      case 32: // Space
+      case 32:
+        camera.keysUp = [87];
+        camera.keysDown = [83];
+        camera.keysLeft = [65];
+        camera.keysRight = [68]; // Space
         break;
 
       case 16: // Shift
         speed = 2.5;
-        break;
-
-      case 82: // R
-        care = true;
         break;
     }
   };
@@ -175,18 +148,15 @@ const createScene = function () {
     canvas.removeEventListener("keydown", onKeyDown);
     canvas.removeEventListener("keyup", onKeyUp);
   };
+  const colMeshes = [ground0, box, box2, box3];
   const update = function () {
     camera.speed = speed + spood;
     camera.onCollide = function (colMesh) {
-      if (colMesh.uniqueId === ground0.uniqueId) {
-        wj = true;
-      }
-      if (colMesh.uniqueId === box.uniqueId) {
-        wj = true;
-      }
-      if (colMesh.uniqueId === box2.uniqueId) {
-        wj = true;
-      }
+      colMeshes.forEach((i) => {
+        if (colMesh.uniqueId === i.uniqueId) {
+          wj = true;
+        }
+      });
     };
     scene.gravity.y = grav;
     if (grav > -0.4) {
@@ -195,7 +165,6 @@ const createScene = function () {
     cylinder.position = camera.position;
     camera.fov = 90;
   };
-
   scene.registerBeforeRender(function () {
     update();
   });
