@@ -1,4 +1,4 @@
-import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera } from "babylonjs"
+import { Vector3 } from "babylonjs"
 
 export class Player{
 
@@ -7,10 +7,6 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
-    private _camera: FreeCamera;
-    private _body: Mesh;
-    private _scene: Scene;
-    private _canvas: HTMLCanvasElement | null
 
     constructor(
         name: string, 
@@ -18,20 +14,12 @@ export class Player{
         exp: number, 
         position: Vector3, 
         id: string,
-        scene: Scene,
-        canvas: HTMLCanvasElement | null
     ){
         this._name = name;
         this._health = health;
         this._exp = exp;
         this._position = position;
         this._id = id;
-        this._scene = scene;
-        this._canvas = canvas
-
-        this._camera = new FreeCamera("Test Camera", this._position, this._scene); 
-        this._camera.attachControl(this._canvas, true);
-
     }
 
     public get position(): Vector3{
@@ -40,8 +28,6 @@ export class Player{
 
     public set position(new_position: Vector3){
         this._position = new_position;
-        this._camera.position = this._position;
-        this._body.position = this._position;
     }
 
     public get name(): string{

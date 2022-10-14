@@ -1,5 +1,5 @@
-import { Scene, Engine, Vector3, ArcRotateCamera, MeshBuilder, FreeCamera, UniversalCamera } from 'babylonjs';
-import { Player } from "../entity/player"
+import { Scene, Engine, Vector3, ArcRotateCamera, MeshBuilder, FreeCamera, UniversalCamera, HemisphericLight } from 'babylonjs';
+import { MainPlayer } from "../entity/mainPlayer"
 
 export class World{
     private _engine: Engine;
@@ -14,12 +14,17 @@ export class World{
 
     public init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-        const player = new Player(
+        const player:MainPlayer = new MainPlayer(
             "Test Username", 100, 0, new Vector3(0, 10, 0), 
             "test-id", this._scene, this._canvas
         )
         
-        var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
+        var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100,  }, this._scene);
+        var light = new HemisphericLight(
+            "light",
+            new Vector3(0, 1, 0),
+            this._scene
+          );
 
         this._scene.executeWhenReady(()=>{
 
