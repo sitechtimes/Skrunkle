@@ -30,10 +30,10 @@ var SocketServer = /** @class */ (function () {
             _this.logger.log('Client connected');
             if (!_this.players.has(client)) {
                 _this.setPlayer(client, new player_1.Player());
-                client.send(JSON.stringify(new packet_1.Packet(packet_1.PacketType.info, [{
+                _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
                         player: _this.players.get(client),
                         players: _this.players.size
-                    }])));
+                    }]));
             }
             // basic starter functiosn
             client.on('message', function (message) {
@@ -43,10 +43,15 @@ var SocketServer = /** @class */ (function () {
                     var player = _this.players.get(client);
                     switch (msg.type) {
                         case "movement":
-                            player.position(new babylonjs_1.Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z));
+                            _this.logger.log("Received Movement from client");
+                            player.position = new babylonjs_1.Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z);
+                            _this.send(client, new packet_1.Packet(packet_1.PacketType.update, [player]));
                             break;
+                        case "ping":
+                            _this.logger.log("Received Ping from client. Pong!");
+                            _this.send(client, new packet_1.Packet(packet_1.PacketType.info, ['Pong!']));
                         default:
-                            _this.logger.error("Unknown socket message from client");
+                            _this.logger.error("Unknown socket message from client (".concat(msg.type, ")"));
                             break;
                     }
                 }
@@ -62,6 +67,9 @@ var SocketServer = /** @class */ (function () {
                 _this.logger.error('Client connection threw an error');
             });
         });
+    };
+    SocketServer.prototype.send = function (client, packet) {
+        client.send(JSON.stringify(packet));
     };
     SocketServer.prototype.broadCast = function (data) {
         var _this = this;

@@ -39,15 +39,13 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         this.setPlayer(client, new Player())
-        client.send(
-          JSON.stringify(
-            new Packet(
-              PacketType.info, 
-              [{
-                player: this.players.get(client),
-                players: this.players.size 
-              }]
-            )
+        this.send(client, 
+          new Packet(
+            PacketType.info, 
+            [{
+              player: this.players.get(client),
+              players: this.players.size 
+            }]
           )
         )
       }
@@ -62,10 +60,15 @@ export class SocketServer {
           
           switch (msg.type) {
             case "movement":
-              player.position(new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z))
+              this.logger.log("Received Movement from client")
+              player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
+              this.send(client, new Packet(PacketType.update, [player]))
               break
+            case "ping":
+              this.logger.log("Received Ping from client. Pong!")
+              this.send(client, new Packet(PacketType.info, ['Pong!']))
             default:
-              this.logger.error("Unknown socket message from client")
+              this.logger.error(`Unknown socket message from client (${msg.type})`)
               break
           }
         }
@@ -84,6 +87,12 @@ export class SocketServer {
         this.logger.error('Client connection threw an error')
       })
     })
+  }
+
+  private send(client:any, packet:Packet) {
+    client.send(
+      JSON.stringify(packet)
+    )
   }
 
   public broadCast(data:string) {

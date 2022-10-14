@@ -12,6 +12,7 @@ export class Socket {
   private init() {
     this.server.onopen = () => {
       this.status = true
+      console.log('status is true')
     }
   }
 
@@ -19,12 +20,14 @@ export class Socket {
     this.server.onmessage = (event:any) => {
       const msg = JSON.parse(event.data)
 
+      console.log(msg)
+
       switch (msg.type) {
-        case "world-update":
-          // update world
+        case "update":
+          console.log(msg.payload)
           break
-        case "player-update":
-          // update players
+        case "info":
+          console.log(msg.payload)
           break
         default:
           // throw some error
@@ -34,9 +37,11 @@ export class Socket {
   }
 
   public send(message: Message) {
-    if (!this.status) this.server.send(JSON.stringify(message))
-    else this.send(message)
-    // just try again until good
+    if (this.status === true) {
+      this.server.send(JSON.stringify(message))
+    } else {
+      setTimeout(() => this.send(message), 500)
+    }
   }
 
   public close() {
@@ -48,3 +53,10 @@ export interface Message {
   type: string,
   payload: any
 }
+
+const server = new Socket()
+
+server.send(<Message>{type: 'ping', payload: ['no plyload']})
+server.send(<Message>{type: 'movement', payload: { position: { x: 5, y: 5, z: 5 }}})
+
+console.log(server)
