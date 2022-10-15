@@ -4,7 +4,6 @@ import { Player } from "./player"
 export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
-    private _body: Mesh;
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null
 
@@ -22,45 +21,28 @@ export class MainPlayer extends Player {
         this._scene = scene;
         this._canvas = canvas
 
-        this._camera = new FreeCamera("Test Camera", new Vector3(this.position.x, this.position.y + 1, this.position.z), this._scene);
-        this._camera.attachControl(this._canvas, true);
-        this._body = MeshBuilder.CreateBox("MainPlayerBody", { size: 1, height: 2, width: 1 }, this._scene);
-        this._body.position = this.position;
+        this._scene.gravity = new Vector3(0, -9.81, 0);
 
-        this._camera.keysUp = [87];
-        this._camera.keysDown = [83];
-        this._camera.keysLeft = [65];
-        this._camera.keysRight = [68];
-        this._camera.inertia = 0.2;
-        this._camera.fov = 1.5;
-        this._camera.minZ = 0;
-        this._camera.angularSensibility = 500;
-        this._camera.speed = 2.5;
+        this._camera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
+        this._camera.attachControl(canvas, true);
+        this._camera.ellipsoid = new Vector3(2, 4, 2);
+        this._camera.checkCollisions = true;
+        this._camera.applyGravity = true;
+        (<any>this._camera)._needMoveForGravity = true;
 
-        document.addEventListener("keypress", ()=>{
-            console.log(this._camera.position)
-        })
-
+        this._camera.keysUp    = [87]; // W
+        this._camera.keysDown  = [83]; // A
+        this._camera.keysLeft  = [65]; // S
+        this._camera.keysRight = [68]; // D
     }
 
-    // private HandleMovement(): void {
-    //     this._camera.speed = speed + spood;
-    //     this._camera.onCollide = function (colMesh) {
-    //         if (colMesh.uniqueId === map.uniqueId) {
-    //             wj = true;
-    //         }
-    //         // if (colMesh.uniqueId === map.uniqueId) {
-    //         //   wj = true;
-    //         // }
-    //     };
-    //     scene.gravity.y = grav;
-    //     if (grav > -0.4) {
-    //         grav -= 0.05;
-    //     }
-    //     cylinder.position = camera.position;
-    //     camera.fov = 90;
-    
-    // }
+    public get position(): Vector3{
+        return this._camera.position;
+    }
+
+    public set position(new_position: Vector3){
+        this._camera.position = new_position;
+    }
 
 
 }

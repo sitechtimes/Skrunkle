@@ -1,4 +1,4 @@
-import { Vector3 } from "babylonjs"
+import { Mesh, MeshBuilder, Vector3 } from "babylonjs"
 
 export class Player{
 
@@ -7,6 +7,7 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
+    private _body: Mesh
 
     constructor(
         name: string, 
@@ -14,12 +15,14 @@ export class Player{
         exp: number, 
         position: Vector3, 
         id: string,
+        options?: { renderBody: true }
     ){
         this._name = name;
         this._health = health;
         this._exp = exp;
         this._position = position;
         this._id = id;
+        if (options.renderBody) this._body = MeshBuilder.CreateBox("playerBody", )
     }
 
     public get position(): Vector3{
