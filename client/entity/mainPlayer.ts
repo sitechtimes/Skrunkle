@@ -4,7 +4,6 @@ import { Player } from "./player"
 export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
-    private _scene: Scene;
     private _canvas: HTMLCanvasElement | null
 
     constructor(
@@ -14,16 +13,15 @@ export class MainPlayer extends Player {
         position: Vector3,
         id: string,
         scene: Scene,
-        canvas: HTMLCanvasElement | null
+        canvas: HTMLCanvasElement | null,
     ) {
-        super(name, health, exp, position, id);
+        super(name, health, exp, position, id, scene, {renderBody: false});
 
-        this._scene = scene;
         this._canvas = canvas
 
-        this._scene.gravity = new Vector3(0, -9.81, 0);
+        this.scene.gravity = new Vector3(0, -9.81, 0);
 
-        this._camera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
+        this._camera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this.scene);
         this._camera.attachControl(canvas, true);
         this._camera.ellipsoid = new Vector3(2, 4, 2);
         this._camera.checkCollisions = true;
