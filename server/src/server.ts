@@ -56,13 +56,14 @@ export class SocketServer {
           let playerId = this.players.get(client)
           let msg = JSON.parse(message)
 
-          let player = this.players.get(client)
+          let player: Player = this.players.get(client)
           
           switch (msg.type) {
             case "movement":
               this.logger.log("Received Movement from client")
-              player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
-              this.send(client, new Packet(PacketType.update, [player]))
+              // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
+              // this.send(client, new Packet(PacketType.update, [player]))
+              player.position = msg.payload[0].position
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")

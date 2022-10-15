@@ -1,7 +1,5 @@
-import './style.css';
+import { World } from "./world/world"
 
-const Socket = new WebSocket("ws://localhost:2000");
+const world = new World(<HTMLCanvasElement> document.getElementById("renderCanvas"))
 
-Socket.addEventListener('message', (data: MessageEvent<any>)=>{
-  console.log(data)
-})
+world.init()

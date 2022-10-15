@@ -1,10 +1,14 @@
+import { World } from "./world/world";
+
 export class Socket {
   static readonly url: string = 'ws://localhost:2000'
   private server: any
   private status: boolean = false
+  private worldReference: World;
 
-  constructor() {
+  constructor(world: World) {
     this.server = new WebSocket(Socket.url)
+    this.worldReference = world;
     this.init()
     this.listen()
   }
@@ -12,27 +16,13 @@ export class Socket {
   private init() {
     this.server.onopen = () => {
       this.status = true
-      console.log('status is true')
     }
   }
 
   private listen() {
     this.server.onmessage = (event:any) => {
       const msg = JSON.parse(event.data)
-
-      console.log(msg)
-
-      switch (msg.type) {
-        case "update":
-          console.log(msg.payload)
-          break
-        case "info":
-          console.log(msg.payload)
-          break
-        default:
-          // throw some error
-          break
-      }
+      this.worldReference.onSocketData(msg);
     }
   }
 
@@ -51,12 +41,5 @@ export class Socket {
 
 export interface Message {
   type: string,
-  payload: any
+  payload: Array<any>
 }
-
-const server = new Socket()
-
-server.send(<Message>{type: 'ping', payload: ['no plyload']})
-server.send(<Message>{type: 'movement', payload: { position: { x: 5, y: 5, z: 5 }}})
-
-console.log(server)
