@@ -10,7 +10,7 @@ var Player = /** @class */ (function () {
         this._health = health || 100;
         this._exp = exp || 0;
         this._position = position || new babylonjs_1.Vector3(0, 0, 0);
-        this._id = id || (0, uuid_1.v4)();
+        this._id = (0, uuid_1.v4)();
     }
     Object.defineProperty(Player.prototype, "position", {
         get: function () {
