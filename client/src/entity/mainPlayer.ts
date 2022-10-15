@@ -14,6 +14,7 @@ export class MainPlayer extends Player {
         id: string,
         scene: Scene,
         canvas: HTMLCanvasElement | null,
+        freeCamera: FreeCamera,
     ) {
         super(name, health, exp, position, id, scene, {renderBody: false});
 
@@ -21,7 +22,7 @@ export class MainPlayer extends Player {
 
         this.scene.gravity = new Vector3(0, -9.81, 0);
 
-        this._camera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this.scene);
+        this._camera = freeCamera;
         this._camera.attachControl(canvas, true);
         this._camera.ellipsoid = new Vector3(2, 4, 2);
         this._camera.checkCollisions = true;
@@ -42,5 +43,8 @@ export class MainPlayer extends Player {
         this._camera.position = new_position;
     }
 
+    public set id(new_id: string){
+        this.id = new_id;
+    }
 
 }
