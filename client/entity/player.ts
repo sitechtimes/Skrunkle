@@ -1,6 +1,4 @@
-import { Vector3 } from "babylonjs"
-import { v4 as uuidv4 } from 'uuid';
-import { generateUsername } from "unique-username-generator";
+import { Mesh, MeshBuilder, Scene, Vector3 } from "babylonjs"
 
 export class Player{
 
@@ -9,19 +7,28 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
+    private _body: Mesh | null = null;
+    private _scene: Scene;
 
     constructor(
-        name?: string|undefined, 
-        health?: number|undefined, 
-        exp?: number|undefined, 
-        position?: Vector3|undefined, 
-        id?: string|undefined
+        name: string, 
+        health: number, 
+        exp: number, 
+        position: Vector3, 
+        id: string,
+        scene: Scene,
+        options: { renderBody?: boolean } = { renderBody: true}
     ){
-        this._name = name || generateUsername();
-        this._health = health || 100;
-        this._exp = exp || 0;
-        this._position = position || new Vector3(0, 0, 0);
-        this._id = uuidv4();
+        this._name = name;
+        this._health = health;
+        this._exp = exp;
+        this._id = id;
+        this._scene = scene
+
+        if (options.renderBody) {
+            this._body = MeshBuilder.CreateBox("playerBody", { size: 10, width: 10, height: 10}, this._scene)
+        }
+        this._position = position;
     }
 
     public get position(): Vector3{
@@ -30,6 +37,7 @@ export class Player{
 
     public set position(new_position: Vector3){
         this._position = new_position;
+        if (this._body) this._body.position = this._position;
     }
 
     public get name(): string{
@@ -61,6 +69,10 @@ export class Player{
 
     public get id(): string{
         return this._id;
+    }
+
+    protected get scene(): Scene{
+        return this._scene
     }
 
 }
