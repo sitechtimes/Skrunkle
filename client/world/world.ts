@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, ArcRotateCamera, MeshBuilder, FreeCamera, UniversalCamera, HemisphericLight } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight } from 'babylonjs';
 import { MainPlayer } from "../entity/mainPlayer"
 
 export class World{
@@ -31,7 +31,7 @@ export class World{
 
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
-                console.log(player.position);
+                
             })
 
         })
