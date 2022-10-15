@@ -19,7 +19,8 @@ export class World{
             "test-id", this._scene, this._canvas
         )
         
-        var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100,  }, this._scene);
+        var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
+        ground.checkCollisions = true;
         var light = new HemisphericLight(
             "light",
             new Vector3(0, 1, 0),
@@ -30,6 +31,7 @@ export class World{
 
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
+                console.log(player.position);
             })
 
         })
