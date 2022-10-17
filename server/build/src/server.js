@@ -42,10 +42,11 @@ var SocketServer = /** @class */ (function () {
                     var player = _this.players.get(client);
                     switch (msg.type) {
                         case "movement":
-                            _this.logger.log("Received Movement from client");
+                            _this.logger.log("Received Movement from client ".concat(msg.payload.id));
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             player.position = msg.payload[0].position;
+                            _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             break;
                         case "ping":
                             _this.logger.log("Received Ping from client. Pong!");
@@ -71,11 +72,11 @@ var SocketServer = /** @class */ (function () {
     SocketServer.prototype.send = function (client, packet) {
         client.send(JSON.stringify(packet));
     };
-    SocketServer.prototype.broadCast = function (data) {
+    SocketServer.prototype.broadCast = function (client, packet) {
         var _this = this;
-        this.server.clients.forEach(function (client) {
-            if (_this.players.get(client) !== null) {
-                client.send(data);
+        this.server.clients.forEach(function (user) {
+            if (_this.players.get(user) !== null && client !== user) {
+                _this.send(user, packet);
             }
         });
     };

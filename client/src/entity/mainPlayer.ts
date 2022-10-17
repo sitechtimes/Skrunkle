@@ -47,4 +47,8 @@ export class MainPlayer extends Player {
         this.id = new_id;
     }
 
+    public get id(): string{
+        return this.id
+    }
+
 }
