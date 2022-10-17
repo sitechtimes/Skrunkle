@@ -60,10 +60,11 @@ export class SocketServer {
           
           switch (msg.type) {
             case "movement":
-              this.logger.log("Received Movement from client")
+              this.logger.log(`Received Movement from client ${msg.payload.id}`)
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               player.position = msg.payload[0].position
+              this.broadCast(client, new Packet(PacketType.update, msg.payload[0]))
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
@@ -96,10 +97,10 @@ export class SocketServer {
     )
   }
 
-  public broadCast(data:string) {
-    this.server.clients.forEach((client) => {
-      if (this.players.get(client) !== null) {
-        client.send(data)
+  public broadCast(client:any, packet:Packet) {
+    this.server.clients.forEach((user) => {
+      if (this.players.get(user) !== null && client !== user) {
+        this.send(user, packet)
       }
     });
   }

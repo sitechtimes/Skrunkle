@@ -9,6 +9,7 @@ export class World {
     private _playerCamera: FreeCamera;
     private _socket: Socket;
     private _player: MainPlayer
+    private _players: Map<any, any>
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -42,8 +43,8 @@ export class World {
 
     private _initPlayer(name: string, id: string): void {
         this._player = new MainPlayer(
-            "temp_name", 100, 0, new Vector3(0, 10, 0),
-            "temp_id", this._scene, this._canvas,
+            name, 100, 0, new Vector3(0, 10, 0),
+            id, this._scene, this._canvas,
             this._playerCamera
         )
         console.log("Created Player")
@@ -54,6 +55,7 @@ export class World {
         switch (data?.type) {
             case "Update":
                 console.log(data?.payload)
+                console.log(this._player)
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
