@@ -1,4 +1,4 @@
-import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder } from "babylonjs"
+import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "babylonjs"
 import { Player } from "./player"
 
 export class MainPlayer extends Player {
@@ -18,8 +18,17 @@ export class MainPlayer extends Player {
     ) {
         super(name, health, exp, position, id, scene, {renderBody: false});
 
-        this._canvas = canvas
-
+        this._canvas = canvas;
+        let createPointerLock = function(scene) {
+            let canvas = scene.getEngine().getRenderingCanvas();
+            canvas.addEventListener("click", event => {
+              canvas.requestPointerLock = canvas.requestPointerLock || canvas.msRequestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
+              if(canvas.requestPointerLock) {
+                canvas.requestPointerLock();
+              }
+            }, false);
+          };
+          createPointerLock(scene);
         this.scene.gravity = new Vector3(0, -9.81, 0);
 
         this._camera = freeCamera;
