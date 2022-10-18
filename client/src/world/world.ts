@@ -1,6 +1,8 @@
 import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera } from 'babylonjs';
 import { MainPlayer } from "../entity/mainPlayer"
-import { Socket, Message } from "../socket"
+import { Socket } from "../socket"
+import { Packet, PacketType } from '../packet';
+import { Player } from '../entity/player';
 
 export class World {
     private _engine: Engine;
@@ -32,25 +34,30 @@ export class World {
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
+            this._socket.send(new Packet(PacketType.info, [this._player]))
+
             this._engine.runRenderLoop(() => {
                 this._scene.render();
-                if (this._player) this._socket.send( <Message> { type: "movement", payload: [ {id: this._player.id, position: this._player.position } ] })
+                if (this._player) this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }]))
             })
 
         })
 
     }
 
-    private _initPlayer(name: string, id: string): void {
+    private _initClient(name: string, id: string): void {
         this._player = new MainPlayer(
             name, 100, 0, new Vector3(0, 10, 0),
             id, this._scene, this._canvas,
             this._playerCamera
         )
-        console.log("Created Player")
+        console.log("Created Main Player")
     }
 
-    public onSocketData(data: any): void {
+    private _initPlayer(player: Player): void {
+        this._players.set(player.id, player)
+    }
+    public onSocketData(data: Packet): void {
         console.log(data)
         switch (data?.type) {
             case "Update":
@@ -59,7 +66,8 @@ export class World {
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
-                this._initPlayer(playerInfo._name, playerInfo._id)
+                if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
+                else // init player
                 break
             default:
                 // throw some error
