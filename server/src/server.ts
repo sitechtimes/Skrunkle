@@ -51,20 +51,24 @@ export class SocketServer {
       }
 
       // basic starter functiosn
-      client.on('message', (message:any) => {
+      client.on('message', (message:string) => {
         if (this.players.has(client)) {
           let playerId = this.players.get(client)
-          let msg = JSON.parse(message)
+          let msg: Packet = JSON.parse(message)
 
           let player: Player = this.players.get(client)
           
           switch (msg.type) {
-            case "movement":
-              this.logger.log(`Received Movement from client ${msg.payload.id}`)
+            case "Movement":
+              this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               player.position = msg.payload[0].position
               this.broadCast(client, new Packet(PacketType.update, msg.payload[0]))
+              break
+            case "Info":
+              this.setPlayer(client, msg.payload[0])
+              this.broadCast(client, new Packet(PacketType.info, msg.payload[0]))
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")

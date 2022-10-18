@@ -43,12 +43,7 @@ export class MainPlayer extends Player {
         this._camera.position = new_position;
     }
 
-    public set id(new_id: string){
+    /* public set id(new_id: string){
         this.id = new_id;
-    }
-
-    public get id(): string{
-        return this.id
-    }
-
+    } */
 }

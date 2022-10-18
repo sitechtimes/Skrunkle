@@ -41,12 +41,16 @@ var SocketServer = /** @class */ (function () {
                     var msg = JSON.parse(message);
                     var player = _this.players.get(client);
                     switch (msg.type) {
-                        case "movement":
-                            _this.logger.log("Received Movement from client ".concat(msg.payload.id));
+                        case "Movement":
+                            _this.logger.log("Received Movement from client ".concat(msg.payload[0].id));
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             player.position = msg.payload[0].position;
                             _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
+                            break;
+                        case "Info":
+                            _this.setPlayer(client, msg.payload[0]);
+                            _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.info, msg.payload[0]));
                             break;
                         case "ping":
                             _this.logger.log("Received Ping from client. Pong!");
