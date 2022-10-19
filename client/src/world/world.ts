@@ -35,11 +35,11 @@ export class World {
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
-            this._socket.send(new Packet(PacketType.info, [this._player]))
+            this._socket.send(new Packet(PacketType.info, [this._player], undefined),)
 
             this._engine.runRenderLoop(() => {
                 this._scene.render();
-                if (this._player) this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }]))
+                if (this._player) this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }], this._player.id))
             })
 
         })
@@ -62,6 +62,8 @@ export class World {
         // console.log(data)
         switch (data?.type) {
             case "Update":
+                console.log("update received")
+
                 try{
                     let pdata =  data?.payload[0];
                     if (this._players.get(data?.payload[0].id) == null) {
