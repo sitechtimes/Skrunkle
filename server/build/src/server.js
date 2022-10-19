@@ -19,8 +19,8 @@ var SocketServer = /** @class */ (function () {
     SocketServer.prototype.init = function () {
         this.world.init();
     };
-    SocketServer.prototype.setPlayer = function (client, player) {
-        this.players.set(client, player);
+    SocketServer.prototype.setPlayer = function (uid, player) {
+        this.players.set(uid, player);
     };
     SocketServer.prototype.listen = function () {
         var _this = this;
@@ -29,32 +29,32 @@ var SocketServer = /** @class */ (function () {
             // save client
             _this.logger.log('Client connected');
             if (!_this.players.has(client)) {
-                _this.setPlayer(client, new player_1.Player());
+                var player = new player_1.Player();
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
-                        player: _this.players.get(client),
+                        player: player,
                         players: _this.players.size
                     }]));
             }
             // basic starter functiosn
             client.on('message', function (message) {
-                if (_this.players.has(client)) {
-                    var playerId = _this.players.get(client);
-                    var msg = JSON.parse(message);
-                    var player = _this.players.get(client);
+                var msg = JSON.parse(message);
+                if (_this.players.has(msg.uid)) {
+                    var player = _this.players.get(msg.uid);
                     switch (msg.type) {
                         case "Movement":
                             // this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
-                            if (player) {
+                            if (player !== null) {
+                                console.log("receiveed movement");
                                 player.position = new babylonjs_1.Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z);
-                                _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
+                                _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             }
                             // console.log(msg.payload[0].position)
                             break;
                         case "Info":
-                            _this.setPlayer(client, msg.payload[0]);
-                            _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.info, msg.payload[0]));
+                            _this.setPlayer(msg.uid, msg.payload[0]);
+                            _this.broadCast(new packet_1.Packet(packet_1.PacketType.info, msg.payload[0]));
                             break;
                         case "ping":
                             _this.logger.log("Received Ping from client. Pong!");
@@ -80,7 +80,7 @@ var SocketServer = /** @class */ (function () {
     SocketServer.prototype.send = function (client, packet) {
         client.send(JSON.stringify(packet));
     };
-    SocketServer.prototype.broadCast = function (client, packet) {
+    SocketServer.prototype.broadCast = function (packet) {
         var _this = this;
         this.server.clients.forEach(function (user) {
             if (_this.players.get(user) !== null) {
