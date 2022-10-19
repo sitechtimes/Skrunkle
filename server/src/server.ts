@@ -60,11 +60,15 @@ export class SocketServer {
           
           switch (msg.type) {
             case "Movement":
-              this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
+              // this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
-              player.position = msg.payload[0].position
-              this.broadCast(client, new Packet(PacketType.update, msg.payload[0]))
+              if (player) {
+                player.position = new Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z)
+                this.broadCast(client, new Packet(PacketType.update, msg.payload[0]))
+              }
+              // console.log(msg.payload[0].position)
+              
               break
             case "Info":
               this.setPlayer(client, msg.payload[0])
@@ -103,7 +107,7 @@ export class SocketServer {
 
   public broadCast(client:any, packet:Packet) {
     this.server.clients.forEach((user) => {
-      if (this.players.get(user) !== null && client !== user) {
+      if (this.players.get(user) !== null) {
         this.send(user, packet)
       }
     });
