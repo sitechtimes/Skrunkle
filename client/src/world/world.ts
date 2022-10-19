@@ -17,6 +17,7 @@ export class World {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
+        this._players = new Map<string, Player>
     }
 
     public init(): void {
@@ -58,11 +59,26 @@ export class World {
         this._players.set(player.id, player)
     }
     public onSocketData(data: Packet): void {
-        console.log(data)
+        // console.log(data)
         switch (data?.type) {
             case "Update":
-                console.log(data?.payload)
-                console.log(this._player)
+                try{
+                    let pdata =  data?.payload[0];
+                    if (this._players.get(data?.payload[0].id) == null) {
+                        this._initPlayer(
+                            new Player(
+                                pdata.id,
+                                100, 0, 
+                                new Vector3(pdata.position.x, pdata.position.y, pdata.position.z),
+                                pdata.id,
+                                this._scene,
+                                { renderBody: true }
+                            ))
+                    }
+                    console.log(this._players)
+                } catch(e){
+
+                }
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;

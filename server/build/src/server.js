@@ -4,6 +4,7 @@ exports.SocketServer = void 0;
 var ws_1 = require("ws");
 var world_1 = require("./world");
 var player_1 = require("./entity/player");
+var babylonjs_1 = require("babylonjs");
 var packet_1 = require("./packet");
 var logger_1 = require("./logger");
 var SocketServer = /** @class */ (function () {
@@ -42,11 +43,14 @@ var SocketServer = /** @class */ (function () {
                     var player = _this.players.get(client);
                     switch (msg.type) {
                         case "Movement":
-                            _this.logger.log("Received Movement from client ".concat(msg.payload[0].id));
+                            // this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
-                            player.position = msg.payload[0].position;
-                            _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
+                            if (player) {
+                                player.position = new babylonjs_1.Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z);
+                                _this.broadCast(client, new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
+                            }
+                            // console.log(msg.payload[0].position)
                             break;
                         case "Info":
                             _this.setPlayer(client, msg.payload[0]);
@@ -79,7 +83,7 @@ var SocketServer = /** @class */ (function () {
     SocketServer.prototype.broadCast = function (client, packet) {
         var _this = this;
         this.server.clients.forEach(function (user) {
-            if (_this.players.get(user) !== null && client !== user) {
+            if (_this.players.get(user) !== null) {
                 _this.send(user, packet);
             }
         });
