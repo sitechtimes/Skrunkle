@@ -1,5 +1,5 @@
 import { World } from "./world/world";
-import { Packet } from "./packet";
+import { Packet, PacketType } from "./packet";
 
 export class Socket {
   static readonly url: string = 'ws://localhost:2000'
@@ -35,7 +35,8 @@ export class Socket {
     }
   }
 
-  public close() {
-    this.server.close()
+  public close(uid: string) {
+    this.send(new Packet(PacketType.close, [{id: uid, delete: true}], uid))
+    this.server.close(uid)
   }
 }

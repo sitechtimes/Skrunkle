@@ -1,7 +1,8 @@
 export enum PacketType{
     update = "Update",
     info = "Info",
-    movement = "Movement"
+    movement = "Movement",
+    close = "Close"
 }
 
 export class Packet{
