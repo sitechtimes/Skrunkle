@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader } from 'babylonjs';
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket, Message } from "../socket"
 
@@ -8,7 +8,7 @@ export class World {
     private _canvas: HTMLCanvasElement | null;
     private _playerCamera: FreeCamera;
     private _socket: Socket;
-    private _player: MainPlayer
+    private _player: MainPlayer;
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -19,7 +19,9 @@ export class World {
     public init(): void {
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
-
+        SceneLoader.Append("../gltf/", "chest.gltf", this._scene, function (scene) {
+            // do something with the scene
+        });
         var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         ground.checkCollisions = true;
         var light = new HemisphericLight(
