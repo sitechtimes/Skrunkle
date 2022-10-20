@@ -39,7 +39,9 @@ export class World {
 
             this._engine.runRenderLoop(() => {
                 this._scene.render();
-                if (this._player) this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }], this._player.id))
+                if (this._player) {
+                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }], this._player.id))
+                }
             })
 
         })
@@ -52,7 +54,7 @@ export class World {
             id, this._scene, this._canvas,
             this._playerCamera
         )
-        console.log("Created Main Player")
+        console.log("Created Main Player id: " + this._player.id)
     }
 
     private _initPlayer(player: Player): void {
@@ -62,25 +64,17 @@ export class World {
         // console.log(data)
         switch (data?.type) {
             case "Update":
-                console.log("update received")
-
-                try{
-                    let pdata =  data?.payload[0];
-                    if (this._players.get(data?.payload[0].id) == null) {
-                        this._initPlayer(
-                            new Player(
-                                pdata.id,
-                                100, 0, 
-                                new Vector3(pdata.position.x, pdata.position.y, pdata.position.z),
-                                pdata.id,
-                                this._scene,
-                                { renderBody: true }
-                            ))
-                    }
-                    console.log(this._players)
-                } catch(e){
-
+                let playerData = data.payload
+                if (!this._players.has(playerData.id) && playerData.id != this._player.id){
+                    let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
+                    this._players.set(playerData.id, newPlayer)
+                    console.log(`PLayer doesn't exist, creating a new player with id ${playerData.id}`)
+                }else if (playerData.id != this._player.id) {
+                    let player: Player = this._players.get(playerData.id)
+                    player.position = playerData.position
+                    this._players.set(player.id, player)
                 }
+                
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
