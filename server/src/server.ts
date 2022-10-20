@@ -39,6 +39,7 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         let player = new Player()
+        this.players.set(player.id, player)
         this.send(client, 
           new Packet(
             PacketType.info, 
@@ -53,7 +54,6 @@ export class SocketServer {
       // basic starter functiosn
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
-
         if (this.players.has(msg.uid)) {
 
           let player: Player = this.players.get(msg.uid)
@@ -64,7 +64,6 @@ export class SocketServer {
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
-                console.log("receiveed movement")
                 player.position = new Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z)
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }

@@ -30,6 +30,7 @@ var SocketServer = /** @class */ (function () {
             _this.logger.log('Client connected');
             if (!_this.players.has(client)) {
                 var player = new player_1.Player();
+                _this.players.set(player.id, player);
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
                         player: player,
                         players: _this.players.size
@@ -46,7 +47,7 @@ var SocketServer = /** @class */ (function () {
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             if (player !== null) {
-                                console.log("receiveed movement");
+                                console.log("received movement");
                                 player.position = new babylonjs_1.Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z);
                                 _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             }

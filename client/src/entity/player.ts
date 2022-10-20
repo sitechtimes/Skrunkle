@@ -37,7 +37,9 @@ export class Player{
 
     public set position(new_position: Vector3){
         this._position = new_position;
-        if (this._body) this._body.position = this._position;
+        if (this._body) {
+            this._body.position = this._position;
+        }
     }
 
     public get name(): string{
