@@ -26,7 +26,7 @@ export class Player{
         this._scene = scene
 
         if (options.renderBody) {
-            this._body = MeshBuilder.CreateBox("playerBody", { size: 10, width: 10, height: 10}, this._scene)
+            this._body = MeshBuilder.CreateBox("playerBody", { size: 5, width: 5, height: 7}, this._scene)
         }
         this._position = position;
     }
@@ -37,7 +37,9 @@ export class Player{
 
     public set position(new_position: Vector3){
         this._position = new_position;
-        if (this._body) this._body.position = this._position;
+        if (this._body) {
+            this._body.position = this._position;
+        }
     }
 
     public get name(): string{
