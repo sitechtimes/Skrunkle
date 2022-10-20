@@ -26,7 +26,7 @@ export class Player{
         this._scene = scene
 
         if (options.renderBody) {
-            this._body = MeshBuilder.CreateBox("playerBody", { size: 10, width: 10, height: 10}, this._scene)
+            this._body = MeshBuilder.CreateBox("playerBody", { size: 5, width: 5, height: 7}, this._scene)
         }
         this._position = position;
     }
