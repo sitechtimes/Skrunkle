@@ -27,8 +27,8 @@ export class SocketServer {
     this.world.init()
   }
 
-  public setPlayer(client:any, player:Player) {
-    this.players.set(client, player)
+  public setPlayer(uid:string|undefined, player:Player) {
+    this.players.set(uid, player)
   }
   
   private listen() {
@@ -38,12 +38,13 @@ export class SocketServer {
       // save client
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
-        this.setPlayer(client, new Player())
+        let player = new Player()
+        this.players.set(player.id, player)
         this.send(client, 
           new Packet(
             PacketType.info, 
             [{
-              player: this.players.get(client),
+              player: player,
               players: this.players.size 
             }]
           )
@@ -51,19 +52,27 @@ export class SocketServer {
       }
 
       // basic starter functiosn
-      client.on('message', (message:any) => {
-        if (this.players.has(client)) {
-          let playerId = this.players.get(client)
-          let msg = JSON.parse(message)
+      client.on('message', (message:string) => {
+        let msg: Packet = JSON.parse(message)
+        if (this.players.has(msg.uid)) {
 
-          let player: Player = this.players.get(client)
+          let player: Player = this.players.get(msg.uid)
           
           switch (msg.type) {
-            case "movement":
-              this.logger.log("Received Movement from client")
+            case "Movement":
+              // this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
-              player.position = msg.payload[0].position
+              if (player !== null) {
+                player.position = new Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z)
+                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
+              }
+              // console.log(msg.payload[0].position)
+              
+              break
+            case "Info":
+              this.setPlayer(msg.uid, msg.payload[0])
+              this.broadCast(new Packet(PacketType.info, msg.payload[0]))
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
@@ -96,10 +105,10 @@ export class SocketServer {
     )
   }
 
-  public broadCast(data:string) {
-    this.server.clients.forEach((client) => {
-      if (this.players.get(client) !== null) {
-        client.send(data)
+  public broadCast(packet:Packet) {
+    this.server.clients.forEach((user) => {
+      if (this.players.get(user) !== null) {
+        this.send(user, packet)
       }
     });
   }
