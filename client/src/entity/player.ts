@@ -74,7 +74,9 @@ export class Player{
     }
 
     public delete() {
-        this._body = null
+        if (this._body) {
+            this._body.dispose()
+        }
     }
 
     protected get scene(): Scene{

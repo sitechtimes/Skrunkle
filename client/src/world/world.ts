@@ -90,10 +90,9 @@ export class World {
                 else // init player
                 break
             case "Close":
-                let player: Player = this._players.get(data.payload.id)
+                let player: Player = this._players.get(data.payload[0].id)
                 player.delete()
-                this._players.delete(data?.payload.id)
-                console.log(data)
+                this._players.delete(data.payload[0].id)
                 break
             default:
                 // throw some error
