@@ -56,6 +56,10 @@ var SocketServer = /** @class */ (function () {
                             _this.setPlayer(msg.uid, msg.payload[0]);
                             _this.broadCast(new packet_1.Packet(packet_1.PacketType.info, msg.payload[0]));
                             break;
+                        case "Close":
+                            _this.players.delete(msg.uid);
+                            _this.broadCast(new packet_1.Packet(packet_1.PacketType.close, [{ id: msg.uid, delete: true }]));
+                            break;
                         case "ping":
                             _this.logger.log("Received Ping from client. Pong!");
                             _this.send(client, new packet_1.Packet(packet_1.PacketType.info, ['Pong!']));
@@ -67,9 +71,7 @@ var SocketServer = /** @class */ (function () {
             });
             client.on('close', function () {
                 _this.logger.log('Client connection closed');
-                var id = _this.players.get(client);
                 // this.world.removePlayer(id)
-                _this.players.delete(client);
                 // close with router
             });
             client.on('error', function () {
