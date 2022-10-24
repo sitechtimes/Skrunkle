@@ -21,8 +21,8 @@ export class World {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
-        var chest = SceneLoader.Load("./gltf/", "untitled.gltf")
-        var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
+        var chest = SceneLoader.ImportMesh("", "gltf/", "chest.babylon", this._scene, function (newMeshes) { newMeshes[0].position.y=2; newMeshes[0].checkCollisions = true});
+        var ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, this._scene);
         ground.checkCollisions = true;;
         var light = new HemisphericLight(
             "light",
