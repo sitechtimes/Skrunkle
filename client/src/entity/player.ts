@@ -27,7 +27,6 @@ export class Player {
 
         if (options.renderBody) {
             SceneLoader.ImportMesh("", "meshes/", "player.babylon", this._scene, this._init)
-            console.log(this._body)
         }
         this._position = position;
     }
