@@ -73,6 +73,12 @@ export class Player{
         return this._id;
     }
 
+    public delete() {
+        if (this._body) {
+            this._body.dispose()
+        }
+    }
+
     protected get scene(): Scene{
         return this._scene
     }
