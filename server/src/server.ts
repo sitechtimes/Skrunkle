@@ -68,11 +68,14 @@ export class SocketServer {
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }
               // console.log(msg.payload[0].position)
-              
               break
             case "Info":
               this.setPlayer(msg.uid, msg.payload[0])
               this.broadCast(new Packet(PacketType.info, msg.payload[0]))
+              break
+            case "Close":
+              this.players.delete(msg.uid)
+              this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
@@ -86,10 +89,7 @@ export class SocketServer {
 
       client.on('close', () => {
         this.logger.log('Client connection closed')
-        let id = this.players.get(client)
         // this.world.removePlayer(id)
-        this.players.delete(client)
-
         // close with router
       })
 

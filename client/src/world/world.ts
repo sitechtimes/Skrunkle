@@ -48,6 +48,14 @@ export class World {
 
         })
 
+        this.listen()
+
+    }
+
+    private listen() {
+        window.onunload = () => {
+            this._socket.close(this._player.id)
+        }
     }
 
     private _initClient(name: string, id: string): void {
@@ -82,6 +90,11 @@ export class World {
                 let playerInfo: any = data?.payload[0].player;
                 if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
                 else // init player
+                break
+            case "Close":
+                let player: Player = this._players.get(data.payload[0].id)
+                player.delete()
+                this._players.delete(data.payload[0].id)
                 break
             default:
                 // throw some error
