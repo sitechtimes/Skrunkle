@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, Scene, Vector3 } from "babylonjs"
+import { BoxBuilder, Mesh, MeshBuilder, PhysicsImpostor, Scene, Vector3 } from "babylonjs"
 
 export class Player{
 
@@ -9,6 +9,7 @@ export class Player{
     private _id: string;
     private _body: Mesh | null = null;
     private _scene: Scene;
+    private _physicsImpostor: BABYLON.PhysicsImpostor
 
     constructor(
         name: string, 
@@ -27,6 +28,8 @@ export class Player{
 
         if (options.renderBody) {
             this._body = MeshBuilder.CreateBox("playerBody", { size: 5, width: 5, height: 7}, this._scene)
+
+            this._physicsImpostor = new BABYLON.PhysicsImpostor(this._body, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.7 }, this.scene)
         }
         this._position = position;
     }
