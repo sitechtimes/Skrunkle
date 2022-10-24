@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode } from 'babylonjs';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -25,7 +25,13 @@ export class World {
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
         SceneLoader.ImportMesh("","gltf/", "player.babylon", this._scene, function (scene) {
             // do something with the scene
-            scene[0].position = new Vector3(0, 0, 0)
+            let parent: TransformNode = new TransformNode("grouped-mesh")
+            for (let child of scene){
+                child.parent = parent
+            }
+            parent.position = new Vector3(0, 3, 0)
+            parent.rotation = new Vector3(Math.PI/2, 0, 0)
+            parent.scaling = new Vector3(0.25, 0.25, 0.25)
         });
         var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         ground.checkCollisions = true;
