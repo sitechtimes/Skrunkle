@@ -23,8 +23,9 @@ export class World {
     public init(): void {
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
-        SceneLoader.ImportMesh("test mesh","/", "test.glb", this._scene, function (scene) {
+        SceneLoader.ImportMesh("","gltf/", "player.babylon", this._scene, function (scene) {
             // do something with the scene
+            scene[0].position = new Vector3(0, 0, 0)
         });
         var ground = MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         ground.checkCollisions = true;
