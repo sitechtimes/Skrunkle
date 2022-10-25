@@ -12,6 +12,7 @@ export class World {
     private _playerCamera: FreeCamera;
     private _socket: Socket;
     private _player: MainPlayer;
+    private _players:  Map<string, Player>;
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -39,7 +40,7 @@ export class World {
             this._engine.runRenderLoop(() => {
                 this._scene.render();
                 if (this._player) {
-                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position }], this._player.id))
+                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position, rotation: this._player.rotation }], this._player.id))
                 }
             })
 
@@ -57,7 +58,7 @@ export class World {
 
     private _initClient(name: string, id: string): void {
         this._player = new MainPlayer(
-            name, 100, 0, new Vector3(0, 10, 0),
+            name, 100, 0, new Vector3(0, 10, 0), new Vector3(0, 0, 0),
             id, this._scene, this._canvas,
             this._playerCamera
         )
@@ -73,12 +74,13 @@ export class World {
             case "Update":
                 let playerData = data.payload
                 if (!this._players.has(playerData.id) && playerData.id != this._player.id){
-                    let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
+                    let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
                     this._players.set(playerData.id, newPlayer)
                     console.log(`PLayer doesn't exist, creating a new player with id ${playerData.id}`)
                 }else if (playerData.id != this._player.id) {
                     let player: Player = this._players.get(playerData.id)
                     player.position = playerData.position
+                    player.rotation = playerData.rotation
                     this._players.set(player.id, player)
                 }
                 

@@ -6,8 +6,9 @@ export class Player {
     private _health: number;
     private _exp: number;
     private _position: Vector3;
+    private _rotation: Vector3;
     private _id: string;
-    private _body: Mesh | TransformNode | null = null;
+    private _body: Mesh | TransformNode = new TransformNode("player-mesh");
     private _scene: Scene;
 
     constructor(
@@ -15,6 +16,7 @@ export class Player {
         health: number,
         exp: number,
         position: Vector3,
+        rotation: Vector3,
         id: string,
         scene: Scene,
         options: { renderBody?: boolean } = { renderBody: true }
@@ -25,21 +27,29 @@ export class Player {
         this._id = id;
         this._scene = scene
 
-        if (options.renderBody) {
-            SceneLoader.ImportMesh("", "meshes/", "player.babylon", this._scene, this._init)
-        }
+        this._loadBody(options);
         this._position = position;
+        this._rotation = new Vector3(Math.PI / 2, Math.PI, 0);
+        console.log(this._rotation)
     }
 
-    private _init(scene: any) {
-        let parent: TransformNode = new TransformNode("grouped-mesh")
-        for (let child of scene) {
+    private async _loadBody(options: any){
+        if (options.renderBody) {
+            let bodies: any = await SceneLoader.ImportMeshAsync("", "meshes/", "player.babylon", this._scene)
+            this._setBody(bodies)
+        }
+    }
+
+    private _setBody(scene: any) {
+        let parent: TransformNode = new TransformNode("player-mesh")
+        for (let child of scene.meshes) {
             child.parent = parent
         }
         parent.position = new Vector3(0, 3, 0)
-        parent.rotation = new Vector3(Math.PI / 2, 0, 0)
+        parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
         parent.scaling = new Vector3(0.25, 0.25, 0.25)
         this._body = parent
+        console.log(this._body.rotation)
     }
 
     public get position(): Vector3 {
@@ -51,6 +61,18 @@ export class Player {
         if (this._body) {
             this._body.position = this._position;
         }
+    }
+
+    public get rotation(): Vector3 {
+        return this._rotation;
+    }
+
+    public set rotation(new_rotation: Vector3) {
+        this._rotation = new_rotation;
+        if (this._body) {
+            this._body.rotation.y = new_rotation._y + Math.PI;
+        }
+        console.log(this._body.rotation)
     }
 
     public get name(): string {
