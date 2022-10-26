@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix } from 'babylonjs';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -13,21 +13,20 @@ export class World {
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
-    private _forward: Vector3;
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
         this._players = new Map<string, Player>;
-        this._forward = new Vector3(0, 0, 1);
     }
 
     public init(): void {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
-        this._forward = vecToLocal(forward, this._camera);
+        var ray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);
+        var hit = this._scene.pickWithRay(ray);
         var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
         ground.checkCollisions = true;
         var light = new HemisphericLight(
