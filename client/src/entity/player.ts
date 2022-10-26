@@ -1,4 +1,5 @@
 import { Mesh, MeshBuilder, Scene, Vector3, SceneLoader, TransformNode } from "babylonjs"
+import { Button, AdvancedDynamicTexture } from '@babylonjs/gui';
 
 export class Player {
 
@@ -10,6 +11,7 @@ export class Player {
     private _id: string;
     private _body: Mesh | TransformNode = new TransformNode("player-mesh");
     private _scene: Scene;
+    private _nametag: Button;
 
     constructor(
         name: string,
@@ -30,7 +32,21 @@ export class Player {
         this._loadBody(options);
         this._position = position;
         this._rotation = new Vector3(Math.PI / 2, Math.PI, 0);
-        console.log(this._rotation)
+
+
+        /*NAME TAG*/
+        this._nametag = Button.CreateSimpleButton("nametag", this._name)
+        this._nametag.width = 1;
+        this._nametag.height = 0.4;
+        this._nametag.color = "white";
+        this._nametag.fontSize = 50;
+        this._nametag.background = "green"
+
+        let nameplane = MeshBuilder.CreatePlane("nameplane")
+        nameplane.parent = this._body
+
+        let advancedTexture = AdvancedDynamicTexture.CreateForMesh(nameplane);
+
     }
 
     private async _loadBody(options: any){
