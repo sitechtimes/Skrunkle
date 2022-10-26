@@ -1,7 +1,9 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode } from 'babylonjs';
+import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
-import { Socket, Message } from "../socket"
-import "babylonjs-loaders";
+import { Socket } from "../socket"
+import { Packet, PacketType } from '../packet';
+import { Player } from '../entity/player';
 
 export class World {
     private _engine: Engine;
@@ -10,20 +12,21 @@ export class World {
     private _playerCamera: FreeCamera;
     private _socket: Socket;
     private _player: MainPlayer;
+    private _players:  Map<string, Player>;
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
+        this._players = new Map<string, Player>;
     }
 
     public init(): void {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
-        var chest = SceneLoader.ImportMesh("", "gltf/", "chest.babylon", this._scene, function (newMeshes) { newMeshes[0].position.y=2; newMeshes[0].checkCollisions = true});
-        var ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, this._scene);
-        ground.checkCollisions = true;;
+        var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
+        ground.checkCollisions = true;
         var light = new HemisphericLight(
             "light",
             new Vector3(0, 1, 0),
@@ -33,33 +36,65 @@ export class World {
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
+            this._socket.send(new Packet(PacketType.info, [this._player], undefined),)
+
             this._engine.runRenderLoop(() => {
                 this._scene.render();
-                if (this._player) this._socket.send( <Message> { type: "movement", payload: [ {id: this._player.id, position: this._player.position } ] })
+                if (this._player) {
+                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                }
             })
 
         })
 
+        this.listen()
+
     }
 
-    private _initPlayer(name: string, id: string): void {
+    private listen() {
+        window.onunload = () => {
+            this._socket.close(this._player.id)
+        }
+    }
+
+    private _initClient(name: string, id: string): void {
         this._player = new MainPlayer(
-            "temp_name", 100, 0, new Vector3(0, 10, 0),
-            "temp_id", this._scene, this._canvas,
+            name, 100, 0, new Vector3(0, 10, 0), new Vector3(0, 0, 0),
+            id, this._scene, this._canvas,
             this._playerCamera
         )
-        console.log("Created Player")
+        console.log("Created Main Player id: " + this._player.id)
     }
 
-    public onSocketData(data: any): void {
-        console.log(data)
+    private _initPlayer(player: Player): void {
+        this._players.set(player.id, player)
+    }
+    public onSocketData(data: Packet): void {
+        // console.log(data)
         switch (data?.type) {
             case "Update":
-                console.log(data?.payload)
+                let playerData = data.payload
+                if (!this._players.has(playerData.id) && playerData.id != this._player.id){
+                    let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
+                    this._players.set(playerData.id, newPlayer)
+                    console.log(`PLayer doesn't exist, creating a new player with id ${playerData.id}`)
+                }else if (playerData.id != this._player.id) {
+                    let player: Player = this._players.get(playerData.id)
+                    player.position = playerData.position
+                    player.rotation = playerData.rotation
+                    this._players.set(player.id, player)
+                }
+                
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
-                this._initPlayer(playerInfo._name, playerInfo._id)
+                if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
+                else // init player
+                break
+            case "Close":
+                let player: Player = this._players.get(data.payload[0].id)
+                player.delete()
+                this._players.delete(data.payload[0].id)
                 break
             default:
                 // throw some error

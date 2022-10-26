@@ -1,7 +1,8 @@
 import { World } from "./world/world";
+import { Packet, PacketType } from "./packet";
 
 export class Socket {
-  static readonly url: string = 'ws://localhost:2000'
+  static readonly url: string = 'ws://10.94.168.236:2000'
   private server: any
   private status: boolean = false
   private worldReference: World;
@@ -26,20 +27,16 @@ export class Socket {
     }
   }
 
-  public send(message: Message) {
+  public send(packet: Packet) {
     if (this.status === true) {
-      this.server.send(JSON.stringify(message))
+      this.server.send(JSON.stringify(packet))
     } else {
-      setTimeout(() => this.send(message), 500)
+      setTimeout(() => this.send(packet), 50)
     }
   }
 
-  public close() {
-    this.server.close()
+  public close(uid: string) {
+    this.send(new Packet(PacketType.close, [{id: uid, delete: true}], uid))
+    this.server.close(uid)
   }
-}
-
-export interface Message {
-  type: string,
-  payload: Array<any>
 }
