@@ -37,7 +37,7 @@ var World = /** @class */ (function () {
         });
     };
     World.prototype.onSocketData = function (data) {
-        switch (data.type) {
+        switch (data === null || data === void 0 ? void 0 : data.type) {
             case "Update":
                 break;
             case "Info":

@@ -5,6 +5,7 @@ import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
 import { Packet, PacketType } from './packet'
 import { Logger } from './logger'
+import { particlesPixelShader } from 'babylonjs/Shaders/particles.fragment'
 
 export class SocketServer {
   static readonly PORT: number = 2000
@@ -111,5 +112,6 @@ export class SocketServer {
         this.send(user, packet)
       }
     });
+    this.world.onSocketData(packet)
   }
 }

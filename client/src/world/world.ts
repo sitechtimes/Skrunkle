@@ -32,7 +32,7 @@ export class World {
             this._scene
         );
 
-        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        /* this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon)); */
 
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);

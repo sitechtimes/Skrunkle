@@ -46,7 +46,7 @@ export class World{
     }
     
     public onSocketData(data:Packet): void {
-        switch (data.type) {
+        switch (data?.type) {
             case "Update":
 
                 break
