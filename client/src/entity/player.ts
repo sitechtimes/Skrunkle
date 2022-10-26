@@ -43,11 +43,12 @@ export class Player {
     private _setBody(scene: any) {
         let parent: TransformNode = new TransformNode("player-mesh")
         for (let child of scene.meshes) {
+            child.position = new Vector3(0, 0, 0)
             child.parent = parent
         }
-        parent.position = new Vector3(0, 3, 0)
-        parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
-        parent.scaling = new Vector3(0.25, 0.25, 0.25)
+        parent.position = new Vector3(0, 0, 0)
+        // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
+        // parent.scaling = new Vector3(0.25, 0.25, 0.25)
         this._body = parent
         console.log(this._body.rotation)
     }
