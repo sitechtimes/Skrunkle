@@ -11,12 +11,13 @@ export class MainPlayer extends Player {
         health: number,
         exp: number,
         position: Vector3,
+        rotation: Vector3,
         id: string,
         scene: Scene,
         canvas: HTMLCanvasElement,
         freeCamera: FreeCamera,
     ) {
-        super(name, health, exp, position, id, scene, {renderBody: false});
+        super(name, health, exp, position, rotation, id, scene, {renderBody: false});
 
         this._canvas = canvas;
         this.scene.gravity = new Vector3(0, -9.81, 0);
@@ -24,6 +25,7 @@ export class MainPlayer extends Player {
         this._camera = freeCamera;
         this._camera.attachControl(canvas, true);
         this._camera.ellipsoid = new Vector3(2, 4, 2);
+        this._camera.inertia = 0.3;
         this._camera.checkCollisions = true;
         this._camera.applyGravity = true;
         (<any>this._camera)._needMoveForGravity = true;
@@ -53,6 +55,10 @@ export class MainPlayer extends Player {
 
     public set position(new_position: Vector3){
         this._camera.position = new_position;
+    }
+
+    public get rotation(): Vector3{
+        return this._camera.rotation
     }
 
     /* public set id(new_id: string){
