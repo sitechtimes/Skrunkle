@@ -1,4 +1,4 @@
-import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "babylonjs"
+import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder, } from "babylonjs"
 import { Player } from "./player"
 
 export class MainPlayer extends Player {
