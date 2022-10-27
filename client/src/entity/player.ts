@@ -1,5 +1,5 @@
-import { Mesh, MeshBuilder, Scene, Vector3, SceneLoader, TransformNode } from "babylonjs"
-import { Button, AdvancedDynamicTexture } from '@babylonjs/gui';
+import { Mesh, Scene, MeshBuilder, Vector3, SceneLoader, TransformNode } from "@babylonjs/core"
+import { Button, AdvancedDynamicTexture } from '@babylonjs/gui/2D';
 
 export class Player {
 
@@ -36,17 +36,22 @@ export class Player {
 
         /*NAME TAG*/
         this._nametag = Button.CreateSimpleButton("nametag", this._name)
-        this._nametag.width = 1;
-        this._nametag.height = 0.4;
+        this._nametag.paddingTop = "2px";
+        this._nametag.width = "500px";
+        this._nametag.height = "40px";
         this._nametag.color = "white";
-        this._nametag.fontSize = 50;
-        this._nametag.background = "green"
+        this._nametag.background = "green";
+        this._nametag.cornerRadius = 10;
+        this._nametag.fontSize = 25;
+        this._nametag.fontFamily = "Verdana";
 
-        let nameplane = MeshBuilder.CreatePlane("nameplane")
-        nameplane.parent = this._body
+        let advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI", false, this._scene)
 
-        let advancedTexture = AdvancedDynamicTexture.CreateForMesh(nameplane);
+        console.log(advancedTexture)
 
+        advancedTexture.addControl(this._nametag);
+        this._nametag.linkWithMesh(this._body)
+        this._nametag.linkOffsetY = -150
     }
 
     private async _loadBody(options: any){
@@ -57,7 +62,7 @@ export class Player {
     }
 
     private _setBody(scene: any) {
-        let parent: TransformNode = new TransformNode("player-mesh")
+        let parent: TransformNode = new Mesh("player-group", this._scene)
         for (let child of scene.meshes) {
             child.position = new Vector3(0, 0, 0)
             child.parent = parent
@@ -66,7 +71,6 @@ export class Player {
         // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
         // parent.scaling = new Vector3(0.25, 0.25, 0.25)
         this._body = parent
-        console.log(this._body.rotation)
     }
 
     public get position(): Vector3 {
