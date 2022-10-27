@@ -1,5 +1,5 @@
 
-import { Mesh, MeshBuilder, Scene, Vector3, SceneLoader, TransformNode } from "babylonjs"
+import { Mesh, MeshBuilder, Scene, Vector3, SceneLoader, TransformNode, PhysicsImpostor } from "babylonjs"
 
 export class Player {
 
@@ -37,7 +37,14 @@ export class Player {
 
     private async _loadBody(options: any){
         if (options.renderBody) {
-            let bodies: any = await SceneLoader.ImportMeshAsync("", "meshes/", "player.babylon", this._scene)
+            let scene = this._scene
+            let bodies: any = await SceneLoader.ImportMeshAsync("", "meshes/", "player.babylon", this._scene, function(mesh:any) {
+                for (let i = 0; i < mesh.length; i++) {
+                    mesh[i].physicsImpostor = new PhysicsImpostor(mesh[i], PhysicsImpostor.BoxImpostor, {
+                        mass: 1, restitution: 0.5, friction: 0.01
+                    }, scene)
+                }
+            })
             this._setBody(bodies)
         }
     }

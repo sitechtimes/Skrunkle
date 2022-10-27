@@ -9,8 +9,6 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
-   /*  private _scene: Scene;
-    private _body: Mesh | null = null */
 
     constructor(
         name?: string|undefined, 
@@ -18,28 +16,12 @@ export class Player{
         exp?: number|undefined, 
         position?: Vector3|undefined, 
         id?: string|undefined,
-        /* scene?: Scene,
-        options: { renderBody?: boolean } = { renderBody: true} */
     ){
         this._name = name || generateUsername();
         this._health = health || 100;
         this._exp = exp || 0;
         this._position = position || new Vector3(0, 0, 0);
         this._id = uuidv4();
-        
-     /*    if (position) {
-            this._position = position
-        }
-        
-        if (scene) {
-            this._scene = scene
-
-            if (options.renderBody) {
-                this._body = MeshBuilder.CreateBox("playerBody", { size: 5, width: 5, height: 7}, this._scene)
-        
-                this._body.physicsImpostor = new PhysicsImpostor(this._body, PhysicsImpostor.BoxImpostor, { mass: 1, friction: 0.01, restitution: 0.3 })
-            }
-        } */
 
     }
     

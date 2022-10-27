@@ -43,9 +43,6 @@ var World = /** @class */ (function () {
             case "Info":
                 break;
             case "Close":
-                var player = this._players.get(data.payload[0].id);
-                player.delete();
-                this._players.delete(data.payload[0].id);
                 break;
             default:
                 // throw some error

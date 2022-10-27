@@ -48,15 +48,10 @@ export class World{
     public onSocketData(data:Packet): void {
         switch (data?.type) {
             case "Update":
-
                 break
             case "Info":
-
                 break
             case "Close":
-                let player: Player = this._players.get(data.payload[0].id)
-                player.delete()
-                this._players.delete(data.payload[0].id)
                 break
             default:
                 // throw some error

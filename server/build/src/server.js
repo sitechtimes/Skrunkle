@@ -89,6 +89,7 @@ var SocketServer = /** @class */ (function () {
                 _this.send(user, packet);
             }
         });
+        this.world.onSocketData(packet);
     };
     SocketServer.PORT = 2000;
     return SocketServer;
