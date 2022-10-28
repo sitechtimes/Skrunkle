@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -40,7 +40,7 @@ export class World {
             this._engine.runRenderLoop(() => {
                 this._scene.render();
                 if (this._player) {
-                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
                 }
             })
 
@@ -74,9 +74,9 @@ export class World {
             case "Update":
                 let playerData = data.payload
                 if (!this._players.has(playerData.id) && playerData.id != this._player.id){
-                    let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
+                    let newPlayer: Player = new Player(playerData.name, 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
                     this._players.set(playerData.id, newPlayer)
-                    console.log(`PLayer doesn't exist, creating a new player with id ${playerData.id}`)
+                    console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
                 }else if (playerData.id != this._player.id) {
                     let player: Player = this._players.get(playerData.id)
                     player.position = playerData.position
@@ -87,12 +87,13 @@ export class World {
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
+                console.log(playerInfo)
                 if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
                 else // init player
                 break
             case "Close":
                 let player: Player = this._players.get(data.payload[0].id)
-                player.delete()
+                if (player) player.delete()
                 this._players.delete(data.payload[0].id)
                 break
             default:
