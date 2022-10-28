@@ -76,7 +76,7 @@ export class World {
                 if (!this._players.has(playerData.id) && playerData.id != this._player.id){
                     let newPlayer: Player = new Player("temp-name", 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
                     this._players.set(playerData.id, newPlayer)
-                    console.log(`PLayer doesn't exist, creating a new player with id ${playerData.id}`)
+                    console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
                 }else if (playerData.id != this._player.id) {
                     let player: Player = this._players.get(playerData.id)
                     player.position = playerData.position
