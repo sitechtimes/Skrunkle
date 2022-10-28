@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix, Size, StandardMaterial} from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix, Size, StandardMaterial, Color3, KeyboardEventTypes, PointerEventTypes} from 'babylonjs';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -34,15 +34,25 @@ export class World {
         );
         const box = MeshBuilder.CreateBox("box", {height:2, width:2, depth:2})
         box.position.y=2;
+        box.metadata = "box";
         box.checkCollisions = true;
         var myMaterial =  new StandardMaterial("myMaterial", this._scene);
 
-myMaterial.diffuseColor = new BABYLON.Color3(1, 0, 1);
-myMaterial.specularColor = new BABYLON.Color3(0.5, 0.6, 0.87);
-myMaterial.emissiveColor = new BABYLON.Color3(1, .1, 1);
-myMaterial.ambientColor = new BABYLON.Color3(0.23, 0.98, 0.53);
+myMaterial.diffuseColor = new Color3(1, 0, 1);
+myMaterial.specularColor = new Color3(0.5, 0.6, 0.87);
+myMaterial.emissiveColor = new Color3(1, .1, 1);
+myMaterial.ambientColor = new Color3(0.23, 0.98, 0.53);
 
 box.material = myMaterial;
+  this._scene.onPointerObservable.add((pointerInfo) => {
+    switch (pointerInfo.type) {
+
+      case PointerEventTypes.POINTERTAP:
+        this._castRay();
+        break;
+    }
+  });
+this._castRay();
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
@@ -75,7 +85,14 @@ box.material = myMaterial;
         )
         console.log("Created Main Player id: " + this._player.id)
     }
-
+    private _castRay(){
+        var ray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);	
+        var hit = this._scene.pickWithRay(ray);
+    
+        if (hit.pickedMesh && hit.pickedMesh.metadata == "box"){
+            console.log("hit")
+        }
+    }   
     private _initPlayer(player: Player): void {
         this._players.set(player.id, player)
     }
