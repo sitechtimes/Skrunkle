@@ -32,6 +32,7 @@ var World = /** @class */ (function () {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
         this.logger = new logger_1.Logger('World');
+        this.worldSize = { width: 100, length: 100 };
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
     }
