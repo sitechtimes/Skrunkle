@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode } from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -92,7 +92,7 @@ export class World {
                 break
             case "Close":
                 let player: Player = this._players.get(data.payload[0].id)
-                player.delete()
+                if (player) player.delete()
                 this._players.delete(data.payload[0].id)
                 break
             default:
