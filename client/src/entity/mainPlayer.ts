@@ -1,4 +1,4 @@
-import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "babylonjs"
+import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
 import { Player } from "./player"
 
 export class MainPlayer extends Player {
@@ -17,7 +17,7 @@ export class MainPlayer extends Player {
         canvas: HTMLCanvasElement,
         freeCamera: FreeCamera,
     ) {
-        super(name, health, exp, position, rotation, id, scene, {renderBody: false});
+        super(name, health, exp, position, rotation, id, scene, {renderBody: false, mainPlayer: true});
 
         this._canvas = canvas;
         this.scene.gravity = new Vector3(0, -9.81, 0);
@@ -25,7 +25,7 @@ export class MainPlayer extends Player {
         this._camera = freeCamera;
         this._camera.attachControl(canvas, true);
         this._camera.ellipsoid = new Vector3(2, 4, 2);
-        this._camera.inertia = 0.3;
+        this._camera.inertia = 0.5;
         this._camera.checkCollisions = true;
         this._camera.applyGravity = true;
         (<any>this._camera)._needMoveForGravity = true;
