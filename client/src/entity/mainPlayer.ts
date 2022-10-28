@@ -17,7 +17,7 @@ export class MainPlayer extends Player {
         canvas: HTMLCanvasElement,
         freeCamera: FreeCamera,
     ) {
-        super(name, health, exp, position, rotation, id, scene, {renderBody: false});
+        super(name, health, exp, position, rotation, id, scene, {renderBody: false, mainPlayer: true});
 
         this._canvas = canvas;
         this.scene.gravity = new Vector3(0, -9.81, 0);

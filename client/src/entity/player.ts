@@ -10,8 +10,8 @@ export class Player {
     private _id: string;
     private _body: Mesh | TransformNode = new TransformNode("player-mesh");
     private _scene: Scene;
-    private _nametag: any;
-    private _nametage_y_offset: number = 0.5;
+    private _nametag: Mesh;
+    private _nametag_y_offset: number = 0.5;
 
     constructor(
         name: string,
@@ -37,17 +37,16 @@ export class Player {
         if (!options.mainPlayer){
             this._nametag = MeshBuilder.CreatePlane("NamePlane", {width: 2, height: 2}, this._scene) // fix ltr
             let planeMat: StandardMaterial = new StandardMaterial("NameTagMaterialMaterial", this._scene)
-            let planeTexture: DynamicTexture = new DynamicTexture("NametagTexture", {width:512, height:256}, this._scene)
+            let planeTexture: DynamicTexture = new DynamicTexture("NametagTexture", {width:750, height:256}, this._scene)
             planeTexture.getContext()
             planeTexture.hasAlpha = true
-            planeTexture.drawText(this._name, 75, 125, "bold 75px Arial", "black", null, true, true)
+            planeTexture.drawText(this._name, 0, 75, "bold 75px Arial", "black", null, true, true)
             planeMat.backFaceCulling = false
             planeMat.diffuseTexture = planeTexture
 
             this._nametag.material = planeMat;
             this._nametag.billboardMode = Mesh.BILLBOARDMODE_ALL;
-            this._nametag.setParent(this._body);
-            this._nametag.position += new Vector3(this._position.x, this._position.y + this._nametage_y_offset, this._position.z)
+            this._nametag.position = new Vector3(this._position.x, this._position.y + this._nametag_y_offset, this._position.z)
         }
     }
 
@@ -80,7 +79,7 @@ export class Player {
             this._body.position = this._position;
         }
         if (this._nametag){
-            this._nametag.position = new Vector3(this._position.x, this._position.y + this._nametage_y_offset, this._position.z)
+            this._nametag.position = new Vector3(this._position._x, this._position._y + this._nametag_y_offset, this._position._z)
         }
     }
 
@@ -129,6 +128,9 @@ export class Player {
     public delete() {
         if (this._body) {
             this._body.dispose()
+        }
+        if (this._nametag) {
+            this._nametag.dispose()
         }
     }
 
