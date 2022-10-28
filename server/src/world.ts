@@ -2,12 +2,18 @@ import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera } f
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 
+interface worldSize {
+    width: number,
+    length: number
+}
+
 export class World{
     private _engine: Engine;
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
     private logger: Logger = new Logger('World');
+    private worldSize: worldSize = { width: 100, length: 100}
 
     constructor(){
         this._engine = new NullEngine();
