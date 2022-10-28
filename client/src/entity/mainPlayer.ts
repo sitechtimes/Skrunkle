@@ -1,6 +1,7 @@
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder, } from "babylonjs"
 import { Player } from "./player"
-
+import { box } from "../world/world"
+ 
 export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
@@ -27,6 +28,8 @@ export class MainPlayer extends Player {
         this._camera.ellipsoid = new Vector3(2, 4, 2);
         this._camera.checkCollisions = true;
         this._camera.applyGravity = true;
+        this._camera.inertia = 0;
+        this._camera.speed = 10;
         (<any>this._camera)._needMoveForGravity = true;
 
         this._camera.keysUp    = [87]; // W
