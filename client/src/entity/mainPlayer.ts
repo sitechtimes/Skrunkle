@@ -25,7 +25,7 @@ export class MainPlayer extends Player {
         this._camera = freeCamera;
         this._camera.attachControl(canvas, true);
         this._camera.ellipsoid = new Vector3(2, 4, 2);
-        this._camera.inertia = 0.3;
+        this._camera.inertia = 0.5;
         this._camera.checkCollisions = true;
         this._camera.applyGravity = true;
         (<any>this._camera)._needMoveForGravity = true;
