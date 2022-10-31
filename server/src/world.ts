@@ -3,8 +3,8 @@ import { Logger } from './logger';
 import * as cannon from "cannon-es";
 
 interface worldSize {
-    width: number,
-    length: number
+    top: Vector3,
+    bottom: Vector3
 }
 
 export class World{
@@ -13,7 +13,7 @@ export class World{
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
     private logger: Logger = new Logger('World');
-    private worldSize: worldSize = { width: 100, length: 100}
+    private worldSize: worldSize = { top: new Vector3(10, 10, 10), bottom: new Vector3(-10, 0, -10)};
 
     constructor(){
         this._engine = new NullEngine();
@@ -24,6 +24,18 @@ export class World{
         let ticks = Math.round(this._ticks_elapsed/this._tick_time * 1000);
         this._ticks_elapsed = 0;
         return ticks;
+    }
+
+    public validateEntityPosition(entityPosition: Vector3): Vector3{
+        if (
+            (entityPosition.x < this.worldSize.bottom.x || entityPosition.x > this.worldSize.top.x) ||
+            (entityPosition.y < this.worldSize.bottom.y || entityPosition.y > this.worldSize.top.y) ||
+            (entityPosition.z < this.worldSize.bottom.z || entityPosition.z > this.worldSize.top.z) 
+        ) {
+            console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " +  this.worldSize.bottom + " and " + this.worldSize.top)
+            return new Vector3(0, 0, 0);
+        }
+        else return entityPosition;
     }
 
     public init(): void{

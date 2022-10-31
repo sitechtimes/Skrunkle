@@ -32,7 +32,7 @@ var World = /** @class */ (function () {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
         this.logger = new logger_1.Logger('World');
-        this.worldSize = { width: 100, length: 100 };
+        this.worldSize = { top: new babylonjs_1.Vector3(10, 10, 10), bottom: new babylonjs_1.Vector3(-10, 0, -10) };
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
     }
@@ -45,6 +45,16 @@ var World = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    World.prototype.validateEntityPosition = function (entityPosition) {
+        if ((entityPosition.x < this.worldSize.bottom.x || entityPosition.x > this.worldSize.top.x) ||
+            (entityPosition.y < this.worldSize.bottom.y || entityPosition.y > this.worldSize.top.y) ||
+            (entityPosition.z < this.worldSize.bottom.z || entityPosition.z > this.worldSize.top.z)) {
+            console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " + this.worldSize.bottom + " and " + this.worldSize.top);
+            return new babylonjs_1.Vector3(0, 0, 0);
+        }
+        else
+            return entityPosition;
+    };
     World.prototype.init = function () {
         var _this = this;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
