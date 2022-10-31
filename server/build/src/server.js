@@ -47,10 +47,10 @@ var SocketServer = /** @class */ (function () {
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             if (player !== null) {
-                                player.position = new babylonjs_1.Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z);
+                                player.position = _this.world.validateEntityPosition(new babylonjs_1.Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z));
+                                msg.payload[0].position = player.position;
                                 _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             }
-                            // console.log(msg.payload[0].position)
                             break;
                         case "Info":
                             _this.setPlayer(msg.uid, msg.payload[0]);
