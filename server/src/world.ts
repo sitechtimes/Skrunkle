@@ -13,7 +13,7 @@ export class World{
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
     private logger: Logger = new Logger('World');
-    private worldSize: worldSize = { top: new Vector3(10, 10, 10), bottom: new Vector3(-10, 0, -10)};
+    private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
 
     constructor(){
         this._engine = new NullEngine();
@@ -33,7 +33,7 @@ export class World{
             (entityPosition.z < this.worldSize.bottom.z || entityPosition.z > this.worldSize.top.z) 
         ) {
             console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " +  this.worldSize.bottom + " and " + this.worldSize.top)
-            return new Vector3(0, 0, 0);
+            return new Vector3(0, 10, 0);
         }
         else return entityPosition;
     }
@@ -42,7 +42,7 @@ export class World{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
 
-        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
 
         this._scene.executeWhenReady(()=>{
 

@@ -13,6 +13,7 @@ export class World {
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
+    private _debug: bool = true
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -42,6 +43,11 @@ export class World {
                 if (this._player) {
                     console.log(this._player.position)
                     this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                    if (this._debug){
+                        document.getElementById("x").innerText = `X: ${this._player.position.x}`
+                        document.getElementById("y").innerText = `Y: ${this._player.position.y}`
+                        document.getElementById("z").innerText = `Z: ${this._player.position.z}`
+                    }
                 }
             })
 
@@ -84,7 +90,6 @@ export class World {
                     player.rotation = playerData.rotation
                     this._players.set(player.id, player)
                 }else if (playerData.id == this._player.id){
-                    console.log(playerData.position)
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
                 

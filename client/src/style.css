@@ -3,3 +3,12 @@
   padding: 0;
   margin: 0;
 }
+
+#coord{
+  position: absolute;
+  color: white;
+  font-size: larger;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
