@@ -3,3 +3,28 @@
   padding: 0;
   margin: 0;
 }
+.hello{
+  width: 100vw;
+  height: 100vh;
+  background-color: orange;
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.chicken{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%;
+height: auto;
+}
+.load{
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 60rem;
+  height: 3rem;
+  background: linear-gradient(rgb(219, 219, 160), pink);
+}
