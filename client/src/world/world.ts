@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix, Size, StandardMaterial, Color3, KeyboardEventTypes, PointerEventTypes} from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix, Size, StandardMaterial, Color3, KeyboardEventTypes, PointerEventTypes, RayHelper, Material} from 'babylonjs';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -13,12 +13,17 @@ export class World {
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
+    private _testMaterial: StandardMaterial;
+    private _guiOpen: boolean;
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
         this._players = new Map<string, Player>;
+        this._testMaterial =  new StandardMaterial("_testMaterial", this._scene);
+        ;
+        this._guiOpen = false;
     }
 
     public init(): void {
@@ -36,23 +41,26 @@ export class World {
         box.position.y=2;
         box.metadata = "box";
         box.checkCollisions = true;
-        var myMaterial =  new StandardMaterial("myMaterial", this._scene);
+this._activated = false;
+this._testMaterial.diffuseColor = new Color3(1, 0, 1);
+this._testMaterial.specularColor = new Color3(0.5, 0.6, 0.87);
+this._testMaterial.emissiveColor = new Color3(1, .1, 1);
+this._testMaterial.ambientColor = new Color3(0.23, 0.98, 0.53);
 
-myMaterial.diffuseColor = new Color3(1, 0, 1);
-myMaterial.specularColor = new Color3(0.5, 0.6, 0.87);
-myMaterial.emissiveColor = new Color3(1, .1, 1);
-myMaterial.ambientColor = new Color3(0.23, 0.98, 0.53);
-
-box.material = myMaterial;
+box.material =  this._testMaterial;
   this._scene.onPointerObservable.add((pointerInfo) => {
     switch (pointerInfo.type) {
 
       case PointerEventTypes.POINTERTAP:
         this._castRay();
+        
+        break;
+      case PointerEventTypes.POINTERWHEEL:
+        this._castRay();
+        
         break;
     }
   });
-this._castRay();
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
@@ -86,11 +94,17 @@ this._castRay();
         console.log("Created Main Player id: " + this._player.id)
     }
     private _castRay(){
-        var ray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);	
-        var hit = this._scene.pickWithRay(ray);
+        var dray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);	
+        var hit = this._scene.pickWithRay(dray);
+        new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
     
         if (hit.pickedMesh && hit.pickedMesh.metadata == "box"){
-            console.log("hit")
+            console.log("hit");
+            this._testMaterial.diffuseColor = new Color3(1, 1, 0);
+            this._guiOpen = true;
+        }else{
+            this._guiOpen = false;
+            console.log("not hit")
         }
     }   
     private _initPlayer(player: Player): void {
@@ -111,7 +125,7 @@ this._castRay();
                     player.rotation = playerData.rotation
                     this._players.set(player.id, player)
                 }
-                
+                this._playerCamera.computeWorldMatrix();
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
