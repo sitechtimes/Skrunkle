@@ -1,6 +1,7 @@
 import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
+import { MeshBuilder } from 'babylonjs/index';
 
 interface worldSize {
     top: Vector3,
@@ -12,6 +13,7 @@ export class World{
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
+    private _entities: any[];
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
 
