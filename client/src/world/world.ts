@@ -51,6 +51,8 @@ export class World {
                 }
             })
 
+            MeshBuilder.CreatePlane("boundaries", { width: 50, height: 50 }, this._scene)
+
         })
 
         this.listen()
@@ -69,6 +71,8 @@ export class World {
             id, this._scene, this._canvas,
             this._playerCamera
         )
+        if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
+        if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
         console.log("Created Main Player id: " + this._player.id)
     }
 
@@ -89,6 +93,7 @@ export class World {
                     player.position = playerData.position
                     player.rotation = playerData.rotation
                     this._players.set(player.id, player)
+                    if (this._debug) document.getElementById("pcount").innerText = `Players online: ${this._players.size}`
                 }else if (playerData.id == this._player.id){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
