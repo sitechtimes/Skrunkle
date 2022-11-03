@@ -6,6 +6,7 @@ import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import { Hotbar } from '../gui/hotbar';
+import { Items } from '../gui/items';
 
 export class World {
     private _engine: Engine;
@@ -39,6 +40,11 @@ export class World {
 
         this._GUI.createHotbar()
         this._hotbar = this._GUI.hotbar
+        this._hotbar.add(Items.hammer, 0)
+        this._hotbar.add(Items.dagger, 1)
+        this._hotbar.add(Items.shovel, 2)
+        this._hotbar.current = 1
+        console.log(this._hotbar)
 
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
