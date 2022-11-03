@@ -1,10 +1,11 @@
-import { AdvancedDynamicTexture, Button } from "@babylonjs/gui"
+import { AdvancedDynamicTexture } from "@babylonjs/gui"
+import { PlayerItem } from "./items"
 
 
 export class Hotbar {
   private _mainGUI: AdvancedDynamicTexture
   private _currentSlot: number = 0
-  private _slots: Map<number, any>
+  private _slots: Map<number, PlayerItem>
   private _currentVersion: number = 9
   private _baseSnippet: string = "UW33M7"
 
@@ -30,8 +31,8 @@ export class Hotbar {
 
   }
 
-  public add(item: any, slot?: number): boolean {
-    if (!slot) {
+  public add(item: PlayerItem, slot: number): boolean {
+    /* if (!slot) {
       for (let i = 0; i < 0; i++) {
         if (!this._slots.has(i)) {
           slot = i 
@@ -45,10 +46,17 @@ export class Hotbar {
       return true
     } else {
       return false
-    }
+    } */
+    this._slots.set(slot, item)
+    return true
   }
 
+  
   public get current(): any {
     return this._slots.get(this._currentSlot)
+  }
+  
+  public set current(slot: number) {
+    this._currentSlot = slot
   }
 }
