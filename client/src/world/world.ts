@@ -29,7 +29,7 @@ export class World {
     public init(): void {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-        this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
+        this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 0, 0), this._scene);
         var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
         ground.checkCollisions = true;
         var light = new HemisphericLight(
@@ -50,11 +50,6 @@ this._testMaterial.ambientColor = new Color3(0.23, 0.98, 0.53);
 box.material =  this._testMaterial;
   this._scene.onPointerObservable.add((pointerInfo) => {
     switch (pointerInfo.type) {
-
-      case PointerEventTypes.POINTERTAP:
-        this._castRay();
-        
-        break;
       case PointerEventTypes.POINTERWHEEL:
         this._castRay();
         
