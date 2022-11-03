@@ -35,6 +35,7 @@ var SocketServer = /** @class */ (function () {
                         player: player,
                         players: _this.players.size
                     }]));
+                _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world.entities));
             }
             // basic starter functiosn
             client.on('message', function (message) {

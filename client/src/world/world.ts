@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera } from '@babylonjs/core';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -10,6 +10,7 @@ export class World {
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
     private _playerCamera: FreeCamera;
+    private _entities: any[] = [];
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
@@ -26,6 +27,7 @@ export class World {
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 20, 0), this._scene);
         var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
+        ground.position = new Vector3(0, 0, 0)
         ground.checkCollisions = true;
         var light = new HemisphericLight(
             "light",
@@ -50,8 +52,6 @@ export class World {
                     }
                 }
             })
-
-            MeshBuilder.CreatePlane("boundaries", { width: 50, height: 50 }, this._scene)
 
         })
 
@@ -98,6 +98,20 @@ export class World {
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
                 
+                break
+            case "Mesh":
+                console.log("MAKING BOXES")
+                let meshdata = data.payload
+                var material = new StandardMaterial("box color", this._scene);
+                material.alpha = 1;
+                material.diffuseColor = new Color3(1.0, 0.2, 0.7);
+                for (let mesh of meshdata){
+                    console.log(mesh)
+                    let box = MeshBuilder.CreateBox(mesh.name, { size: 2, width: 2, height: 2}, this._scene)
+                    box.position = mesh.position
+                    box.material = material; // <--
+                    this._entities.push(box)
+                }
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
