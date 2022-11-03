@@ -15,12 +15,13 @@ export class GUI {
 
   public async createHotbar() {
     await this._hotbar.init()
-    setTimeout(() => {
-      this._hotbar.increment()
-    }, 5000)
   }
 
   public disposeGUI() {
     this._mainGUI.dispose()
+  }
+
+  public get hotbar() {
+    return this._hotbar
   }
 }

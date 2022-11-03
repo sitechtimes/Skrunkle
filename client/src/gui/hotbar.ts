@@ -5,7 +5,7 @@ export class Hotbar {
   private _mainGUI: AdvancedDynamicTexture
   private _currentSlot: number = 0
   private _slots: Map<number, any>
-  private _currentVersion: number = 12
+  private _currentVersion: number = 9
   private _baseSnippet: string = "UW33M7"
 
   constructor(mainGUI: AdvancedDynamicTexture) {
@@ -23,14 +23,14 @@ export class Hotbar {
 
   // on scroll wheel
   public async increment() {
-      
+    
   }
 
   public async decrement() {
 
   }
 
-  public add(item: any, slot?: number) {
+  public add(item: any, slot?: number): boolean {
     if (!slot) {
       for (let i = 0; i < 0; i++) {
         if (!this._slots.has(i)) {
@@ -40,7 +40,12 @@ export class Hotbar {
       }
     }
     
-    if (slot) this._slots.set(slot, item)
+    if (slot) {
+      this._slots.set(slot, item)
+      return true
+    } else {
+      return false
+    }
   }
 
   public get current(): any {
