@@ -6,7 +6,7 @@
 .hello{
   width: 100vw;
   height: 100vh;
-  background-color: orange;
+  background-color: #FFB238;
   z-index: 1000;
   position: absolute;
   top: 0;
@@ -24,7 +24,9 @@ height: auto;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 60rem;
+  width: 65rem;
   height: 3rem;
-  background: linear-gradient(rgb(219, 219, 160), pink);
+  background: linear-gradient(#FABC3C, #F55536);
+  border: solid black 5px;
+  box-shadow: 8px 10px black;
 }
