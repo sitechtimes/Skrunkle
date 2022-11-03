@@ -5,6 +5,7 @@ import { Socket } from "../socket"
 import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
+import { Hotbar } from '../gui/hotbar';
 
 export class World {
     private _engine: Engine;
@@ -15,6 +16,7 @@ export class World {
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
     private _GUI: GUI
+    private _hotbar: Hotbar
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -36,6 +38,7 @@ export class World {
         );
 
         this._GUI.createHotbar()
+        this._hotbar = this._GUI.hotbar
 
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
