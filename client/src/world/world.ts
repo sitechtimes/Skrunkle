@@ -4,6 +4,9 @@ import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
 import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
+import { GUI } from '../gui/gui';
+import { Hotbar } from '../gui/hotbar';
+import { Items } from '../gui/items';
 
 export class World {
     private _engine: Engine;
@@ -14,12 +17,15 @@ export class World {
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
+    private _GUI: GUI
+    private _hotbar: Hotbar
     private _debug: bool = true
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
+        this._GUI = new GUI(this._scene);
         this._players = new Map<string, Player>;
     }
 
@@ -34,6 +40,14 @@ export class World {
             new Vector3(0, 1, 0),
             this._scene
         );
+
+        this._GUI.createHotbar()
+        this._hotbar = this._GUI.hotbar
+        this._hotbar.add(Items.hammer, 0)
+        this._hotbar.add(Items.dagger, 1)
+        this._hotbar.add(Items.shovel, 2)
+        this._hotbar.current = 1
+        console.log(this._hotbar)
 
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
@@ -56,7 +70,6 @@ export class World {
         })
 
         this.listen()
-
     }
 
     private listen() {
