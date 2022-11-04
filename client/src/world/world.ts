@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, ArcRotateCamera, FreeCamera, SceneLoader, TransformNode, vecToLocal, Matrix, Size, StandardMaterial, Color3, KeyboardEventTypes, PointerEventTypes, RayHelper, Material} from 'babylonjs';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix} from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -17,10 +17,10 @@ export class World {
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
-    private _testMaterial: StandardMaterial;
     private _GUI: GUI
     private _hotbar: Hotbar
     private _debug: bool = true
+    private _testMaterial: StandardMaterial
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -45,17 +45,6 @@ export class World {
             new Vector3(0, 1, 0),
             this._scene
         );
-        const box = MeshBuilder.CreateBox("box", {height:2, width:2, depth:2})
-        box.position.y=2;
-        box.metadata = "box";
-        box.checkCollisions = true;
-this._activated = false;
-this._testMaterial.diffuseColor = new Color3(1, 0, 1);
-this._testMaterial.specularColor = new Color3(0.5, 0.6, 0.87);
-this._testMaterial.emissiveColor = new Color3(1, .1, 1);
-this._testMaterial.ambientColor = new Color3(0.23, 0.98, 0.53);
-
-box.material =  this._testMaterial;
   this._scene.onPointerObservable.add((pointerInfo) => {
     switch (pointerInfo.type) {
       case PointerEventTypes.POINTERWHEEL:
@@ -64,6 +53,14 @@ box.material =  this._testMaterial;
         break;
     }
   });
+        this._GUI.createHotbar()
+        this._hotbar = this._GUI.hotbar
+        this._hotbar.add(Items.hammer, 0)
+        this._hotbar.add(Items.dagger, 1)
+        this._hotbar.add(Items.shovel, 2)
+        this._hotbar.current = 1
+        console.log(this._hotbar)
+
         this._GUI.createHotbar()
         this._hotbar = this._GUI.hotbar
         this._hotbar.add(Items.hammer, 0)
@@ -113,17 +110,17 @@ box.material =  this._testMaterial;
     }
     private _castRay(){
         var dray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);	
-        var hit = this._scene.pickWithRay(dray);
+        // var hit = this._scene.pickWithRay(dray);
         new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
     
-        if (hit.pickedMesh && hit.pickedMesh.metadata == "box"){
-            console.log("hit");
-            this._testMaterial.diffuseColor = new Color3(1, 1, 0);
-            this._guiOpen = true;
-        }else{
-            this._guiOpen = false;
-            console.log("not hit")
-        }
+        // if (hit.pickedMesh && hit.pickedMesh.metadata == "box"){
+        //     console.log("hit");
+        //     this._testMaterial.diffuseColor = new Color3(1, 1, 0);
+        //     this._guiOpen = true;
+        // }else{
+        //     this._guiOpen = false;
+        //     console.log("not hit")
+        // }
     }   
     private _initPlayer(player: Player): void {
         this._players.set(player.id, player)
@@ -146,7 +143,6 @@ box.material =  this._testMaterial;
                 }else if (playerData.id == this._player.id){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
-                this._playerCamera.computeWorldMatrix();
                 break
             case "Mesh":
                 console.log("MAKING BOXES")

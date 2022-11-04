@@ -15,7 +15,12 @@
     "vite": "^3.1.0"
   },
   "dependencies": {
+<<<<<<< HEAD
     "babylonjs": "^5.29.0",
     "babylonjs-loaders": "^5.29.0"
+=======
+    "@babylonjs/gui": "^5.30.0",
+    "babylonjs": "^5.28.0"
+>>>>>>> f6195b81dc52c2ad62feecb875096d1533a340ea
   }
 }
