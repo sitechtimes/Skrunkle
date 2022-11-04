@@ -6,6 +6,7 @@ var PacketType;
     PacketType["update"] = "Update";
     PacketType["info"] = "Info";
     PacketType["movement"] = "Movement";
+    PacketType["mesh"] = "Mesh";
     PacketType["close"] = "Close";
 })(PacketType = exports.PacketType || (exports.PacketType = {}));
 var Packet = /** @class */ (function () {

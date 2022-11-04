@@ -7,10 +7,12 @@ var World = /** @class */ (function () {
     function World() {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
+        this._entities = [];
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(50, 50, 50), bottom: new babylonjs_1.Vector3(-50, 0, -50) };
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
+        this._entities.push(babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene));
     }
     Object.defineProperty(World.prototype, "_get_tick", {
         get: function () {
@@ -47,6 +49,15 @@ var World = /** @class */ (function () {
             _this.logger.progress("Avg Server tick (".concat(_this._tick_time, " ms): ").concat(_this._get_tick));
         });
     };
+    Object.defineProperty(World.prototype, "entities", {
+        get: function () {
+            return this._entities.map(function (entity) {
+                return { name: entity.name, position: entity.position };
+            });
+        },
+        enumerable: false,
+        configurable: true
+    });
     return World;
 }());
 exports.World = World;
