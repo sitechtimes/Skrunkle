@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, Scene, Vector3, SceneLoader, TransformNode } from "babylonjs"
+import { Mesh, Scene, MeshBuilder, Vector3, SceneLoader, TransformNode, DynamicTexture, Plane, StandardMaterial } from "@babylonjs/core"
 
 export class Player {
 
@@ -10,6 +10,8 @@ export class Player {
     private _id: string;
     private _body: Mesh | TransformNode = new TransformNode("player-mesh");
     private _scene: Scene;
+    private _nametag: Mesh;
+    private _nametag_y_offset: number = 0.5;
 
     constructor(
         name: string,
@@ -19,7 +21,7 @@ export class Player {
         rotation: Vector3,
         id: string,
         scene: Scene,
-        options: { renderBody?: boolean } = { renderBody: true }
+        options: { renderBody?: boolean, mainPlayer?: boolean } = { renderBody: true, mainPlayer: false }
     ) {
         this._name = name;
         this._health = health;
@@ -30,7 +32,22 @@ export class Player {
         this._loadBody(options);
         this._position = position;
         this._rotation = new Vector3(Math.PI / 2, Math.PI, 0);
-        console.log(this._rotation)
+
+        /*NAME TAG*/
+        if (!options.mainPlayer){
+            this._nametag = MeshBuilder.CreatePlane("NamePlane", {width: 2, height: 2}, this._scene) // fix ltr
+            let planeMat: StandardMaterial = new StandardMaterial("NameTagMaterialMaterial", this._scene)
+            let planeTexture: DynamicTexture = new DynamicTexture("NametagTexture", {width:750, height:256}, this._scene)
+            planeTexture.getContext()
+            planeTexture.hasAlpha = true
+            planeTexture.drawText(this._name, 0, 75, "bold 75px Arial", "black", null, true, true)
+            planeMat.backFaceCulling = false
+            planeMat.diffuseTexture = planeTexture
+
+            this._nametag.material = planeMat;
+            this._nametag.billboardMode = Mesh.BILLBOARDMODE_ALL;
+            this._nametag.position = new Vector3(this._position.x, this._position.y + this._nametag_y_offset, this._position.z)
+        }
     }
 
     private async _loadBody(options: any){
@@ -41,15 +58,15 @@ export class Player {
     }
 
     private _setBody(scene: any) {
-        let parent: TransformNode = new TransformNode("player-mesh")
+        let parent: TransformNode = new Mesh("player-group", this._scene)
         for (let child of scene.meshes) {
+            child.position = new Vector3(0, 0, 0)
             child.parent = parent
         }
-        parent.position = new Vector3(0, 3, 0)
-        parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
-        parent.scaling = new Vector3(0.25, 0.25, 0.25)
+        parent.position = new Vector3(0, 0, 0)
+        // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
+        // parent.scaling = new Vector3(0.25, 0.25, 0.25)
         this._body = parent
-        console.log(this._body.rotation)
     }
 
     public get position(): Vector3 {
@@ -60,6 +77,9 @@ export class Player {
         this._position = new_position;
         if (this._body) {
             this._body.position = this._position;
+        }
+        if (this._nametag){
+            this._nametag.position = new Vector3(this._position._x, this._position._y + this._nametag_y_offset, this._position._z)
         }
     }
 
@@ -72,7 +92,6 @@ export class Player {
         if (this._body) {
             this._body.rotation.y = new_rotation._y + Math.PI;
         }
-        console.log(this._body.rotation)
     }
 
     public get name(): string {
@@ -109,6 +128,9 @@ export class Player {
     public delete() {
         if (this._body) {
             this._body.dispose()
+        }
+        if (this._nametag) {
+            this._nametag.dispose()
         }
     }
 
