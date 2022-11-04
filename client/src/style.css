@@ -41,3 +41,12 @@ height: auto;
   border: solid black 5px;
   box-shadow: 8px 10px black;
 }
+
+#debug{
+  position: absolute;
+  color: green;
+  font-size: larger;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}

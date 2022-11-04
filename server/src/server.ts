@@ -49,6 +49,12 @@ export class SocketServer {
             }]
           )
         )
+        this.send(client,
+          new Packet(
+            PacketType.mesh,
+            this.world.entities
+          )
+        )
       }
 
       // basic starter functiosn
@@ -64,10 +70,10 @@ export class SocketServer {
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
-                player.position = new Vector3(msg.payload[0].position.x, msg.payload[0].position.y, msg.payload[0].position.z)
+                player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
+                 msg.payload[0].position = player.position
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }
-              // console.log(msg.payload[0].position)
               break
             case "Info":
               this.setPlayer(msg.uid, msg.payload[0])
