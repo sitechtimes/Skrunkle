@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3 } from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
@@ -12,21 +14,21 @@ export class World {
     private _engine: Engine;
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
-    private _playerCamera: FreeCamera;
+    private _playerCamera: FreeCamera | undefined;
     private _entities: any[] = [];
-    private _socket: Socket;
-    private _player: MainPlayer;
+    private _socket: Socket | undefined;
+    private _player: MainPlayer | undefined;
     private _players:  Map<string, Player>;
     private _GUI: GUI
-    private _hotbar: Hotbar
-    private _debug: bool = true
+    private _hotbar: Hotbar | undefined
+    private _debug: boolean = true
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
         this._GUI = new GUI(this._scene);
-        this._players = new Map<string, Player>;
+        this._players = new Map<string, Player>();
     }
 
     public init(): void {
@@ -58,7 +60,7 @@ export class World {
                 this._scene.render();
                 if (this._player) {
                     console.log(this._player.position)
-                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
                     if (this._debug){
                         document.getElementById("x").innerText = `X: ${this._player.position.x}`
                         document.getElementById("y").innerText = `Y: ${this._player.position.y}`
@@ -74,7 +76,7 @@ export class World {
 
     private listen() {
         window.onunload = () => {
-            this._socket.close(this._player.id)
+            if (this._player?.id) this._socket?.close(this._player.id)
         }
     }
 

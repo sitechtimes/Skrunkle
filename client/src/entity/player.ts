@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Mesh, Scene, MeshBuilder, Vector3, SceneLoader, TransformNode, DynamicTexture, Plane, StandardMaterial } from "@babylonjs/core"
 
 export class Player {

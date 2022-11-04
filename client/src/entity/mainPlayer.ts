@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
 import { Player } from "./player"
 
@@ -14,11 +16,12 @@ export class MainPlayer extends Player {
         rotation: Vector3,
         id: string,
         scene: Scene,
-        canvas: HTMLCanvasElement,
+        canvas: HTMLCanvasElement | null,
         freeCamera: FreeCamera,
     ) {
         super(name, health, exp, position, rotation, id, scene, {renderBody: false, mainPlayer: true});
 
+        //@ts-ignore
         this._canvas = canvas;
         // this.scene.gravity = new Vector3(0, -9.81, 0);
 
