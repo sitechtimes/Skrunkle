@@ -2,6 +2,7 @@ export enum PacketType{
     update = "Update",
     info = "Info",
     movement = "Movement",
+    mesh = "Mesh",
     close = "Close"
 }
 
