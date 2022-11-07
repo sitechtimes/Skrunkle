@@ -1,0 +1,16 @@
+[
+  {
+    "name": "fun",
+    "path": "/fun",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\fun.vue",
+    "chunkName": "pages/fun",
+    "_name": "_194079b9"
+  },
+  {
+    "name": "index",
+    "path": "/",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_04f319e8"
+  }
+]
