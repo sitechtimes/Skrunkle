@@ -1,4 +1,4 @@
-import { AdvancedDynamicTexture } from "@babylonjs/gui"
+import { AdvancedDynamicTexture, Control } from "@babylonjs/gui"
 import { PlayerItem } from "./items"
 
 
@@ -6,8 +6,10 @@ export class Hotbar {
   private _mainGUI: AdvancedDynamicTexture
   private _currentSlot: number = 0
   private _slots: Array<PlayerItem | null>
-  private _currentVersion: number = 9
+  private _currentVersion: number = 13
   private _baseSnippet: string = "UW33M7"
+  private _children: Control[] | [] = []
+  private _guiSlots: Map<number, any>
 
   constructor(mainGUI: AdvancedDynamicTexture) {
     this._mainGUI = mainGUI
@@ -23,10 +25,19 @@ export class Hotbar {
       null, 
       null,
     ]
+    this._guiSlots = new Map()
   }
 
   private async load() {
     await this._mainGUI.parseFromSnippetAsync(`${this._baseSnippet}#${this._currentVersion}`)
+    this._children = this._mainGUI.getChildren()[0].children
+
+    for (let i = 0; i < 10; i++) {
+      let temp = this._children.filter((control: Control) => control.name === `slot-${i + 1}`)[0]
+      this._guiSlots.set(i + 1, temp)
+    }
+    
+    console.log("slots", this._guiSlots)
   }
 
   public async init() {
