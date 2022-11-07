@@ -8,7 +8,7 @@ export class Socket {
   private worldReference: World;
 
   constructor(world: World) {
-    this.server = new WebSocket(Socket.url)
+    this.server = new WebSocket(Socket.url, "tcp")
     this.worldReference = world;
     this.init()
     this.listen()
