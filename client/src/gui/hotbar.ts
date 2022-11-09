@@ -1,4 +1,4 @@
-import { AdvancedDynamicTexture, Control } from "@babylonjs/gui"
+import { AdvancedDynamicTexture, Control, Grid } from "@babylonjs/gui"
 import { PlayerItem } from "./items"
 
 
@@ -8,7 +8,7 @@ export class Hotbar {
   private _slots: Array<PlayerItem | null>
   private _currentVersion: number = 13
   private _baseSnippet: string = "UW33M7"
-  private _children: Control[] | [] = []
+  private _children: any
   private _guiSlots: Map<number, any>
 
   constructor(mainGUI: AdvancedDynamicTexture) {
@@ -30,18 +30,51 @@ export class Hotbar {
 
   private async load() {
     await this._mainGUI.parseFromSnippetAsync(`${this._baseSnippet}#${this._currentVersion}`)
-    this._children = this._mainGUI.getChildren()[0].children
+    let grid:any = this._mainGUI.getChildren()[0].children[0]
+    this._children = grid._childControls
 
-    for (let i = 0; i < 10; i++) {
-      let temp = this._children.filter((control: Control) => control.name === `slot-${i + 1}`)[0]
-      this._guiSlots.set(i + 1, temp)
+    for (let i = 1; i < 11; i++) {
+      let temp = this._children.filter((control: Control) => control.name === `slot-${i}`)[0]
+      this._guiSlots.set(i, temp)
+
+      temp.onPointerClickObservable.add(() => {
+        this.current = i
+      })
     }
+
+    this.current = 1
     
-    console.log("slots", this._guiSlots)
+    console.log(this._guiSlots)
   }
 
   public async init() {
     await this.load()
+    this.listen()
+  }
+
+  private listen() {
+    onkeydown = (event) => {
+      switch(event.code) {
+        case "Digit1":
+          this.current = 1
+          break
+        case "Digit2":
+          this.current = 2
+          break
+        case "Digit3":
+          this.current = 3
+          break
+        case "Digit4":
+          this.current = 4
+          break
+        case "Digit5":
+          this.current = 5
+          break
+        case "Digit6":
+          this.current = 6
+          break
+      }
+    }
   }
 
   // on scroll wheel
@@ -89,10 +122,16 @@ export class Hotbar {
 
   
   public get current(): any {
-    return this._slots.get(this._currentSlot)
+    return this._slots[this._currentSlot]
   }
   
   public set current(slot: number) {
+    if (this._currentSlot !== 0) {
+      let oldControl = this._guiSlots.get(this._currentSlot)
+      oldControl.children[0].background = "#cccccc"
+    }
     this._currentSlot = slot
+    let slotControl = this._guiSlots.get(slot)
+    slotControl.children[0].background = "#fbff00"
   }
 }
