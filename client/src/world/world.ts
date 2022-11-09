@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix} from '@babylonjs/core';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial} from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -20,7 +20,7 @@ export class World {
     private _GUI: GUI
     private _hotbar: Hotbar
     private _debug: bool = true
-    private _testMaterial: StandardMaterial
+    public chestOpen: boolean
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -31,12 +31,13 @@ export class World {
         this._testMaterial =  new StandardMaterial("_testMaterial", this._scene);
         ;
         this._guiOpen = false;
+        this.chestOpen = false;
     }
 
     public init(): void {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-        this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 0, 0), this._scene);
+        this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 6, 0), this._scene);
         var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
         ground.position = new Vector3(0, 0, 0)
         ground.checkCollisions = true;
@@ -109,18 +110,20 @@ export class World {
         console.log("Created Main Player id: " + this._player.id)
     }
     private _castRay(){
-        var dray = this._scene.createPickingRay(this._scene.pointerX, this._scene.pointerY, Matrix.Identity(), this._playerCamera);	
-        // var hit = this._scene.pickWithRay(dray);
-        new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
-    
-        // if (hit.pickedMesh && hit.pickedMesh.metadata == "box"){
-        //     console.log("hit");
-        //     this._testMaterial.diffuseColor = new Color3(1, 1, 0);
-        //     this._guiOpen = true;
-        // }else{
-        //     this._guiOpen = false;
-        //     console.log("not hit")
-        // }
+        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+        var hit = this._scene.pickWithRay(dray);
+        // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
+        if(this.chestOpen == false){
+        if (hit.pickedMesh && hit.pickedMesh.metadata == "box" || hit.pickedMesh.metadata == "obox"){
+            console.log("hit");
+            this.chestOpen = true;
+        }else{
+            console.log("not hit")
+            this.chestOpen = false;
+        }
+    }else{
+        this.chestOpen =false
+    }
     }   
     private _initPlayer(player: Player): void {
         this._players.set(player.id, player)
@@ -143,6 +146,22 @@ export class World {
                 }else if (playerData.id == this._player.id){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
+                console.log(this.chestOpen)
+                if(this.chestOpen == true){
+                    var material = new StandardMaterial("box color", this._scene);
+                    material.alpha = .5;
+                    material.diffuseColor = new Color3(0.2, 1, 0.2);
+                    let obox = MeshBuilder.CreateBox("obox", { size: 3, width: 3, height: 3}, this._scene)
+                    obox.metadata = "obox"
+                    obox.material = material; // <--
+                    this._entities.push(obox)
+                    }if(this.chestOpen == false ){
+                        this._entities.forEach((i)=>{
+                            if(i.metadata == "obox"){
+                                i.dispose();
+                            }
+                        })
+                    }
                 break
             case "Mesh":
                 console.log("MAKING BOXES")
@@ -152,8 +171,9 @@ export class World {
                 material.diffuseColor = new Color3(1.0, 0.2, 0.7);
                 for (let mesh of meshdata){
                     console.log(mesh)
-                    let box = MeshBuilder.CreateBox(mesh.name, { size: 2, width: 2, height: 2}, this._scene)
+                    let box = MeshBuilder.CreateBox(mesh.name, { size: 3, width: 3, height: 3}, this._scene)
                     box.position = mesh.position
+                    box.metadata = "box"
                     box.material = material; // <--
                     this._entities.push(box)
                 }
