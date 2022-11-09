@@ -1,10 +1,10 @@
 [
   {
-    "name": "fun",
-    "path": "/fun",
-    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\fun.vue",
-    "chunkName": "pages/fun",
-    "_name": "_194079b9"
+    "name": "details",
+    "path": "/details",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\details.vue",
+    "chunkName": "pages/details",
+    "_name": "_2b7063fc"
   },
   {
     "name": "index",
