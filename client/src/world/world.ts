@@ -43,7 +43,7 @@ export class World {
             this._engine.runRenderLoop(() => {
                 this._scene.render();
                 if (this._player) {
-                    console.log(this._player.position)
+                    // console.log(this._player.position)
                     this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
                     if (this._debug){
                         document.getElementById("x").innerText = `X: ${this._player.position.x}`
@@ -73,7 +73,7 @@ export class World {
         )
         if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
         if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
-        console.log("Created Main Player id: " + this._player.id)
+        // console.log("Created Main Player id: " + this._player.id)
     }
 
     private _initPlayer(player: Player): void {
@@ -87,7 +87,7 @@ export class World {
                 if (!this._players.has(playerData.id) && playerData.id != this._player.id){
                     let newPlayer: Player = new Player(playerData.name, 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
                     this._players.set(playerData.id, newPlayer)
-                    console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
+                    // console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
                 }else if (playerData.id != this._player.id) {
                     let player: Player = this._players.get(playerData.id)
                     player.position = playerData.position
@@ -106,7 +106,7 @@ export class World {
                 material.alpha = 1;
                 material.diffuseColor = new Color3(1.0, 0.2, 0.7);
                 for (let mesh of meshdata){
-                    console.log(mesh)
+                    // console.log(mesh)
                     let box = MeshBuilder.CreateBox(mesh.name, { size: 2, width: 2, height: 2}, this._scene)
                     box.position = mesh.position
                     box.material = material; // <--
@@ -115,7 +115,7 @@ export class World {
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
-                console.log(playerInfo)
+                // console.log(playerInfo)
                 if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
                 else // init player
                 break

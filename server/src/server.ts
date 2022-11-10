@@ -40,6 +40,7 @@ export class SocketServer {
       if(!this.players.has(client)) {
         let player = new Player()
         this.players.set(player.id, player)
+        this.world.add_players(player.id)
         this.send(client, 
           new Packet(
             PacketType.info, 
@@ -71,7 +72,7 @@ export class SocketServer {
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                 msg.payload[0].position = player.position
+                msg.payload[0].position = player.position
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }
               break
@@ -81,6 +82,7 @@ export class SocketServer {
               break
             case "Close":
               this.players.delete(msg.uid)
+              this.world.players.delete(msg.uid)
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
             case "ping":

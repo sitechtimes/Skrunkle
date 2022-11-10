@@ -31,6 +31,7 @@ var SocketServer = /** @class */ (function () {
             if (!_this.players.has(client)) {
                 var player = new player_1.Player();
                 _this.players.set(player.id, player);
+                _this.world.add_players(player.id);
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
                         player: player,
                         players: _this.players.size
@@ -59,6 +60,7 @@ var SocketServer = /** @class */ (function () {
                             break;
                         case "Close":
                             _this.players.delete(msg.uid);
+                            _this.world.players.delete(msg.uid);
                             _this.broadCast(new packet_1.Packet(packet_1.PacketType.close, [{ id: msg.uid, delete: true }]));
                             break;
                         case "ping":
