@@ -73,17 +73,42 @@ export class Hotbar {
         case "Digit6":
           this.current = 6
           break
+        case "Digit7":
+          this.current = 7
+          break
+        case "Digit8":
+          this.current = 8
+          break
+        case "Digit9":
+          this.current = 9
+          break
+        case "Digit0":
+          this.current = 10
+          break
+      }
+    }
+    onwheel = (event) => {
+      let direction = event.deltaY < 0 ? "up" : "down"
+      switch (direction) {
+        case "up":
+          this.decrement()
+          break
+        case "down":
+          this.increment()
+          break
       }
     }
   }
 
   // on scroll wheel
   public async increment() {
-    
+    if (this._currentSlot === 10) this.current = 1
+    else this.current = this._currentSlot + 1
   }
 
   public async decrement() {
-
+    if (this._currentSlot === 1) this.current = 10
+    else this.current = this._currentSlot - 1
   }
 
   public add(item: PlayerItem, slot?: number): boolean {
