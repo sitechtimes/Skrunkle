@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial} from '@babylonjs/core';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial, KeyboardEventTypes} from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -21,6 +21,7 @@ export class World {
     private _hotbar: Hotbar
     private _debug: bool = true
     public chestOpen: boolean
+    private _pickup: boolean
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -32,6 +33,7 @@ export class World {
         ;
         this._guiOpen = false;
         this.chestOpen = false;
+        this._pickup = false;
     }
 
     public init(): void {
@@ -46,11 +48,21 @@ export class World {
             new Vector3(0, 1, 0),
             this._scene
         );
-  this._scene.onPointerObservable.add((pointerInfo) => {
-    switch (pointerInfo.type) {
-      case PointerEventTypes.POINTERWHEEL:
-        this._castRay();
+//   this._scene.onPointerObservable.add((pointerInfo) => {
+//     switch (pointerInfo.type) {
+//       case PointerEventTypes.POINTERWHEEL:
+//         this._castRay();
         
+//         break;
+//     }
+    
+//   });
+  this._scene.onKeyboardObservable.add((kbInfo) => {
+    switch (kbInfo.type) {
+      case KeyboardEventTypes.KEYDOWN:
+        if(kbInfo.event.key == "e"){
+            this._castRay()
+        }
         break;
     }
   });
@@ -117,12 +129,26 @@ export class World {
         if (hit.pickedMesh && hit.pickedMesh.metadata == "box" || hit.pickedMesh.metadata == "obox"){
             console.log("hit");
             this.chestOpen = true;
+            document.getElementById("debug").insertAdjacentHTML("beforeend", "<div id='chestOpen'>Chest is Open</div>")
         }else{
             console.log("not hit")
             this.chestOpen = false;
+            document.getElementById("chestOpen").remove()
         }
     }else{
         this.chestOpen =false
+        document.getElementById("chestOpen").remove()
+    }
+    }   
+    private _castLookingRay(){
+        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+        var hit = this._scene.pickWithRay(dray);
+        // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
+        if (hit.pickedMesh && hit.pickedMesh.metadata == "box" || hit.pickedMesh.metadata == "obox"){
+            console.log("hit");
+            this._pickup = true
+        }else{
+        this._pickup = false
     }
     }   
     private _initPlayer(player: Player): void {
@@ -146,7 +172,12 @@ export class World {
                 }else if (playerData.id == this._player.id){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
-                console.log(this.chestOpen)
+                this._castLookingRay()
+                if(this._pickup == true){
+                    document.getElementById("PickupItem").innerHTML = "pickup item"
+                }else{
+                    document.getElementById("PickupItem").innerHTML = ""
+                }
                 if(this.chestOpen == true){
                     var material = new StandardMaterial("box color", this._scene);
                     material.alpha = .5;
