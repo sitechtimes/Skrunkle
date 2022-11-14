@@ -20,6 +20,7 @@ export class PlayerItem {
 
 export const Items = {
   hammer: new PlayerItem("Hammer", 5, "img-link"),
+  spork: new PlayerItem("Spork", 7, "img-link"),
   shovel: new PlayerItem("Shovel", 10, "img-link"),
   dagger: new PlayerItem("Dagger", 35, "img-link")
 }

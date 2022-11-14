@@ -46,6 +46,7 @@ export class World {
         this._hotbar.add(Items.hammer, 0)
         this._hotbar.add(Items.dagger, 1)
         this._hotbar.add(Items.shovel, 2)
+        this._hotbar.add(Items.spork, 4)
         console.log(this._hotbar)
 
         this._scene.executeWhenReady(() => {

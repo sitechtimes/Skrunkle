@@ -1,4 +1,5 @@
-import { AdvancedDynamicTexture, Control, Grid } from "@babylonjs/gui"
+import { AdvancedDynamicTexture, Control, Grid, TextBlock } from "@babylonjs/gui"
+import { TestBase64DataUrl } from "babylonjs"
 import { PlayerItem } from "./items"
 
 
@@ -40,6 +41,15 @@ export class Hotbar {
       temp.onPointerClickObservable.add(() => {
         this.current = i
       })
+
+      if (this._slots[i - 1] !== null) {
+        let text = new TextBlock()
+        text.text = this._slots[i - 1]._name
+        text.color = "black"
+        text.fontSize = 10
+        
+        temp.addControl(text)
+      }
     }
 
     this.current = 1
@@ -111,7 +121,7 @@ export class Hotbar {
     else this.current = this._currentSlot - 1
   }
 
-  public add(item: PlayerItem, slot?: number): boolean {
+  public add(item: PlayerItem, slot: number): boolean {
     /* if (!slot) {
       for (let i = 0; i < 0; i++) {
         if (!this._slots.has(i)) {
@@ -128,17 +138,17 @@ export class Hotbar {
       return false
     } */
     // this._slots.set(slot, item)
-    if (!slot) {
-      for (let i = 0; i < 10; i++) {
-        if (!this._slots[i]) {
-          slot = i
-        }
-      }
-    }
+    // if (!slot) {
+    //   for (let i = 0; i < 10; i++) {
+    //     if (!this._slots[i]) {
+    //       slot = i
+    //     }
+    //   }
+    // }
 
-    if (!slot) {
-      return false
-    }
+    // if (!slot) {
+    //   return false
+    // }
 
     this._slots[slot] = item
 
