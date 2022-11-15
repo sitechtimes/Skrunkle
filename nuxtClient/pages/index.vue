@@ -48,6 +48,7 @@
   width: 35%;
   height: auto;
   margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 .load {
   display: block;
