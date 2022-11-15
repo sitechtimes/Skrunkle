@@ -35,12 +35,13 @@ var World = /** @class */ (function () {
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(50, 50, 50), bottom: new babylonjs_1.Vector3(-50, 0, -50) };
         this.players = new Map();
-        this.tempid = "";
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._entities.push(babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene));
-        this._ground = babylonjs_1.MeshBuilder.CreatePlane("ground", { width: 500, height: 500 }, this._scene);
-        this._ground.rotation = new babylonjs_1.Vector3(Math.PI / 2, 0, 0);
+        this._ground = babylonjs_1.MeshBuilder.CreateBox("ground", { size: 500, width: 500, height: 500 }, this._scene);
+        // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
+        this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene);
+        // console.log(this._ground.position)
     }
     Object.defineProperty(World.prototype, "_get_tick", {
         get: function () {
@@ -65,14 +66,15 @@ var World = /** @class */ (function () {
         var _this = this;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera = new babylonjs_1.ArcRotateCamera("Camera", 0, 0.8, 100, babylonjs_1.Vector3.Zero(), this._scene);
-        this._scene.enablePhysics(new babylonjs_1.Vector3(0, -1, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
+        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin());
         this._scene.executeWhenReady(function () {
             _this.logger.progress("Scene is ready, running server side simulation");
             _this._engine.runRenderLoop(function () {
                 _this._scene.render();
                 _this._ticks_elapsed++;
-                if (_this.tempid != "")
-                    console.log(_this.players.get(_this.tempid).position);
+                console.log(_this._ground.position);
+                // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
@@ -81,10 +83,9 @@ var World = /** @class */ (function () {
     };
     World.prototype.add_players = function (id) {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
-        playerMesh.position = new babylonjs_1.Vector3(100, 100, 100);
-        playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 10, restitution: 15 }, this._scene);
+        playerMesh.position = new babylonjs_1.Vector3(0, 100, 0);
+        playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 15 }, this._scene);
         this.players.set(id, playerMesh);
-        this.tempid = id;
     };
     World.prototype.update_player = function (id, value) {
         this.players.set(id, value);
