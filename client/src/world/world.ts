@@ -16,7 +16,7 @@ export class World {
     private _entities: any[] = [];
     private _socket: Socket;
     private _player: MainPlayer;
-    private _players:  Map<string, Player>;
+    private _players:  Map<string, Player> = new Map()
     private _GUI: GUI
     private _hotbar: Hotbar
     private _debug: bool = true
@@ -26,7 +26,6 @@ export class World {
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
         this._GUI = new GUI(this._scene);
-        this._players = new Map<string, Player>;
     }
 
     public init(): void {
@@ -43,12 +42,7 @@ export class World {
 
         this._GUI.createHotbar()
         this._hotbar = this._GUI.hotbar
-        this._hotbar.add(Items.hammer, 0)
-        this._hotbar.add(Items.dagger, 1)
-        this._hotbar.add(Items.shovel, 2)
-        this._hotbar.add(Items.spork, 4)
-        console.log(this._hotbar)
-
+        
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
@@ -86,7 +80,15 @@ export class World {
         )
         if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
         if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
+        this._hotbar.inventory = this._player.inventory
+        /* TEMPORARILY ADDING ITEMS */
+        this._hotbar.add(Items.hammer, 0)
+        this._hotbar.add(Items.dagger, 1)
+        this._hotbar.add(Items.shovel, 2)
+        this._hotbar.add(Items.spork, 4)
+        /* TEMPORARILY ADDED ITEMS */
         console.log("Created Main Player id: " + this._player.id)
+        console.log(this._player.inventory)
     }
 
     private _initPlayer(player: Player): void {

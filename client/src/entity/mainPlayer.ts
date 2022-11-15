@@ -1,10 +1,12 @@
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
+import { PlayerItem } from "../gui/items";
 import { Player } from "./player"
 
 export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
     private _canvas: HTMLCanvasElement
+    private _inventory: Map<number, PlayerItem> = new Map()
 
     constructor(
         name: string,
@@ -61,7 +63,7 @@ export class MainPlayer extends Player {
         return this._camera.rotation
     }
 
-    /* public set id(new_id: string){
-        this.id = new_id;
-    } */
+    public get inventory(): Map<number, PlayerItem> {
+        return this._inventory
+    }
 }

@@ -1,4 +1,5 @@
 import { Mesh, Scene, MeshBuilder, Vector3, SceneLoader, TransformNode, DynamicTexture, Plane, StandardMaterial } from "@babylonjs/core"
+import { PlayerItem } from "../gui/items";
 
 export class Player {
 
@@ -12,6 +13,7 @@ export class Player {
     private _scene: Scene;
     private _nametag: Mesh;
     private _nametag_y_offset: number = 0.5;
+    private _inventory: Map<number, PlayerItem> = new Map()
 
     constructor(
         name: string,
@@ -136,6 +138,10 @@ export class Player {
 
     protected get scene(): Scene {
         return this._scene
+    }
+
+    public get inventory(): Map<number, PlayerItem> {
+        return this._inventory
     }
 
 }

@@ -1,5 +1,6 @@
 import { AdvancedDynamicTexture, Control, Grid, TextBlock } from "@babylonjs/gui"
 import { TestBase64DataUrl } from "babylonjs"
+import { MainPlayer } from "../entity/mainPlayer"
 import { PlayerItem } from "./items"
 
 
@@ -11,7 +12,8 @@ export class Hotbar {
   private _baseSnippet: string = "UW33M7"
   private _children: any
   private _guiSlots: Map<number, any>
-
+  private _playerInventory: Map<number, PlayerItem> = new Map()
+  
   constructor(mainGUI: AdvancedDynamicTexture) {
     this._mainGUI = mainGUI
     this._slots = [
@@ -27,6 +29,11 @@ export class Hotbar {
       null,
     ]
     this._guiSlots = new Map()
+  }
+  
+  public async init() {
+    await this.load()
+    this.listen()
   }
 
   private async load() {
@@ -56,11 +63,30 @@ export class Hotbar {
     
     console.log(this._guiSlots)
   }
+  
+  private loadSlot(item: PlayerItem, slot: number) {
+    slot++
 
-  public async init() {
-    await this.load()
-    this.listen()
+    let grid:any = this._mainGUI.getChildren()[0].children[0]
+    let children = grid._childControls
+    let temp = children.filter((control: Control) => control.name === `slot-${slot}`)[0]
+    this._guiSlots.set(slot, temp)
+
+    if (temp.children.length === 1) {
+      let text = new TextBlock()
+      text.text = item._name
+      text.color = "black"
+      text.fontSize = 10
+      
+      temp.addControl(text)
+    } else {
+      let text = temp.children[1]
+      text.text = item._name
+      text.color = "black"
+      text.fontSize = 10
+    }
   }
+  
 
   private listen() {
     onkeydown = (event) => {
@@ -151,6 +177,9 @@ export class Hotbar {
     // }
 
     this._slots[slot] = item
+    this._playerInventory.set(slot, item)
+    this.loadSlot(item, slot)
+    console.log(slot, item)
 
     return true
   }
@@ -168,5 +197,13 @@ export class Hotbar {
     this._currentSlot = slot
     let slotControl = this._guiSlots.get(slot)
     slotControl.children[0].background = "#fbff00"
+  }
+
+  public get inventory(): Map<number, PlayerItem> {
+    return this._playerInventory
+  }
+
+  public set inventory(inv: Map<number, PlayerItem>) {
+    this._playerInventory = inv
   }
 }
