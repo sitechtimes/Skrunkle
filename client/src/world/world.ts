@@ -81,7 +81,11 @@ export class World {
         this._hotbar.add(Items.shovel, 2)
         this._hotbar.current = 1
         console.log(this._hotbar)
-
+        let item = MeshBuilder.CreateCylinder("item", {height:5, diameter:3})
+        item.position.x = 3;
+        item.position.y = 1;
+        item.position.z = 10;
+        item.metadata = "item"
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
@@ -144,9 +148,27 @@ export class World {
         var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
         var hit = this._scene.pickWithRay(dray);
         // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
-        if (hit.pickedMesh && hit.pickedMesh.metadata == "box" || hit.pickedMesh.metadata == "obox"){
+        if (hit.pickedMesh && hit.pickedMesh.metadata == "item" || hit.pickedMesh.metadata == "obox" || hit.pickedMesh.metadata == "box"){
             console.log("hit");
             this._pickup = true
+
+            if(hit.pickedMesh.metadata="item"){
+                let abc = true;
+                
+                this._scene.onKeyboardObservable.add((kbInfo) => {
+                    switch (kbInfo.type) {
+                      case KeyboardEventTypes.KEYDOWN:
+                        if(kbInfo.event.key == "f"){
+                            hit.pickedMesh.dispose();
+                            document.getElementById("PickedupItem").innerHTML= "Picked Up"
+
+                        }
+                        break;
+                    }
+                  });
+                
+                
+            }
         }else{
         this._pickup = false
     }
@@ -175,6 +197,7 @@ export class World {
                 this._castLookingRay()
                 if(this._pickup == true){
                     document.getElementById("PickupItem").innerHTML = "pickup item"
+
                 }else{
                     document.getElementById("PickupItem").innerHTML = ""
                 }
