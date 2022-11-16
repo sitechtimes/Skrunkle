@@ -1,5 +1,4 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, OimoJSPlugin } from 'babylonjs';
-import { Plane } from '@babylonjs/core';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 
@@ -14,19 +13,22 @@ export class World{
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
     private _entities: any[] = [];
-    private _ground: Mesh;
+    private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, any> = new Map()
-
+    
     constructor(){
         this._engine = new NullEngine();
         this._scene = new Scene(this._engine);
 
+        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        
         this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
-        this._ground = MeshBuilder.CreateBox("ground", {size: 500, width: 500, height: 500}, this._scene);
+        this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
-        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene)
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
         // console.log(this._ground.position)
     }
 
@@ -52,7 +54,6 @@ export class World{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
 
-        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
         // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin());
 
         this._scene.executeWhenReady(()=>{
@@ -62,7 +63,7 @@ export class World{
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
                 this._ticks_elapsed++;
-                console.log(this._ground.position)
+
                 // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
             })
 
@@ -77,7 +78,7 @@ export class World{
     public add_players(id: string): void{
         let playerMesh: any = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
         playerMesh.position = new Vector3(0, 100, 0)
-        playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 15 }, this._scene);
+        playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         this.players.set(id, playerMesh)
     }
 

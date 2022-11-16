@@ -5,6 +5,7 @@ export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
     private _canvas: HTMLCanvasElement
+    private _old_position: Vector3;
 
     constructor(
         name: string,
@@ -30,12 +31,25 @@ export class MainPlayer extends Player {
         // this._camera.applyGravity = true;
         // (<any>this._camera)._needMoveForGravity = true;
 
+        this._old_position = this.position
+
         this._camera.keysUp    = [87]; // W
         this._camera.keysDown  = [83]; // A
         this._camera.keysLeft  = [65]; // S
         this._camera.keysRight = [68]; // D
 
         this._createPointerLock()
+
+        this._camera.inputs.checkInputs = this._calculateForce
+
+    }
+
+    private _calculateForce(): void{
+        if (this.position){
+            let changeVector: Vector3 = new Vector3(this.position.x - this._old_position.x, this.position.y - this._old_position.y, this.position.z - this._old_position.z)
+            console.log(changeVector);
+            this._old_position = this.position
+        }
     }
 
     private _createPointerLock(): void{
