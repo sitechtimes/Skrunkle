@@ -52,7 +52,7 @@ export class World {
                 this._scene.render();
                 if (this._player) {
                     console.log(this._player.position)
-                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                    this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.id))
                     if (this._debug){
                         document.getElementById("x").innerText = `X: ${this._player.position.x}`
                         document.getElementById("y").innerText = `Y: ${this._player.position.y}`
