@@ -1,5 +1,19 @@
-import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
+import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder, Camera, FreeCameraKeyboardMoveInput  } from "@babylonjs/core"
 import { Player } from "./player"
+
+const handleFreeCameraInputs = new FreeCameraKeyboardMoveInput().checkInputs
+
+class CustomInput extends FreeCameraKeyboardMoveInput {       
+    keysUp    = [87]; // W
+    keysDown  = [83]; // A
+    keysLeft  = [65]; // S
+    keysRight = [68]; // D
+
+    checkInputs(): void {
+        handleFreeCameraInputs.apply(this)
+        console.log("Wtf")
+    }
+}
 
 export class MainPlayer extends Player {
 
@@ -33,14 +47,12 @@ export class MainPlayer extends Player {
 
         this._old_position = this.position
 
-        this._camera.keysUp    = [87]; // W
-        this._camera.keysDown  = [83]; // A
-        this._camera.keysLeft  = [65]; // S
-        this._camera.keysRight = [68]; // D
-
         this._createPointerLock()
 
-        this._camera.inputs.checkInputs = this._calculateForce
+        this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput")
+        this._camera.inputs.add(new CustomInput())
+        console.log(this._camera.inputs.attached)
+        // this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
 
     }
 
