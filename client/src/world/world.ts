@@ -7,6 +7,7 @@ import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import { Hotbar } from '../gui/hotbar';
 import { Items } from '../gui/items';
+import { GroundMesh, ThinMaterialHelper, TimerState } from 'babylonjs';
 
 export class World {
     private _engine: Engine;
@@ -22,6 +23,7 @@ export class World {
     private _debug: bool = true
     public chestOpen: boolean
     private _pickup: boolean
+    private _pickedup: boolean
 
     constructor(canvas: HTMLCanvasElement | null) {
         this._canvas = canvas;
@@ -34,6 +36,7 @@ export class World {
         this._guiOpen = false;
         this.chestOpen = false;
         this._pickup = false;
+        this._pickedup = false
     }
 
     public init(): void {
@@ -63,6 +66,17 @@ export class World {
         if(kbInfo.event.key == "e"){
             this._castRay()
         }
+        if(kbInfo.event.key == "q"){
+            if(this._pickedup==true){
+        let item = MeshBuilder.CreateCylinder("item", {height:5, diameter:3})
+        item.position.x = this._player.position.x;
+        item.position.y = this._player.position.y;
+        item.position.z = this._player.position.z;
+        item.metadata = "item"
+        this._pickedup = false;
+        document.getElementById("PickedupItem").innerHTML= ""
+        }
+    }
         break;
     }
   });
@@ -147,6 +161,7 @@ export class World {
     private _castLookingRay(){
         var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
         var hit = this._scene.pickWithRay(dray);
+        
         // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
         if (hit.pickedMesh && hit.pickedMesh.metadata == "item" || hit.pickedMesh.metadata == "obox" || hit.pickedMesh.metadata == "box"){
             console.log("hit");
@@ -159,6 +174,7 @@ export class World {
                     switch (kbInfo.type) {
                       case KeyboardEventTypes.KEYDOWN:
                         if(kbInfo.event.key == "f"){
+                            this._pickedup = true;
                             hit.pickedMesh.dispose();
                             document.getElementById("PickedupItem").innerHTML= "Picked Up"
 
