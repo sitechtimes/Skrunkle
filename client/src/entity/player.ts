@@ -115,6 +115,11 @@ export class Player {
         this._health = new_health;
     }
 
+    public heal(magnitude: number) {
+        this._health += magnitude
+        if (this._health > 100) this._health = 100
+    }
+
     public get exp(): number {
         return this._exp;
     }

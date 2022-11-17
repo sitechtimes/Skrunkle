@@ -6,7 +6,7 @@ import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import { Hotbar } from '../gui/hotbar';
-import { Items } from '../gui/items';
+import { Items, PlayerItem } from '../gui/items';
 
 export class World {
     private _engine: Engine;
@@ -82,10 +82,11 @@ export class World {
         if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
         this._hotbar.inventory = this._player.inventory
         /* TEMPORARILY ADDING ITEMS */
-        this._hotbar.add(Items.hammer, 0)
-        this._hotbar.add(Items.dagger, 1)
-        this._hotbar.add(Items.shovel, 2)
-        this._hotbar.add(Items.spork, 4)
+        this._hotbar.add(new PlayerItem(Items.hammer, this._player), 0)
+        this._hotbar.add(new PlayerItem(Items.dagger, this._player), 1)
+        this._hotbar.add(new PlayerItem(Items.shovel, this._player), 2)
+        this._hotbar.add(new PlayerItem(Items.spork, this._player), 4)
+        this._hotbar.add(new PlayerItem(Items.bandage, this._player), 9)
         /* TEMPORARILY ADDED ITEMS */
         console.log("Created Main Player id: " + this._player.id)
         console.log(this._player.inventory)

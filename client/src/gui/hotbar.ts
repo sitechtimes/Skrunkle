@@ -121,6 +121,9 @@ export class Hotbar {
         case "Digit0":
           this.current = 10
           break
+        case "KeyE":
+          this.current?.use()
+          break
       }
     }
     onwheel = (event) => {
@@ -186,7 +189,8 @@ export class Hotbar {
 
   
   public get current(): any {
-    return this._slots[this._currentSlot]
+    // this is to stop circular data json error
+    return this._slots[this._currentSlot - 1]
   }
   
   public set current(slot: number) {
