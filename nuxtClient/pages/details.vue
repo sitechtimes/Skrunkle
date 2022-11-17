@@ -52,10 +52,10 @@ html {
 .enterName-namebox {
   background-color: #feefdd;
   border-radius: 35px;
-  width: 80%;
+  width: 85%;
 }
 .joinButton-namebox {
-  width: 80%;
+  width: 85%;
   border-radius: 35px;
 }
 .circle {
