@@ -101,6 +101,15 @@ var World = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
+    World.prototype.apply_impulse_player = function (id, impulse_vector) {
+        var _a;
+        var playerMesh = this.players.get(id);
+        if (playerMesh) {
+            (_a = playerMesh.physicsImpostor) === null || _a === void 0 ? void 0 : _a.applyImpulse(impulse_vector, playerMesh.getAbsolutePosition().add(babylonjs_1.Vector3.Zero()));
+            console.log(playerMesh.position);
+            this.players.set(id, playerMesh);
+        }
+    };
     return World;
 }());
 exports.World = World;

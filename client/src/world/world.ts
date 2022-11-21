@@ -61,7 +61,7 @@ export class World {
 
     private listen() {
         window.onunload = () => {
-            this._socket.close(this._player.id)
+            this._socket.close(this._player.id) 
         }
     }
 
@@ -69,7 +69,7 @@ export class World {
         this._player = new MainPlayer(
             name, 100, 0, new Vector3(0, 10, 0), new Vector3(0, 0, 0),
             id, this._scene, this._canvas,
-            this._playerCamera
+            this._playerCamera, this._socket
         )
         if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
         if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`

@@ -95,5 +95,14 @@ export class World{
             return {name: entity.name, position: entity.position}
         })
     }
+
+    public apply_impulse_player(id: string, impulse_vector: Vector3): void{
+        let playerMesh: Mesh | undefined = this.players.get(id)
+        if (playerMesh){
+            playerMesh.physicsImpostor?.applyImpulse(impulse_vector, playerMesh.getAbsolutePosition().add(Vector3.Zero()))
+            console.log(playerMesh.position)
+            this.players.set(id, playerMesh)
+        }
+    }
     
 }

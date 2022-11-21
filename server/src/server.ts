@@ -75,6 +75,9 @@ export class SocketServer {
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }
               break
+            case "Impulse":
+              this.world.apply_impulse_player(msg.uid, msg.payload[0].impulse)
+              break
             case "Info":
               this.setPlayer(msg.uid, msg.payload[0])
               this.broadCast(new Packet(PacketType.info, msg.payload[0]))

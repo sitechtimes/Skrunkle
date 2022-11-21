@@ -53,6 +53,9 @@ var SocketServer = /** @class */ (function () {
                                 _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             }
                             break;
+                        case "Impulse":
+                            _this.world.apply_impulse_player(msg.uid, msg.payload[0].impulse);
+                            break;
                         case "Info":
                             _this.setPlayer(msg.uid, msg.payload[0]);
                             _this.broadCast(new packet_1.Packet(packet_1.PacketType.info, msg.payload[0]));
