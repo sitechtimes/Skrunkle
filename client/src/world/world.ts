@@ -1,4 +1,4 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial, KeyboardEventTypes} from '@babylonjs/core';
+import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial, KeyboardEventTypes, ParticleSystem,} from '@babylonjs/core';
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -7,7 +7,7 @@ import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import { Hotbar } from '../gui/hotbar';
 import { Items } from '../gui/items';
-import { GroundMesh, ThinMaterialHelper, TimerState } from 'babylonjs';
+import { GroundMesh, Texture, ThinMaterialHelper, TimerState } from 'babylonjs';
 
 export class World {
     private _engine: Engine;
@@ -51,6 +51,7 @@ export class World {
             new Vector3(0, 1, 0),
             this._scene
         );
+
 //   this._scene.onPointerObservable.add((pointerInfo) => {
 //     switch (pointerInfo.type) {
 //       case PointerEventTypes.POINTERWHEEL:
@@ -68,18 +69,30 @@ export class World {
         }
         if(kbInfo.event.key == "q"){
             if(this._pickedup==true){
-        let item = MeshBuilder.CreateCylinder("item", {height:5, diameter:3})
+        let item = MeshBuilder.CreateCylinder("item", {height:5, diameter:3})        
+        var myMat = new StandardMaterial("myMat", this._scene);
+        myMat.specularColor = new Color3(.15,.76,.9)
+        myMat.diffuseColor = new Color3(.95,.16,.9)
+        myMat.emissiveColor = new Color3(1,.1,1)
+        myMat.ambientColor = new Color3(.58,.6,.9)
+        item.material = myMat;
         item.position.x = this._player.position.x;
         item.position.y = this._player.position.y;
         item.position.z = this._player.position.z;
         item.metadata = "item"
-        this._pickedup = false;
-        document.getElementById("PickedupItem").innerHTML= ""
-        }
+        const partsys = new ParticleSystem("partsys", 100, this._scene);
+        partsys.particleTexture = new Texture("https://i.etsystatic.com/35502579/r/il/96e98e/3927622762/il_794xN.3927622762_pwrf.jpg")
+        partsys.emitter = item;
+
+        partsys.start()
+        this._pickedup = false; 
+        document.getElementById("PickedupItem").innerHTML= "";
+
+    
     }
         break;
     }
-  });
+  }});
         this._GUI.createHotbar()
         this._hotbar = this._GUI.hotbar
         this._hotbar.add(Items.hammer, 0)
