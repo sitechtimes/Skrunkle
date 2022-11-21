@@ -9,13 +9,12 @@
         <img class="chicken" src="~/assets/chicken.png" alt="" />
       </div>
       <div class="box">
+        <label for="name">Enter name:</label>
         <div class="namebox">
-          <h3 class="enterName-namebox">
-            Enter name
-            <button class="generateName-namebox">Gen</button>
-          </h3>
-          <button class="joinButton-namebox">Join</button>
+          <input class="enterName-namebox" type="text" id="name" name="name" />
+          <button class="generateName-namebox">Gen</button>
         </div>
+        <button class="joinButton-namebox">Join</button>
       </div>
     </div>
   </div>
@@ -40,7 +39,21 @@ html {
   justify-content: center;
   margin-top: 4rem;
 }
-.namebox {
+.generateName-namebox {
+  position: absolute;
+  top: 0;
+  border-radius: 5px;
+  right: 0px;
+  z-index: 2;
+  border: none;
+  top: 50%;
+  height: 30px;
+  cursor: pointer;
+  color: white;
+  background-color: #1e90ff;
+  transform: translateX(2px);
+}
+.box {
   background-color: #fd551b;
   width: 50rem;
   border-radius: 35px;
@@ -49,14 +62,28 @@ html {
   flex-direction: column;
   justify-content: center;
 }
+.namebox {
+  display: flex;
+  justify-content: center;
+}
+label {
+  margin-top: 3rem;
+  margin-left: 5rem;
+}
 .enterName-namebox {
   background-color: #feefdd;
   border-radius: 35px;
-  width: 85%;
+  width: 83%;
+  height: 4rem;
+  margin: auto;
 }
 .joinButton-namebox {
-  width: 85%;
+  width: 83%;
   border-radius: 35px;
+  height: 9rem;
+  margin: auto;
+  margin-bottom: 3rem;
+  background-color: #feefdd;
 }
 .circle {
   background-color: #fd551b;
