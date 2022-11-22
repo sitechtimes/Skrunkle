@@ -12,7 +12,9 @@
         <label for="name">Enter name:</label>
         <div class="namebox">
           <input class="enterName-namebox" type="text" id="name" name="name" />
-          <button class="generateName-namebox">Gen</button>
+          <button class="generateName-namebox">
+            <img src="~/assets/dice.png" alt="random generator" class="dice" />
+          </button>
         </div>
         <button class="joinButton-namebox">Join</button>
       </div>
@@ -41,17 +43,11 @@ html {
 }
 .generateName-namebox {
   position: absolute;
-  top: 0;
   border-radius: 5px;
-  right: 0px;
-  z-index: 2;
+  right: 13rem;
   border: none;
-  top: 50%;
-  height: 30px;
-  cursor: pointer;
-  color: white;
-  background-color: #1e90ff;
-  transform: translateX(2px);
+  top: 35.5%;
+  background-color: #fd551b;
 }
 .box {
   background-color: #fd551b;
@@ -66,6 +62,10 @@ html {
   display: flex;
   justify-content: center;
 }
+.dice {
+  width: 3rem;
+  padding-top: 0.3rem;
+}
 label {
   margin-top: 3rem;
   margin-left: 5rem;
@@ -76,6 +76,7 @@ label {
   width: 83%;
   height: 4rem;
   margin: auto;
+  margin-bottom: 2rem;
 }
 .joinButton-namebox {
   width: 83%;
