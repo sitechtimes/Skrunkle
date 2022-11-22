@@ -3,14 +3,12 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\ashle\\\\OneDrive\\\\Documents\\\\GitHub\\\\Skrunkle\\\\nuxtClient\\\\pages\\\\details.vue",
-    "chunkName": "pages/details",
-    "_name": "_4b8a5f38"
+    "chunkName": "pages/details"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\ashle\\\\OneDrive\\\\Documents\\\\GitHub\\\\Skrunkle\\\\nuxtClient\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_b5c3e570"
+    "chunkName": "pages/index"
   }
 ]
