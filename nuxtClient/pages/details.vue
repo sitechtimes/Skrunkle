@@ -9,6 +9,7 @@
         <span class="slider round"></span>
       </label>
     </div>
+
     <div class="small">
       <div class="characterCircle">
         <div class="circle"></div>
@@ -42,6 +43,18 @@ html {
   margin: auto;
   margin-top: 2rem;
 }
+.theme-light {
+  --color-primary: #feefdd;
+  --color-secondary: #000000;
+  --color-accent: #fd551b;
+  --font-color: #000000;
+}
+.theme-dark {
+  --color-primary: #feefdd;
+  --color-secondary: #fce762;
+  --color-accent: #fd551b;
+  --font-color: #000000;
+}
 .small {
   display: flex;
   justify-content: center;
@@ -50,10 +63,9 @@ html {
 .generateName-namebox {
   position: absolute;
   border-radius: 5px;
-  right: 13rem;
+  right: 20rem;
   border: none;
-  top: 35.5%;
-  background-color: #fd551b;
+  top: 35%;
 }
 .box {
   background-color: #fd551b;
@@ -167,6 +179,11 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
+}
+.wordLogo {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 .wrap {
   display: flex;

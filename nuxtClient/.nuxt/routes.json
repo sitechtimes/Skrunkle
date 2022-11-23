@@ -2,13 +2,15 @@
   {
     "name": "details",
     "path": "/details",
-    "component": "C:\\\\Users\\\\ashle\\\\OneDrive\\\\Documents\\\\GitHub\\\\Skrunkle\\\\nuxtClient\\\\pages\\\\details.vue",
-    "chunkName": "pages/details"
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\details.vue",
+    "chunkName": "pages/details",
+    "_name": "_2b7063fc"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\ashle\\\\OneDrive\\\\Documents\\\\GitHub\\\\Skrunkle\\\\nuxtClient\\\\pages\\\\index.vue",
-    "chunkName": "pages/index"
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\index.vue",
+    "chunkName": "pages/index",
+    "_name": "_04f319e8"
   }
 ]
