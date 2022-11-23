@@ -97,10 +97,13 @@ export class World{
     }
 
     public apply_impulse_player(id: string, impulse_vector: Vector3): void{
+        const scale = 1e3
         let playerMesh: Mesh | undefined = this.players.get(id)
+        let scaledVector = new Vector3(impulse_vector._x * scale, impulse_vector._y , impulse_vector._z * scale) 
+        // y no scale yet
         if (playerMesh){
-            playerMesh.physicsImpostor?.applyImpulse(impulse_vector, playerMesh.getAbsolutePosition().add(Vector3.Zero()))
-            console.log(playerMesh.position)
+            console.log(`Applied impulse: { x: ${scaledVector._x}, y: ${scaledVector._y}, z: ${scaledVector._z} }`)
+            playerMesh.physicsImposter.applyImpulse(scaledVector, playerMesh.getAbsolutePosition().add(Vector3.Zero()))
             this.players.set(id, playerMesh)
         }
     }

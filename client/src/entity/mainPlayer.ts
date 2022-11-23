@@ -19,8 +19,8 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
     }
 
     checkInputs(): void {
-        handleFreeCameraInputs.apply(this)
-        this.playerReference._calculateForce()
+        // handleFreeCameraInputs.apply(this)
+        // this.playerReference._calculateForce()
     }
 }
 
@@ -66,6 +66,10 @@ export class MainPlayer extends Player {
         // this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
 
         this._socket = socket
+
+        document.addEventListener("keydown", ()=>{
+            this._calculateForce()
+        })
 
     }
 

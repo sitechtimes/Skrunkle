@@ -102,11 +102,13 @@ var World = /** @class */ (function () {
         configurable: true
     });
     World.prototype.apply_impulse_player = function (id, impulse_vector) {
-        var _a;
+        var scale = 1e3;
         var playerMesh = this.players.get(id);
+        var scaledVector = new babylonjs_1.Vector3(impulse_vector._x * scale, impulse_vector._y, impulse_vector._z * scale);
+        // y no scale yet
         if (playerMesh) {
-            (_a = playerMesh.physicsImpostor) === null || _a === void 0 ? void 0 : _a.applyImpulse(impulse_vector, playerMesh.getAbsolutePosition().add(babylonjs_1.Vector3.Zero()));
-            console.log(playerMesh.position);
+            console.log("Applied impulse: { x: ".concat(scaledVector._x, ", y: ").concat(scaledVector._y, ", z: ").concat(scaledVector._z, " }"));
+            playerMesh.physicsImposter.applyImpulse(scaledVector, playerMesh.getAbsolutePosition().add(babylonjs_1.Vector3.Zero()));
             this.players.set(id, playerMesh);
         }
     };
