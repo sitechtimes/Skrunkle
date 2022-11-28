@@ -10,20 +10,27 @@
       </label>
     </div>
 
-    <div class="small">
-      <div class="characterCircle">
-        <div class="circle"></div>
-        <img class="chicken" src="~/assets/chicken.png" alt="" />
-      </div>
-      <div class="box">
-        <label for="name">Enter name:</label>
-        <div class="namebox">
-          <input class="enterName-namebox" type="text" id="name" name="name" />
-          <button class="generateName-namebox">
-            <img src="~/assets/dice.png" alt="random generator" class="dice" />
-          </button>
+    <div class="main">
+      <div class="main-left">
+        <div class="box1">
+          <input
+            class="enterName"
+            type="text"
+            value="generatedNamePlaceholder5375"
+            id="name"
+            name="name"
+          />
+          <button class="customizeButton">Customize</button>
         </div>
-        <button class="joinButton-namebox">Join</button>
+        <div class="box2"></div>
+      </div>
+
+      <div class="main-middle">
+        <div class="characterCircle">
+          <div class="circle"></div>
+          <img class="chicken" src="~/assets/chicken.png" alt="" />
+        </div>
+        <button class="joinButton">Join</button>
       </div>
     </div>
   </div>
@@ -55,59 +62,56 @@ html {
   --color-accent: #fd551b;
   --font-color: #000000;
 }
-.small {
+.main {
   display: flex;
   justify-content: center;
   margin-top: 4rem;
 }
-.generateName-namebox {
-  position: absolute;
-  border-radius: 5px;
-  right: 20rem;
-  border: none;
-  top: 35%;
-}
-.box {
+.box1 {
   background-color: #fd551b;
-  width: 50rem;
+  width: 100%;
   border-radius: 35px;
-  height: 20rem;
+  height: 17rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
-.namebox {
+.box2 {
+  background-color: #fd551b;
+  width: 100%;
+  border-radius: 35px;
+  height: 17rem;
   display: flex;
+  flex-direction: column;
   justify-content: center;
 }
-.dice {
-  width: 3rem;
-  padding-top: 0.3rem;
-}
-label {
-  margin-top: 3rem;
-  margin-left: 5rem;
-}
-.enterName-namebox {
+.enterName {
   background-color: #feefdd;
   border-radius: 35px;
   width: 83%;
-  height: 4rem;
+  height: 3rem;
   margin: auto;
-  margin-bottom: 2rem;
 }
-.joinButton-namebox {
+.customizeButton {
   width: 83%;
   border-radius: 35px;
   height: 9rem;
   margin: auto;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
   background-color: #feefdd;
+}
+.joinButton {
+  width: 20rem;
+  border-radius: 35px;
+  height: 6rem;
+  margin: auto;
+  margin-bottom: 2rem;
+  background-color: #fd551b;
 }
 .circle {
   background-color: #fd551b;
-  height: 35rem;
-  width: 35rem;
+  height: 30rem;
+  width: 30rem;
   border-radius: 50%;
   position: relative;
   margin-right: 8rem;
@@ -116,7 +120,7 @@ label {
   height: 30rem;
   position: absolute;
   top: 40%;
-  right: 61%;
+  right: 20%;
 }
 /* The switch - the box around the slider */
 .switch {
