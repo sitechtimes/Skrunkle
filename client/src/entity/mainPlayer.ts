@@ -1,4 +1,5 @@
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
+import { Hotbar } from "../gui/hotbar";
 import { PlayerItem } from "../gui/items";
 import { Player } from "./player"
 
@@ -7,6 +8,7 @@ export class MainPlayer extends Player {
     private _camera: FreeCamera;
     private _canvas: HTMLCanvasElement
     private _inventory: Map<number, PlayerItem> = new Map()
+    private _hotbar: Hotbar
 
     constructor(
         name: string,

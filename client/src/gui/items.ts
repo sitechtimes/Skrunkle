@@ -1,4 +1,5 @@
 import type { MainPlayer } from "../entity/mainPlayer"
+import type { Hotbar } from "./hotbar"
 
 export class PlayerItem {
   public _name: string
@@ -6,16 +7,19 @@ export class PlayerItem {
   public _magnitude: number
   public _img: string
   #_player: MainPlayer
+  #_hotbar: Hotbar
   
   constructor(
     item:Item,
-    player: MainPlayer
+    player: MainPlayer,
+    hotbar: Hotbar
   ) {
     this._name = item.name
     this._type = item.type
     this._magnitude = item.magnitude
     this._img = item.img
     this.#_player = player
+    this.#_hotbar = hotbar
   }
 
   public drop() {
@@ -27,10 +31,12 @@ export class PlayerItem {
       case "Damage":
         // use thomas' hitbox detection
         this.#_player.health = 50
+        this.#_hotbar.healthChange(this.#_player.health)
         break
       case "Heal":
         this.#_player.heal(this._magnitude)
         console.log(this.#_player.health)
+        this.#_hotbar.healthChange(this.#_player.health)
         break
       case "Utility":
         // not sure what this means yet
