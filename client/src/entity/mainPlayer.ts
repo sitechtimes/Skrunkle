@@ -5,17 +5,41 @@ import { Player } from "./player"
 
 const handleFreeCameraInputs = new FreeCameraKeyboardMoveInput().checkInputs
 
-class CustomInput extends FreeCameraKeyboardMoveInput {       
+class CustomInput extends FreeCameraKeyboardMoveInput {     
+    
+    onKeyDown = false;
     keysUp    = [87]; // W
     keysDown  = [83]; // A
     keysLeft  = [65]; // S
     keysRight = [68]; // D
-    
+
+    private changeX = 0;
+    private changeY = 0;
+
     private playerReference: MainPlayer;
 
     constructor(mainPlayer: MainPlayer){
         super()
+        this.init(document)
         this.playerReference = mainPlayer
+    }
+
+    init(element: any): void{
+
+        const handleKeyDown = (event:any)=>{
+            console.log(event.keyCode)
+        }
+
+        const handleKeyUp = (event: any)=>{
+            this.changeX = 0;
+            this.changeY = 0
+            console.log(event.keyCode)
+        }
+
+        element.addEventListener("keydown", handleKeyDown, false);
+        element.addEventListener("keyup", handleKeyUp, false);
+
+        console.log("init")
     }
 
     checkInputs(): void {
@@ -63,13 +87,12 @@ export class MainPlayer extends Player {
         this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput")
         this._camera.inputs.add(new CustomInput(this))
         console.log(this._camera.inputs.attached)
+
+        console.log(this._camera.inputs.attached)
         // this._camera.inputs.removeByType("FreeCameraKeyboardMoveInput");
 
         this._socket = socket
 
-        document.addEventListener("keydown", ()=>{
-            this._calculateForce()
-        })
 
     }
 
