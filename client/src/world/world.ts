@@ -69,22 +69,11 @@ export class World {
         }
         if(kbInfo.event.key == "q"){
             if(this._pickedup==true){
-        let item = MeshBuilder.CreateCylinder("item", {height:5, diameter:3})        
-        var myMat = new StandardMaterial("myMat", this._scene);
-        myMat.specularColor = new Color3(.15,.76,.9)
-        myMat.diffuseColor = new Color3(.95,.16,.9)
-        myMat.emissiveColor = new Color3(1,.1,1)
-        myMat.ambientColor = new Color3(.58,.6,.9)
-        item.material = myMat;
-        item.position.x = this._player.position.x;
-        item.position.y = this._player.position.y;
-        item.position.z = this._player.position.z;
-        item.metadata = "item"
-        const partsys = new ParticleSystem("partsys", 100, this._scene);
-        partsys.particleTexture = new Texture("https://i.etsystatic.com/35502579/r/il/96e98e/3927622762/il_794xN.3927622762_pwrf.jpg")
-        partsys.emitter = item;
-
-        partsys.start()
+        // const partsys = new ParticleSystem("partsys", 1000, this._scene);
+        // partsys.emitter = item;
+        // partsys.preWarmCycles = 100;
+        // partsys.start()
+        // partsys.targetStopDuration = 5;
         this._pickedup = false; 
         document.getElementById("PickedupItem").innerHTML= "";
 
@@ -113,6 +102,12 @@ export class World {
         item.position.y = 1;
         item.position.z = 10;
         item.metadata = "item"
+        var myMat = new StandardMaterial("myMat", this._scene);
+        myMat.specularColor = new Color3(.15,.76,.9)
+        myMat.diffuseColor = new Color3(.95,.16,.9)
+        myMat.emissiveColor = new Color3(1,.1,1)
+        myMat.ambientColor = new Color3(.58,.6,.9)
+        item.material = myMat;
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
@@ -127,6 +122,7 @@ export class World {
                         document.getElementById("x").innerText = `X: ${this._player.position.x}`
                         document.getElementById("y").innerText = `Y: ${this._player.position.y}`
                         document.getElementById("z").innerText = `Z: ${this._player.position.z}`
+                        console.log(this._player.rotation)
                     }
                 }
             })
@@ -188,7 +184,6 @@ export class World {
                       case KeyboardEventTypes.KEYDOWN:
                         if(kbInfo.event.key == "f"){
                             this._pickedup = true;
-                            hit.pickedMesh.dispose();
                             document.getElementById("PickedupItem").innerHTML= "Picked Up"
 
                         }
@@ -230,20 +225,25 @@ export class World {
                 }else{
                     document.getElementById("PickupItem").innerHTML = ""
                 }
-                if(this.chestOpen == true){
-                    var material = new StandardMaterial("box color", this._scene);
-                    material.alpha = .5;
-                    material.diffuseColor = new Color3(0.2, 1, 0.2);
-                    let obox = MeshBuilder.CreateBox("obox", { size: 3, width: 3, height: 3}, this._scene)
-                    obox.metadata = "obox"
-                    obox.material = material; // <--
-                    this._entities.push(obox)
-                    }if(this.chestOpen == false ){
-                        this._entities.forEach((i)=>{
-                            if(i.metadata == "obox"){
-                                i.dispose();
-                            }
-                        })
+                // if(this.chestOpen == true){
+                //     var material = new StandardMaterial("box color", this._scene);
+                //     material.alpha = .5;
+                //     material.diffuseColor = new Color3(0.2, 1, 0.2);
+                //     let obox = MeshBuilder.CreateBox("obox", { size: 3, width: 3, height: 3}, this._scene)
+                //     obox.metadata = "obox"
+                //     obox.material = material; // <--
+                //     this._entities.push(obox)
+                //     }if(this.chestOpen == false ){
+                //         this._entities.forEach((i)=>{
+                //             if(i.metadata == "obox"){
+                //                 i.dispose();
+                //             }
+                //         })
+                //     }
+                    if(this._pickedup==true){
+                        let ray = this._playerCamera.getForwardRay()
+                        let item = this._scene.getMeshByName("item")     
+                        item.position = ray.origin.clone().add(ray.direction.scale(10));
                     }
                 break
             case "Mesh":
