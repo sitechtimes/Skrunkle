@@ -97,7 +97,7 @@ export class World{
     }
 
     public apply_impulse_player(id: string, impulse_vector: Vector3): void{
-        const scale = 1e3
+        const scale = 1e2
         let playerMesh: Mesh | undefined = this.players.get(id)
         let scaledVector = new Vector3(impulse_vector._x * scale, impulse_vector._y , impulse_vector._z * scale) 
         // y no scale yet

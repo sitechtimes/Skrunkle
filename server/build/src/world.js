@@ -102,7 +102,7 @@ var World = /** @class */ (function () {
         configurable: true
     });
     World.prototype.apply_impulse_player = function (id, impulse_vector) {
-        var scale = 1e3;
+        var scale = 1e2;
         var playerMesh = this.players.get(id);
         var scaledVector = new babylonjs_1.Vector3(impulse_vector._x * scale, impulse_vector._y, impulse_vector._z * scale);
         // y no scale yet
