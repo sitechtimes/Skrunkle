@@ -1,4 +1,7 @@
 import type { MainPlayer } from "../entity/mainPlayer"
+import type { Player } from "../entity/player"
+import { Packet, PacketType } from "../packet"
+import type { Socket } from "../socket"
 import type { Hotbar } from "./hotbar"
 
 export class PlayerItem {
@@ -8,11 +11,13 @@ export class PlayerItem {
   public _img: string
   #_player: MainPlayer
   #_hotbar: Hotbar
+  #_socket: Socket
   
   constructor(
     item:Item,
     player: MainPlayer,
-    hotbar: Hotbar
+    hotbar: Hotbar,
+    socket: Socket
   ) {
     this._name = item.name
     this._type = item.type
@@ -20,6 +25,7 @@ export class PlayerItem {
     this._img = item.img
     this.#_player = player
     this.#_hotbar = hotbar
+    this.#_socket = socket
   }
 
   public drop() {
@@ -29,14 +35,17 @@ export class PlayerItem {
   public use() {
     switch (this._type) {
       case "Damage":
-        // use thomas' hitbox detection
-        this.#_player.health = 50
-        this.#_hotbar.healthChange(this.#_player.health)
+        // TODO: use the hitbox detection
+        let target: Player|null = null /* DETECT TARGET WITH POINTER EVENT THING */
+        if (target) {
+          this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: target._id, type: this._type, magnitude: this._magnitude }]))
+        }
         break
       case "Heal":
         this.#_player.heal(this._magnitude)
         console.log(this.#_player.health)
         this.#_hotbar.healthChange(this.#_player.health)
+        /* ALSO SEND THROUGH SOCKET */
         break
       case "Utility":
         // not sure what this means yet
@@ -52,6 +61,7 @@ export const Items = {
   dagger: <Item>{ name: "Dagger", type: "Damage", magnitude: 35, img: "img-link"},
   skillet: <Item>{ name: "Cast Iron Skillet", type: "Damage", magnitude: 10, img: "img-link"},
   bandage: <Item>{ name: "Bandage", type: "Heal", magnitude: 33, img: "img-link"},
+  medkit: <Item>{ name: "Medkit", type: "Heal", magnitude: 100, img: "img-link"},
   rope: <Item>{ name: "Rope", type: "Utility", magnitude: 50, img: "img-link"},
 }
 

@@ -4,30 +4,20 @@ import { PlayerItem } from "./items"
 
 export class Hotbar {
   private _mainGUI: AdvancedDynamicTexture
-  private _currentSlot: number = 0
-  private _slots: Array<PlayerItem | null>
+  private _currentSlot: number = 1
+  private _slots: Map<number, PlayerItem>
   private _currentVersion: number = 13
   private _baseSnippet: string = "UW33M7"
   private _children: any
   private _guiSlots: Map<number, any>
   private _healthBar: Control
-  private _playerInventory: Map<number, PlayerItem> = new Map()
+  private _playerInventory: Map<number, PlayerItem>
   
   constructor(mainGUI: AdvancedDynamicTexture) {
     this._mainGUI = mainGUI
-    this._slots = [
-      null, 
-      null, 
-      null, 
-      null, 
-      null, 
-      null, 
-      null, 
-      null, 
-      null, 
-      null,
-    ]
+    this._slots = new Map()
     this._guiSlots = new Map()
+    this._playerInventory = new Map()
   }
   
   public async init() {
@@ -48,9 +38,9 @@ export class Hotbar {
         this.current = i
       })
 
-      if (this._slots[i - 1] !== null) {
+      if (this._slots.has(i)) {
         let text = new TextBlock()
-        text.text = this._slots[i - 1]._name
+        text.text = this._slots.get(i)!._name
         text.color = "black"
         text.fontSize = 10
         
@@ -66,6 +56,7 @@ export class Hotbar {
       health.fontSize = 20
       health.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP
       health.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT
+      health.topInPixels = -500
       this._mainGUI.addControl(health)
       this._healthBar = this._mainGUI.getChildren()[0]._children[4]
     }
@@ -74,8 +65,6 @@ export class Hotbar {
   }
   
   private loadSlot(item: PlayerItem, slot: number) {
-    slot++
-
     let grid:any = this._mainGUI.getChildren()[0].children[0]
     let children = grid._childControls
     let temp = children.filter((control: Control) => control.name === `slot-${slot}`)[0]
@@ -164,35 +153,7 @@ export class Hotbar {
   }
 
   public add(item: PlayerItem, slot: number): boolean {
-    /* if (!slot) {
-      for (let i = 0; i < 0; i++) {
-        if (!this._slots.has(i)) {
-          slot = i 
-          break
-        }
-      }
-    }
-    
-    if (slot) {
-      this._slots.set(slot, item)
-      return true
-    } else {
-      return false
-    } */
-    // this._slots.set(slot, item)
-    // if (!slot) {
-    //   for (let i = 0; i < 10; i++) {
-    //     if (!this._slots[i]) {
-    //       slot = i
-    //     }
-    //   }
-    // }
-
-    // if (!slot) {
-    //   return false
-    // }
-
-    this._slots[slot] = item
+    this._slots.set(slot, item)
     this._playerInventory.set(slot, item)
     this.loadSlot(item, slot)
     console.log(slot, item)
@@ -203,7 +164,7 @@ export class Hotbar {
   
   public get current(): any {
     // this is to stop circular data json error
-    return this._slots[this._currentSlot - 1]
+    return this._slots.get(this._currentSlot)
   }
   
   public set current(slot: number) {

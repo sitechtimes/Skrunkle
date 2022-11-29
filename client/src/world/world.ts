@@ -78,15 +78,17 @@ export class World {
             id, this._scene, this._canvas,
             this._playerCamera
         )
-        if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
-        if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
+        if (this._debug) document.getElementById("name")!.innerText = `Name: ${this._player.name}`
+        if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.id}`
         this._hotbar.inventory = this._player.inventory
         /* TEMPORARILY ADDING ITEMS */
-        this._hotbar.add(new PlayerItem(Items.hammer, this._player), 0)
-        this._hotbar.add(new PlayerItem(Items.dagger, this._player), 1)
-        this._hotbar.add(new PlayerItem(Items.shovel, this._player), 2)
-        this._hotbar.add(new PlayerItem(Items.spork, this._player), 4)
-        this._hotbar.add(new PlayerItem(Items.bandage, this._player), 9)
+        this._hotbar.add(new PlayerItem(Items.hammer, this._player, this._hotbar), 1)
+        this._hotbar.add(new PlayerItem(Items.dagger, this._player, this._hotbar), 2)
+        this._hotbar.add(new PlayerItem(Items.shovel, this._player, this._hotbar), 3)
+        this._hotbar.add(new PlayerItem(Items.spork, this._player, this._hotbar), 5)
+        this._hotbar.add(new PlayerItem(Items.bandage, this._player, this._hotbar), 10)
+        this._hotbar.add(new PlayerItem(Items.medkit, this._player, this._hotbar), 8)
+        this._hotbar.add(new PlayerItem(Items.skillet, this._player, this._hotbar), 7)
         /* TEMPORARILY ADDED ITEMS */
         console.log("Created Main Player id: " + this._player.id)
         console.log(this._player.inventory)
