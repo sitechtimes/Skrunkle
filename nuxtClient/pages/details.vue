@@ -67,20 +67,29 @@ html {
   justify-content: center;
   margin-top: 4rem;
 }
+.main-left {
+  width: 25%;
+  margin-left: 5rem;
+  margin-right: 20rem;
+}
+.main-middle {
+  width: 100%;
+}
 .box1 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 17rem;
+  height: 32%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 .box2 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 17rem;
+  height: 65%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -91,21 +100,22 @@ html {
   width: 83%;
   height: 3rem;
   margin: auto;
+  margin-top: 1rem;
 }
 .customizeButton {
   width: 83%;
   border-radius: 35px;
-  height: 9rem;
+  height: 6rem;
   margin: auto;
-  margin-bottom: 2rem;
   background-color: #feefdd;
+  margin-bottom: 1rem;
 }
 .joinButton {
   width: 20rem;
   border-radius: 35px;
   height: 6rem;
-  margin: auto;
-  margin-bottom: 2rem;
+  margin: 2rem;
+  margin-left: 5rem;
   background-color: #fd551b;
 }
 .circle {
