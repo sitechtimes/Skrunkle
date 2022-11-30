@@ -1,5 +1,4 @@
 import type { MainPlayer } from "../entity/mainPlayer"
-import type { Player } from "../entity/player"
 import { Packet, PacketType } from "../packet"
 import type { Socket } from "../socket"
 import type { Hotbar } from "./hotbar"
@@ -36,16 +35,16 @@ export class PlayerItem {
     switch (this._type) {
       case "Damage":
         // TODO: use the hitbox detection
-        let target: Player|null = null /* DETECT TARGET WITH POINTER EVENT THING */
-        if (target) {
-          this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: target._id, type: this._type, magnitude: this._magnitude }]))
+        let targetID: string = '' /* DETECT TARGET WITH POINTER EVENT THING */
+        if (targetID) {
+          this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: targetID, type: this._type, magnitude: this._magnitude }]))
         }
         break
       case "Heal":
         this.#_player.heal(this._magnitude)
-        console.log(this.#_player.health)
         this.#_hotbar.healthChange(this.#_player.health)
         /* ALSO SEND THROUGH SOCKET */
+        this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: this.#_player.id, type: this._type, magnitude: this._magnitude }]))
         break
       case "Utility":
         // not sure what this means yet
