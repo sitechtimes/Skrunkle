@@ -32,10 +32,11 @@ export class PlayerItem {
   }
 
   public use() {
+    console.log("item used")
     switch (this._type) {
       case "Damage":
         // TODO: use the hitbox detection
-        let targetID: string = '' /* DETECT TARGET WITH POINTER EVENT THING */
+        let targetID: string = 'asdf' /* DETECT TARGET WITH POINTER EVENT THING */
         if (targetID) {
           this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: targetID, type: this._type, magnitude: this._magnitude }]))
         }
@@ -48,6 +49,9 @@ export class PlayerItem {
         break
       case "Utility":
         // not sure what this means yet
+        break
+      default:
+        console.log("Unexpected item type")
         break
     }
   }
