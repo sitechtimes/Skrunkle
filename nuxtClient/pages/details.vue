@@ -68,12 +68,13 @@ html {
   margin-top: 4rem;
 }
 .main-left {
-  width: 25%;
+  width: 40%;
   margin-left: 5rem;
   margin-right: 20rem;
 }
 .main-middle {
   width: 100%;
+  margin-right: 20rem;
 }
 .box1 {
   background-color: #fd551b;
@@ -115,13 +116,14 @@ html {
   border-radius: 35px;
   height: 6rem;
   margin: 2rem;
+  margin-bottom: 0rem;
   margin-left: 5rem;
   background-color: #fd551b;
 }
 .circle {
   background-color: #fd551b;
-  height: 30rem;
-  width: 30rem;
+  height: 32rem;
+  width: 32rem;
   border-radius: 50%;
   position: relative;
   margin-right: 8rem;
@@ -130,7 +132,7 @@ html {
   height: 30rem;
   position: absolute;
   top: 40%;
-  right: 20%;
+  right: 35%;
 }
 /* The switch - the box around the slider */
 .switch {
