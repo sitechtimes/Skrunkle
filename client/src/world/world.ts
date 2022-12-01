@@ -46,7 +46,7 @@ export class World {
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
-            this._socket.send(new Packet(PacketType.info, [this._player], undefined),)
+            this._socket.send(new Packet(PacketType.info, [this._player], ''),)
 
             this._engine.runRenderLoop(() => {
                 this._scene.render();
@@ -54,9 +54,9 @@ export class World {
                     console.log(this._player.position)
                     this._socket.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.id))
                     if (this._debug){
-                        document.getElementById("x").innerText = `X: ${this._player.position.x}`
-                        document.getElementById("y").innerText = `Y: ${this._player.position.y}`
-                        document.getElementById("z").innerText = `Z: ${this._player.position.z}`
+                        document.getElementById("x")!.innerText = `X: ${this._player.position.x}`
+                        document.getElementById("y")!.innerText = `Y: ${this._player.position.y}`
+                        document.getElementById("z")!.innerText = `Z: ${this._player.position.z}`
                     }
                 }
             })

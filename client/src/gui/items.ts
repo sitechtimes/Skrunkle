@@ -1,5 +1,5 @@
-import type { MainPlayer } from "../entity/mainPlayer"
 import { Packet, PacketType } from "../packet"
+import type { MainPlayer } from "../entity/mainPlayer"
 import type { Socket } from "../socket"
 import type { Hotbar } from "./hotbar"
 
@@ -8,6 +8,7 @@ export class PlayerItem {
   public _type: "Damage"|"Heal"|"Utility"
   public _magnitude: number
   public _img: string
+  /* the hashtag means private */
   #_player: MainPlayer
   #_hotbar: Hotbar
   #_socket: Socket
@@ -38,14 +39,13 @@ export class PlayerItem {
         // TODO: use the hitbox detection
         let targetID: string = 'asdf' /* DETECT TARGET WITH POINTER EVENT THING */
         if (targetID) {
-          this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: targetID, type: this._type, magnitude: this._magnitude }]))
+          this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: targetID, type: this._type, magnitude: this._magnitude }], this.#_player.id))
         }
         break
       case "Heal":
         this.#_player.heal(this._magnitude)
         this.#_hotbar.healthChange(this.#_player.health)
-        /* ALSO SEND THROUGH SOCKET */
-        this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: this.#_player.id, type: this._type, magnitude: this._magnitude }]))
+        this.#_socket.send(new Packet(PacketType.interaction, [{ id: this.#_player.id, target: this.#_player.id, type: this._type, magnitude: this._magnitude }], this.#_player.id))
         break
       case "Utility":
         // not sure what this means yet
