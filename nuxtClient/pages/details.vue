@@ -32,6 +32,9 @@
         </div>
         <button class="joinButton">Join</button>
       </div>
+      <div class="main-right">
+        <div class="box3"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -44,11 +47,14 @@
 .wordLogo {
   text-align: center;
 }
-.body,
 html {
-  background-color: #feefdd;
+  /* background-color: #feefdd; */
   margin: auto;
   margin-top: 2rem;
+}
+body {
+  background-image: url("assets/pattern.svg");
+  background-repeat: repeat;
 }
 .theme-light {
   --color-primary: #feefdd;
@@ -68,13 +74,17 @@ html {
   margin-top: 4rem;
 }
 .main-left {
-  width: 40%;
+  width: 20%;
   margin-left: 5rem;
   margin-right: 20rem;
 }
 .main-middle {
-  width: 100%;
+  width: 40%;
   margin-right: 20rem;
+}
+.main-right {
+  width: 20%;
+  margin-right: 5rem;
 }
 .box1 {
   background-color: #fd551b;
@@ -87,6 +97,15 @@ html {
   margin-bottom: 1rem;
 }
 .box2 {
+  background-color: #fd551b;
+  width: 100%;
+  border-radius: 35px;
+  height: 65%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.box3 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;

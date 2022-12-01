@@ -17,7 +17,7 @@
     </body>
   </html>
 </template>
-<style>
+<style >
 * {
   overflow: hidden;
   padding: 0;
