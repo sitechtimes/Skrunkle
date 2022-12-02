@@ -53,8 +53,25 @@ html {
   margin-top: 2rem;
 }
 body {
-  background-image: url("assets/pattern.svg");
-  background-repeat: repeat;
+  background-image: url("assets/pattern.png");
+  background-size: 125vw;
+  animation-name: animatedBackground 3s linear infinite;
+}
+@keyframes animatedBackground {
+  0% {
+    transform: translate(0);
+  }
+  100% {
+    transform: translate(-3840px); /* The image width */
+  }
+}
+#animate-area {
+  width: 200px;
+  height: 200px;
+  background-image: url(http://placekitten.com/400/200);
+  background-position: 0px 0px;
+  background-repeat: repeat-x;
+  animation: animatedBackground 10s linear infinite alternate;
 }
 .theme-light {
   --color-primary: #feefdd;
