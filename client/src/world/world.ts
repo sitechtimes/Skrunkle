@@ -241,8 +241,10 @@ export class World {
                 //         })
                 //     }
                     if(this._pickedup==true){
+                        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+                        var hit = this._scene.pickWithRay(dray);
                         let ray = this._playerCamera.getForwardRay()
-                        let item = this._scene.getMeshByName("item")     
+                        let item = this._scene.getMeshByName(hit.pickedMesh.name)     
                         item.position = ray.origin.clone().add(ray.direction.scale(10));
                     }
                 break
