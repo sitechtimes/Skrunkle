@@ -16,7 +16,7 @@
           <input
             class="enterName"
             type="text"
-            value="generatedNamePlaceholder5375"
+            value="Placeholder5375"
             id="name"
             name="name"
           />
@@ -39,39 +39,29 @@
   </div>
 </template>
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
 * {
   overflow: hidden;
   padding: 0;
   margin: 0;
+  font-family: "Titan One", cursive;
 }
 .wordLogo {
+  margin-top: 3rem;
   text-align: center;
-}
-html {
-  /* background-color: #feefdd; */
-  margin: auto;
-  margin-top: 2rem;
 }
 body {
   background-image: url("assets/pattern.png");
-  background-size: 125vw;
-  animation-name: animatedBackground 3s linear infinite;
+  background-size: 130vw;
+  animation: animatedBackground 30s infinite linear alternate-reverse;
 }
 @keyframes animatedBackground {
   0% {
-    transform: translate(0);
+    background-position: 0 0;
   }
   100% {
-    transform: translate(-3840px); /* The image width */
+    background-position: 100% 0; /* The image width */
   }
-}
-#animate-area {
-  width: 200px;
-  height: 200px;
-  background-image: url(http://placekitten.com/400/200);
-  background-position: 0px 0px;
-  background-repeat: repeat-x;
-  animation: animatedBackground 10s linear infinite alternate;
 }
 .theme-light {
   --color-primary: #feefdd;
@@ -91,23 +81,23 @@ body {
   margin-top: 4rem;
 }
 .main-left {
-  width: 20%;
+  width: 25%;
   margin-left: 5rem;
-  margin-right: 20rem;
+  margin-right: 15rem;
 }
 .main-middle {
   width: 40%;
-  margin-right: 20rem;
+  margin-right: 15rem;
 }
 .main-right {
-  width: 20%;
+  width: 25%;
   margin-right: 5rem;
 }
 .box1 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 32%;
+  height: 35%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -117,7 +107,7 @@ body {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 65%;
+  height: 62%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -138,6 +128,7 @@ body {
   height: 3rem;
   margin: auto;
   margin-top: 1rem;
+  font-size: x-large;
 }
 .customizeButton {
   width: 83%;
@@ -146,6 +137,7 @@ body {
   margin: auto;
   background-color: #feefdd;
   margin-bottom: 1rem;
+  font-size: xx-large;
 }
 .joinButton {
   width: 20rem;
@@ -155,6 +147,7 @@ body {
   margin-bottom: 0rem;
   margin-left: 5rem;
   background-color: #fd551b;
+  font-size: xxx-large;
 }
 .circle {
   background-color: #fd551b;
