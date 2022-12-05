@@ -2,13 +2,13 @@ import { World } from "./world/world";
 import { Packet, PacketType } from "./packet";
 
 export class Socket {
-  static readonly url: string = 'ws://localhost:2000'
+  static readonly url: string = 'ws://10.94.168.236:2000'
   private server: any
   private status: boolean = false
   private worldReference: World;
 
   constructor(world: World) {
-    this.server = new WebSocket(Socket.url)
+    this.server = new WebSocket(Socket.url, "tcp")
     this.worldReference = world;
     this.init()
     this.listen()
