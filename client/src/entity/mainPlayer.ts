@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
-import { Hotbar } from "../gui/hotbar";
+import type { Hotbar } from "../gui/hotbar";
 import { PlayerItem } from "../gui/items";
 import { Player } from "./player"
 

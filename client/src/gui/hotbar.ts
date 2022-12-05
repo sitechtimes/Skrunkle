@@ -1,5 +1,5 @@
-import { AdvancedDynamicTexture, Control, Grid, TextBlock } from "@babylonjs/gui"
-import { PlayerItem } from "./items"
+import { AdvancedDynamicTexture, Control, TextBlock } from "@babylonjs/gui"
+import type { PlayerItem } from "./items"
 
 
 export class Hotbar {
@@ -10,7 +10,7 @@ export class Hotbar {
   private _baseSnippet: string = "UW33M7"
   private _children: any
   private _guiSlots: Map<number, any>
-  private _healthBar: Control
+  private _healthBar: TextBlock|null = null
   private _playerInventory: Map<number, PlayerItem>
   
   constructor(mainGUI: AdvancedDynamicTexture) {
@@ -58,7 +58,7 @@ export class Hotbar {
       health.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT
       health.topInPixels = -500
       this._mainGUI.addControl(health)
-      this._healthBar = this._mainGUI.getChildren()[0]._children[4]
+      this._healthBar = <TextBlock>this._mainGUI.getChildren()[0]._children[4]
     }
 
     this.current = 1
@@ -149,7 +149,7 @@ export class Hotbar {
   }
 
   public healthChange(new_health: number) {
-    this._healthBar.text = `Health: ${new_health}`
+    this._healthBar!.text = `Health: ${new_health}`
   }
 
   public add(item: PlayerItem, slot: number): boolean {

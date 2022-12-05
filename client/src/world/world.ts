@@ -7,7 +7,7 @@ import { Socket } from "../socket"
 import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
-import { Hotbar } from '../gui/hotbar';
+import type { Hotbar } from '../gui/hotbar';
 import { Items, PlayerItem } from '../gui/items';
 
 export class World {
@@ -106,16 +106,25 @@ export class World {
             case "Update":
                 let playerData = data.payload
                 if (!this._players.has(playerData.id) && playerData.id != this._player.id){
-                    let newPlayer: Player = new Player(playerData.name, 100, 0, new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), playerData.id, this._scene, {renderBody: true})
+                    let newPlayer: Player = new Player(
+                        playerData.name, 
+                        100, 
+                        0, 
+                        new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), 
+                        new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), 
+                        playerData.id, 
+                        this._scene, 
+                        {renderBody: true}
+                    )
                     this._players.set(playerData.id, newPlayer)
                     console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
-                }else if (playerData.id != this._player.id) {
+                } else if (playerData.id != this._player.id) {
                     let player: Player = this._players.get(playerData.id)
                     player.position = playerData.position
                     player.rotation = playerData.rotation
                     this._players.set(player.id, player)
                     if (this._debug) document.getElementById("pcount").innerText = `Players online: ${this._players.size}`
-                }else if (playerData.id == this._player.id){
+                } else if (playerData.id == this._player.id){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
                 
