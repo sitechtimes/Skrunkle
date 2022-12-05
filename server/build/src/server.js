@@ -61,6 +61,9 @@ var SocketServer = /** @class */ (function () {
                             _this.players.delete(msg.uid);
                             _this.broadCast(new packet_1.Packet(packet_1.PacketType.close, [{ id: msg.uid, delete: true }]));
                             break;
+                        case "Interaction":
+                            _this.logger.log("Received interaction");
+                            break;
                         case "ping":
                             _this.logger.log("Received Ping from client. Pong!");
                             _this.send(client, new packet_1.Packet(packet_1.PacketType.info, ['Pong!']));

@@ -8,7 +8,7 @@ import { Packet, PacketType } from '../packet';
 import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import { Hotbar } from '../gui/hotbar';
-import { Items } from '../gui/items';
+import { Items, PlayerItem } from '../gui/items';
 
 export class World {
     private _engine: Engine;
@@ -45,26 +45,21 @@ export class World {
 
         this._GUI.createHotbar()
         this._hotbar = this._GUI.hotbar
-        this._hotbar.add(Items.hammer, 0)
-        this._hotbar.add(Items.dagger, 1)
-        this._hotbar.add(Items.shovel, 2)
-        this._hotbar.current = 1
-        console.log(this._hotbar)
-
+        
         this._scene.executeWhenReady(() => {
             this._socket = new Socket(this);
 
-            this._socket.send(new Packet(PacketType.info, [this._player], undefined),)
+            this._socket.send(new Packet(PacketType.info, [this._player], ''),)
 
             this._engine.runRenderLoop(() => {
                 this._scene.render();
                 if (this._player) {
                     console.log(this._player.position)
-                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation }], this._player.id))
+                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.id))
                     if (this._debug){
-                        document.getElementById("x").innerText = `X: ${this._player.position.x}`
-                        document.getElementById("y").innerText = `Y: ${this._player.position.y}`
-                        document.getElementById("z").innerText = `Z: ${this._player.position.z}`
+                        document.getElementById("x")!.innerText = `X: ${this._player.position.x}`
+                        document.getElementById("y")!.innerText = `Y: ${this._player.position.y}`
+                        document.getElementById("z")!.innerText = `Z: ${this._player.position.z}`
                     }
                 }
             })
@@ -86,9 +81,20 @@ export class World {
             id, this._scene, this._canvas,
             this._playerCamera
         )
-        if (this._debug) document.getElementById("name").innerText = `Name: ${this._player.name}`
-        if (this._debug) document.getElementById("id").innerText = `UserID: ${this._player.id}`
+        if (this._debug) document.getElementById("name")!.innerText = `Name: ${this._player.name}`
+        if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.id}`
+        this._hotbar.inventory = this._player.inventory
+        /* TEMPORARILY ADDING ITEMS */
+        this._hotbar.add(new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket), 1)
+        this._hotbar.add(new PlayerItem(Items.dagger, this._player, this._hotbar, this._socket), 2)
+        this._hotbar.add(new PlayerItem(Items.shovel, this._player, this._hotbar, this._socket), 3)
+        this._hotbar.add(new PlayerItem(Items.spork, this._player, this._hotbar, this._socket), 5)
+        this._hotbar.add(new PlayerItem(Items.bandage, this._player, this._hotbar, this._socket), 10)
+        this._hotbar.add(new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket), 8)
+        this._hotbar.add(new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket), 7)
+        /* TEMPORARILY ADDED ITEMS */
         console.log("Created Main Player id: " + this._player.id)
+        console.log(this._player.inventory)
     }
 
     private _initPlayer(player: Player): void {
