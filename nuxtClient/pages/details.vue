@@ -128,7 +128,7 @@ body {
   height: 3rem;
   margin: auto;
   margin-top: 1rem;
-  font-size: x-large;
+  font-size: 1.5rem;
 }
 .customizeButton {
   width: 83%;
@@ -137,7 +137,7 @@ body {
   margin: auto;
   background-color: #feefdd;
   margin-bottom: 1rem;
-  font-size: xx-large;
+  font-size: 2.5rem;
 }
 .joinButton {
   width: 20rem;
@@ -147,7 +147,7 @@ body {
   margin-bottom: 0rem;
   margin-left: 5rem;
   background-color: #fd551b;
-  font-size: xxx-large;
+  font-size: 3rem;
 }
 .circle {
   background-color: #fd551b;
@@ -160,15 +160,17 @@ body {
 .chicken {
   height: 30rem;
   position: absolute;
-  top: 40%;
-  right: 35%;
+  top: 35%;
+  right: 38%;
 }
 /* The switch - the box around the slider */
 .switch {
-  position: relative;
+  position: absolute;
   display: inline-block;
   width: 60px;
   height: 34px;
+  top: 7%;
+  left: 90%;
 }
 
 /* Hide default HTML checkbox */
@@ -220,6 +222,9 @@ input:checked + .slider:before {
 /* Rounded sliders */
 .slider.round {
   border-radius: 34px;
+  margin-right: 0;
+  position: absolute;
+  left: 0;
 }
 
 .slider.round:before {
