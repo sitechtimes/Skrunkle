@@ -1,11 +1,16 @@
+// @ts-nocheck
+
 import { Vector3, UniversalCamera, Mesh, Scene, FreeCamera, MeshBuilder,  } from "@babylonjs/core"
+import type { Hotbar } from "../gui/hotbar";
+import { PlayerItem } from "../gui/items";
 import { Player } from "./player"
-import { box } from "../world/world"
- 
+
 export class MainPlayer extends Player {
 
     private _camera: FreeCamera;
     private _canvas: HTMLCanvasElement
+    private _inventory: Map<number, PlayerItem> = new Map()
+    private _hotbar: Hotbar
 
     constructor(
         name: string,
@@ -15,11 +20,12 @@ export class MainPlayer extends Player {
         rotation: Vector3,
         id: string,
         scene: Scene,
-        canvas: HTMLCanvasElement,
+        canvas: HTMLCanvasElement | null,
         freeCamera: FreeCamera,
     ) {
         super(name, health, exp, position, rotation, id, scene, {renderBody: false, mainPlayer: true});
 
+        //@ts-ignore
         this._canvas = canvas;
         // this.scene.gravity = new Vector3(0, -9.81, 0);
 
@@ -62,7 +68,7 @@ export class MainPlayer extends Player {
         return this._camera.rotation
     }
 
-    /* public set id(new_id: string){
-        this.id = new_id;
-    } */
+    public get inventory(): Map<number, PlayerItem> {
+        return this._inventory
+    }
 }
