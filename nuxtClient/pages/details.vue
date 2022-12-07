@@ -1,11 +1,11 @@
 <template>
-  <div class="body">
+  <div class="body" :class="[darkMode ? 'dark-mode' : 'light-mode']">
     <div class="wrap">
       <div class="wordLogo">
         <img src="~/assets/skrunkleWord.png" alt="Skrunkle" />
       </div>
       <label class="switch">
-        <input type="checkbox" />
+        <input type="checkbox" @click="toggleDark" />
         <span class="slider round"></span>
       </label>
     </div>
@@ -38,6 +38,22 @@
     </div>
   </div>
 </template>
+
+<script lang="ts">
+export default {
+  data() {
+    return {
+      darkMode: false,
+    };
+  },
+  methods: {
+    toggleDark() {
+      this.darkMode = !this.darkMode;
+    },
+  },
+};
+</script>
+
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
 * {
@@ -50,10 +66,16 @@
   margin-top: 3rem;
   text-align: center;
 }
-body {
-  background-image: url("assets/pattern.png");
+.body {
   background-size: 130vw;
+  height: 100vh;
   animation: animatedBackground 30s infinite linear alternate-reverse;
+}
+.light-mode {
+  background-image: url("assets/pattern.png");
+}
+.dark-mode {
+  background-image: url("assets/pattern2.png");
 }
 @keyframes animatedBackground {
   0% {
@@ -127,6 +149,7 @@ body {
   width: 83%;
   height: 3rem;
   margin: auto;
+  padding-left: 1.5rem;
   margin-top: 1rem;
   font-size: 1.5rem;
 }
