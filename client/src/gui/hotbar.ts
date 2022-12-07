@@ -135,6 +135,9 @@ export class Hotbar {
           break
       }
     }
+    onclick = () => {
+      this.current?.use()
+    }
   }
 
   // on scroll wheel
