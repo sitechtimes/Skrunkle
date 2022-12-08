@@ -2,7 +2,11 @@
   <div class="body" :class="[darkMode ? 'dark-mode' : 'light-mode']">
     <div class="wrap">
       <div class="wordLogo">
-        <img src="~/assets/skrunkleWord.png" alt="Skrunkle" />
+        <img
+          :class="[darkMode ? 'dark-mode-color-logo' : 'light-mode-color-logo']"
+          src="~/assets/skrunkleWord.png"
+          alt="Skrunkle"
+        />
       </div>
       <label class="switch">
         <input type="checkbox" @click="toggleDark" />
@@ -12,7 +16,10 @@
 
     <div class="main">
       <div class="main-left">
-        <div class="box1">
+        <div
+          class="box1"
+          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+        >
           <input
             class="enterName"
             type="text"
@@ -22,18 +29,32 @@
           />
           <button class="customizeButton">Customize</button>
         </div>
-        <div class="box2"></div>
+        <div
+          class="box2"
+          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+        ></div>
       </div>
 
       <div class="main-middle">
         <div class="characterCircle">
-          <div class="circle"></div>
+          <div
+            class="circle"
+            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+          ></div>
           <img class="chicken" src="~/assets/chicken.png" alt="" />
         </div>
-        <button class="joinButton">Join</button>
+        <button
+          class="joinButton"
+          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+        >
+          Join
+        </button>
       </div>
       <div class="main-right">
-        <div class="box3"></div>
+        <div
+          class="box3"
+          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+        ></div>
       </div>
     </div>
   </div>
@@ -76,6 +97,18 @@ export default {
 }
 .dark-mode {
   background-image: url("assets/pattern2.png");
+}
+.light-mode-color {
+  background-color: #fd551b !important;
+}
+.dark-mode-color {
+  background-color: #9b713a !important;
+}
+.light-mode-color-logo {
+  filter: hue-rotate(0deg);
+}
+.dark-mode-color-logo {
+  filter: hue-rotate(25deg);
 }
 @keyframes animatedBackground {
   0% {
@@ -229,11 +262,11 @@ export default {
 }
 
 input:checked + .slider {
-  background-color: #fd551b;
+  background-color: #9b713a;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #fd551b;
+  box-shadow: 0 0 1px #9b713a;
 }
 
 input:checked + .slider:before {
