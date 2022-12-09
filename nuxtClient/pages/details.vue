@@ -82,6 +82,7 @@ export default {
   padding: 0;
   margin: 0;
   font-family: "Titan One", cursive;
+  box-sizing: border-box;
 }
 .wordLogo {
   margin-top: 3rem;
@@ -100,15 +101,17 @@ export default {
 }
 .light-mode-color {
   background-color: #fd551b !important;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .dark-mode-color {
   background-color: #9b713a !important;
+  border: solid rgb(214, 194, 128) 5px !important;
 }
 .light-mode-color-logo {
   filter: hue-rotate(0deg);
 }
 .dark-mode-color-logo {
-  filter: hue-rotate(25deg);
+  filter: hue-rotate(26deg);
 }
 @keyframes animatedBackground {
   0% {
@@ -157,6 +160,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   margin-bottom: 1rem;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .box2 {
   background-color: #fd551b;
@@ -166,6 +170,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .box3 {
   background-color: #fd551b;
@@ -175,6 +180,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .enterName {
   background-color: #feefdd;
@@ -182,7 +188,7 @@ export default {
   width: 83%;
   height: 3rem;
   margin: auto;
-  padding-left: 1.5rem;
+  padding: 0rem 1.5rem 0rem 1.5rem;
   margin-top: 1rem;
   font-size: 1.5rem;
 }
@@ -194,6 +200,7 @@ export default {
   background-color: #feefdd;
   margin-bottom: 1rem;
   font-size: 2.5rem;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .joinButton {
   width: 20rem;
@@ -204,6 +211,7 @@ export default {
   margin-left: 5rem;
   background-color: #fd551b;
   font-size: 3rem;
+  border: solid rgb(247, 247, 247) 5px;
 }
 .circle {
   background-color: #fd551b;
