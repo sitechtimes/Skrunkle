@@ -27,7 +27,12 @@
             id="name"
             name="name"
           />
-          <button class="customizeButton">Customize</button>
+          <button
+            class="customizeButton"
+            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+          >
+            Customize
+          </button>
         </div>
         <div
           class="box2"
