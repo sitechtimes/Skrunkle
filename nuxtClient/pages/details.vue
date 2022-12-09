@@ -29,7 +29,9 @@
           />
           <button
             class="customizeButton"
-            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+            :class="[
+              darkMode ? 'dark-mode-color-button' : 'light-mode-color-button',
+            ]"
           >
             Customize
           </button>
@@ -50,7 +52,9 @@
         </div>
         <button
           class="joinButton"
-          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+          :class="[
+            darkMode ? 'dark-mode-color-button' : 'light-mode-color-button',
+          ]"
         >
           Join
         </button>
@@ -112,11 +116,19 @@ export default {
   background-color: #9b713a !important;
   border: solid rgb(214, 194, 128) 5px !important;
 }
+.light-mode-color-button {
+  border: solid #fff2d8 5px !important;
+  background-color: #f1b441 !important;
+}
+.dark-mode-color-button {
+  border: solid #f7b148 5px !important;
+  background-color: #e0761e !important;
+}
 .light-mode-color-logo {
   filter: hue-rotate(0deg);
 }
 .dark-mode-color-logo {
-  filter: hue-rotate(26deg);
+  filter: hue-rotate(27deg);
 }
 @keyframes animatedBackground {
   0% {
