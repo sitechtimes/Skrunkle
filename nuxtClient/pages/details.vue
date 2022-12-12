@@ -128,7 +128,7 @@ export default {
   filter: hue-rotate(0deg);
 }
 .dark-mode-color-logo {
-  filter: hue-rotate(27deg);
+  filter: hue-rotate(23deg);
 }
 @keyframes animatedBackground {
   0% {
