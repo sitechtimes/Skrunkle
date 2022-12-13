@@ -1,5 +1,5 @@
 <template>
-  <html xmlns="http://www.w3.org/1999/xhtml">
+  <html>
     <body>
       <div class="customLoadingScreenDiv">
         <img alt="skrunkle logo" class="chicken" src="~/assets/skrunkler.gif" />
@@ -18,7 +18,7 @@
   </html>
 </template>
 
-<style >
+<style>
 * {
   overflow: hidden;
   padding: 0;

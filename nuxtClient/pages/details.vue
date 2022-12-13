@@ -35,6 +35,7 @@
           >
             Customize
           </button>
+          <button class="signInButton">Sign In</button>
         </div>
         <div
           class="box2"
@@ -56,6 +57,7 @@
             darkMode ? 'dark-mode-color-button' : 'light-mode-color-button',
           ]"
         >
+          <img class="play" src="~/assets/play.png" alt="play button" />
           Join
         </button>
       </div>
@@ -138,18 +140,6 @@ export default {
     background-position: 100% 0; /* The image width */
   }
 }
-.theme-light {
-  --color-primary: #feefdd;
-  --color-secondary: #000000;
-  --color-accent: #fd551b;
-  --font-color: #000000;
-}
-.theme-dark {
-  --color-primary: #feefdd;
-  --color-secondary: #fce762;
-  --color-accent: #fd551b;
-  --font-color: #000000;
-}
 .main {
   display: flex;
   justify-content: center;
@@ -157,7 +147,7 @@ export default {
 }
 .main-left {
   width: 25%;
-  margin-left: 5rem;
+  margin-left: 4rem;
   margin-right: 15rem;
 }
 .main-middle {
@@ -166,13 +156,13 @@ export default {
 }
 .main-right {
   width: 25%;
-  margin-right: 5rem;
+  margin-right: 4rem;
 }
 .box1 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 35%;
+  height: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -183,7 +173,7 @@ export default {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 62%;
+  height: 57%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -207,6 +197,7 @@ export default {
   margin: auto;
   padding: 0rem 1.5rem 0rem 1.5rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
 }
 .customizeButton {
@@ -216,19 +207,32 @@ export default {
   margin: auto;
   background-color: #feefdd;
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: 2rem;
+  border: solid rgb(247, 247, 247) 5px;
+}
+.signInButton {
+  width: 83%;
+  border-radius: 35px;
+  height: 4rem;
+  margin: auto;
+  background-color: #feefdd;
+  margin-bottom: 1rem;
+  font-size: 2rem;
   border: solid rgb(247, 247, 247) 5px;
 }
 .joinButton {
   width: 20rem;
   border-radius: 35px;
-  height: 6rem;
+  height: 7rem;
   margin: 2rem;
   margin-bottom: 0rem;
   margin-left: 5rem;
   background-color: #fd551b;
-  font-size: 3rem;
+  font-size: 4rem;
   border: solid rgb(247, 247, 247) 5px;
+}
+.play {
+  width: 3rem;
 }
 .circle {
   background-color: #fd551b;

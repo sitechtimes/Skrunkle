@@ -6,6 +6,18 @@
     "chunkName": "pages/details"
   },
   {
+    "name": "intro",
+    "path": "/intro",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\intro.vue",
+    "chunkName": "pages/intro"
+  },
+  {
+    "name": "signin",
+    "path": "/signin",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\signin.vue",
+    "chunkName": "pages/signin"
+  },
+  {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\index.vue",
