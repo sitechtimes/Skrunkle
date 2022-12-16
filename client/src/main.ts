@@ -1,5 +1,7 @@
-import { World } from "./world/world"
+import { World } from "./world/world";
 
-const world = new World(<HTMLCanvasElement> document.getElementById("renderCanvas"))
+const world = new World(
+  <HTMLCanvasElement>document.getElementById("renderCanvas")
+);
 
-world.init()
+world.init();

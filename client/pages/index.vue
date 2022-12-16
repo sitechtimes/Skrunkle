@@ -1,3 +1,24 @@
+<template>
+  <html xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+      <div class="customLoadingScreenDiv">
+        <img alt="skrunkle logo" class="chicken" src="~/assets/skrunkler.gif" />
+        <div class="load"></div>
+      </div>
+
+      <div id="debug">
+        <p id="name"></p>
+        <p id="id"></p>
+        <p id="pcount"></p>
+        <p id="x"></p>
+        <p id="y"></p>
+        <p id="z"></p>
+      </div>
+    </body>
+  </html>
+</template>
+
+<style>
 * {
   overflow: hidden;
   padding: 0;
@@ -11,7 +32,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  display: none;
 }
 .hello {
   width: 100vw;
@@ -28,6 +48,8 @@
   margin-right: auto;
   width: 35%;
   height: auto;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 .load {
   display: block;
@@ -48,3 +70,4 @@
   left: 0;
   z-index: 999;
 }
+</style>
