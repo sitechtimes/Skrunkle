@@ -76,7 +76,7 @@ export class SocketServer {
               }
               break
             case "Impulse":
-              this.world.apply_impulse_player(msg.uid, msg.payload[0].impulse)
+              this.world.move_player(msg.uid, msg.payload[0].impulse)
               break
             case "Info":
               this.setPlayer(msg.uid, msg.payload[0])

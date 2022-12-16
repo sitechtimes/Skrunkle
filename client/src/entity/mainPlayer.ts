@@ -30,10 +30,12 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
     init(element: any): void{
 
         const handleKeyDown = (event:any)=>{
+
+            console.log(this.camera.position)
         
-            if (event.keyCode == 87) this.changeX = this.change;
+            if (event.keyCode == 87) this.changeX = -this.change;
             else if (event.keyCode == 65) this.changeZ = -this.change;
-            else if (event.keyCode == 83) this.changeX = -this.change;
+            else if (event.keyCode == 83) this.changeX = this.change;
             else if (event.keyCode == 68) this.changeZ = this.change;
 
         }
@@ -50,13 +52,14 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
     }
 
     checkInputs(): void {
-        // handleFreeCameraInputs.apply(this)
         // this.playerReference._calculateForce()
         if (this.playerReference && this.socketReference){
             console.log(`change x: ${this.changeX}, change z: ${this.changeZ}`)
-            let impulseDirection: Vector3 = new Vector3(this.changeX, 0, this.changeZ)
-            this.socketReference.send(new Packet(PacketType.impulse, [{impulse: impulseDirection}], this.playerReference.id))
+            let movementDirection: Vector3 = new Vector3(this.changeX, 0, this.changeZ)
+            this.socketReference.send(new Packet(PacketType.impulse, [{impulse: movementDirection}], this.playerReference.id))
         }
+        // handleFreeCameraInputs.apply(this)
+        // console.log(this.camera.rotation.y%Math.PI)
     }
 }
 

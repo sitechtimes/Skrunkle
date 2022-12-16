@@ -82,7 +82,7 @@ var World = /** @class */ (function () {
     };
     World.prototype.add_players = function (id) {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
-        playerMesh.position = new babylonjs_1.Vector3(0, 100, 0);
+        playerMesh.position = new babylonjs_1.Vector3(0, 5, 0);
         playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         this.players.set(id, playerMesh);
     };
@@ -101,16 +101,12 @@ var World = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    World.prototype.apply_impulse_player = function (id, impulse_vector) {
-        var scale = 1e2;
+    World.prototype.move_player = function (id, change_vector) {
+        var scale = 0.5;
         var playerMesh = this.players.get(id);
-        var scaledVector = new babylonjs_1.Vector3(impulse_vector._x * scale, impulse_vector._y, impulse_vector._z * scale);
-        // y no scale yet
-        if (playerMesh) {
-            console.log("Applied impulse: { x: ".concat(scaledVector._x, ", y: ").concat(scaledVector._y, ", z: ").concat(scaledVector._z, " }"));
-            playerMesh.physicsImposter.applyImpulse(scaledVector, playerMesh.getAbsolutePosition().add(babylonjs_1.Vector3.Zero()));
-            this.players.set(id, playerMesh);
-        }
+        playerMesh.position.x += change_vector._x * scale;
+        playerMesh.position.y += change_vector._y * scale;
+        playerMesh.position.z += change_vector._z * scale;
     };
     return World;
 }());

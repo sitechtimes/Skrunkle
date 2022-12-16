@@ -77,7 +77,7 @@ export class World{
 
     public add_players(id: string): void{
         let playerMesh: any = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
-        playerMesh.position = new Vector3(0, 100, 0)
+        playerMesh.position = new Vector3(0, 5, 0)
         playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         this.players.set(id, playerMesh)
     }
@@ -96,16 +96,14 @@ export class World{
         })
     }
 
-    public apply_impulse_player(id: string, impulse_vector: Vector3): void{
-        const scale = 1e2
+    public move_player(id: string, change_vector: Vector3): void{
+
+        const scale = 0.5
         let playerMesh: Mesh | undefined = this.players.get(id)
-        let scaledVector = new Vector3(impulse_vector._x * scale, impulse_vector._y , impulse_vector._z * scale) 
-        // y no scale yet
-        if (playerMesh){
-            console.log(`Applied impulse: { x: ${scaledVector._x}, y: ${scaledVector._y}, z: ${scaledVector._z} }`)
-            playerMesh.physicsImposter.applyImpulse(scaledVector, playerMesh.getAbsolutePosition().add(Vector3.Zero()))
-            this.players.set(id, playerMesh)
-        }
+        
+        playerMesh!.position.x += change_vector._x * scale
+        playerMesh!.position.y += change_vector._y * scale
+        playerMesh!.position.z += change_vector._z * scale
     }
     
 }

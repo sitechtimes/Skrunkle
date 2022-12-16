@@ -54,7 +54,7 @@ var SocketServer = /** @class */ (function () {
                             }
                             break;
                         case "Impulse":
-                            _this.world.apply_impulse_player(msg.uid, msg.payload[0].impulse);
+                            _this.world.move_player(msg.uid, msg.payload[0].impulse);
                             break;
                         case "Info":
                             _this.setPlayer(msg.uid, msg.payload[0]);
