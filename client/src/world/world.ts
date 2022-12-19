@@ -118,7 +118,8 @@ export class World {
     this._hotbar = this._GUI.hotbar;
 
     this._scene.executeWhenReady(() => {
-      // this._socket.send(new Packet(PacketType.info, [this._player], ""));
+      console.log(this._player)
+      this._socket.send(new Packet(PacketType.info, [this._player], ""));
 
       this._engine.runRenderLoop(() => {
         this._scene.render();

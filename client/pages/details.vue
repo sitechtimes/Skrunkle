@@ -77,7 +77,8 @@ export default {
       this.darkMode = !this.darkMode;
     },
     routePlay() {
-      this.$router.push('/play')
+      // doesn't work with router.push
+      window.location.href = '/play' 
     }
   }
 };
@@ -220,6 +221,7 @@ export default {
   background-color: #fd551b;
   font-size: 3rem;
   border: solid rgb(247, 247, 247) 5px;
+  cursor: pointer;
 }
 .circle {
   background-color: #fd551b;
