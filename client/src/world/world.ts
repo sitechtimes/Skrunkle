@@ -118,8 +118,8 @@ export class World {
     this._hotbar = this._GUI.hotbar;
 
     this._scene.executeWhenReady(() => {
-      console.log(this._player)
-      this._socket.send(new Packet(PacketType.info, [this._player], ""));
+      // TODO: Find out a way to avoid circular JSON error below. This never used to happen
+      // this._socket.send(new Packet(PacketType.info, [this._player], ""));
 
       this._engine.runRenderLoop(() => {
         this._scene.render();

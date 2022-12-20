@@ -21,7 +21,7 @@ export class Player {
   private _rotation: Vector3;
   private _id: string;
   private _body: Mesh | TransformNode = new TransformNode("player-mesh");
-  #_scene: Scene;
+  private _scene: Scene;
   private _nametag: Mesh;
   private _nametag_y_offset: number = 0.5;
   private _inventory: Map<number, PlayerItem> = new Map();
@@ -43,7 +43,7 @@ export class Player {
     this._health = health;
     this._exp = exp;
     this._id = id;
-    this.#_scene = scene;
+    this._scene = scene;
 
     this._loadBody(options);
     this._position = position;
@@ -54,16 +54,16 @@ export class Player {
       this._nametag = MeshBuilder.CreatePlane(
         "NamePlane",
         { width: 2, height: 2 },
-        this.#_scene
+        this._scene
       ); // fix ltr
       let planeMat: StandardMaterial = new StandardMaterial(
         "NameTagMaterialMaterial",
-        this.#_scene
+        this._scene
       );
       let planeTexture: DynamicTexture = new DynamicTexture(
         "NametagTexture",
         { width: 750, height: 256 },
-        this.#_scene
+        this._scene
       );
       planeTexture.getContext();
       planeTexture.hasAlpha = true;
@@ -96,14 +96,14 @@ export class Player {
         "",
         "meshes/",
         "player.babylon",
-        this.#_scene
+        this._scene
       );
       this._setBody(bodies);
     }
   }
 
   private _setBody(scene: any) {
-    let parent: TransformNode = new Mesh("player-group", this.#_scene);
+    let parent: TransformNode = new Mesh("player-group", this._scene);
     for (let child of scene.meshes) {
       child.position = new Vector3(0, 0, 0);
       child.parent = parent;
@@ -189,7 +189,7 @@ export class Player {
   }
 
   protected get scene(): Scene {
-    return this.#_scene;
+    return this._scene;
   }
 
   public get inventory(): Map<number, PlayerItem> {

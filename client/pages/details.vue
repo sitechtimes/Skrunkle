@@ -48,7 +48,8 @@
           ></div>
           <img class="chicken" src="~/assets/chicken.png" alt="" />
         </div>
-        <button @click="routePlay"
+        <button
+          @click="routePlay"
           class="joinButton"
           :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
         >
@@ -78,9 +79,9 @@ export default {
     },
     routePlay() {
       // doesn't work with router.push
-      window.location.href = '/play' 
-    }
-  }
+      window.location.href = "/play";
+    },
+  },
 };
 </script>
 
