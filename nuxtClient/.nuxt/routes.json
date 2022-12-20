@@ -3,35 +3,30 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\details.vue",
-    "chunkName": "pages/details",
-    "_name": "_2b7063fc"
+    "chunkName": "pages/details"
   },
   {
     "name": "fake",
     "path": "/fake",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\fake.vue",
-    "chunkName": "pages/fake",
-    "_name": "_2acc2aea"
+    "chunkName": "pages/fake"
   },
   {
     "name": "intro",
     "path": "/intro",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\intro.vue",
-    "chunkName": "pages/intro",
-    "_name": "_619a53a6"
+    "chunkName": "pages/intro"
   },
   {
     "name": "signin",
     "path": "/signin",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\signin.vue",
-    "chunkName": "pages/signin",
-    "_name": "_565844d8"
+    "chunkName": "pages/signin"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_04f319e8"
+    "chunkName": "pages/index"
   }
 ]
