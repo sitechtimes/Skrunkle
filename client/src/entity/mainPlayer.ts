@@ -31,26 +31,44 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
 
         const handleKeyDown = (event:any)=>{
 
-            console.log(this.camera.position)
-        
+            let rotation:number = this.camera.rotation.y%(2*Math.PI)
+
+            let left: boolean = false
+            let front: boolean = false
+
+            //                              0
+            //                              |
+            //                              |
+            //                              |
+            //                              |
+            // (1.5pi / -0.5pi) - - - - - - - - - - - - - (0.5pi)
+            //                              |
+            //                              |
+            //                              |
+            //                              |
+            //                              pi
+
+            
+            if ( (rotation < 0 && Math.abs(rotation) < Math.PI) || ( rotation > Math.PI && rotation < 2*Math.PI)) left = true
+            
             if (event.keyCode == 87) this.changeX = -this.change;
             else if (event.keyCode == 65) this.changeZ = -this.change;
             else if (event.keyCode == 83) this.changeX = this.change;
             else if (event.keyCode == 68) this.changeZ = this.change;
-
+            
         }
-
+        
         const handleKeyUp = (event: any)=>{
             this.changeX = 0;
             this.changeZ = 0
         }
-
+        
         element.addEventListener("keydown", handleKeyDown, false);
         element.addEventListener("keyup", handleKeyUp, false);
-
+        
         console.log("init")
     }
-
+    
     checkInputs(): void {
         // this.playerReference._calculateForce()
         if (this.playerReference && this.socketReference){
@@ -59,7 +77,6 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
             this.socketReference.send(new Packet(PacketType.impulse, [{impulse: movementDirection}], this.playerReference.id))
         }
         // handleFreeCameraInputs.apply(this)
-        // console.log(this.camera.rotation.y%Math.PI)
     }
 }
 
