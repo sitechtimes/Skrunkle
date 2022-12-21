@@ -2,9 +2,9 @@
   <html>
     <body>
       <div class="container video-header">
-        <!--  <video id="background-video" autoplay loop muted>
+        <video id="background-video" autoplay loop muted>
           <source src="~/assets/treeBacco.mp4" type="video/mp4" />
-        </video> -->
+        </video>
         <div class="viewport-header">
           <h1>SKRUNKLE</h1>
           <h2>Go getem</h2>
@@ -59,7 +59,20 @@ body {
   margin: 0;
   font-family: "Titan One", cursive;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
+#background-video {
+  height: 100vh;
+  width: 100vw;
+  object-fit: cover;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
 :root {
   --color: #333;
 }
@@ -70,13 +83,12 @@ body {
 .container {
   text-align: center;
   color: var(--color);
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url("assets/bac1.jpg");
   background-size: cover;
   background-position: center;
 
@@ -116,7 +128,7 @@ a {
 }
 
 .second {
-  background-image: url(https://images.unsplash.com/photo-1514496959998-c01c40915c5f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1740&q=80);
+  background-image: url("assets/bac1.jpg");
   background-attachment: fixed;
   height: 1200px;
 }
