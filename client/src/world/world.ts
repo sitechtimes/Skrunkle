@@ -119,7 +119,8 @@ export class World {
 
     this._scene.executeWhenReady(() => {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
-      // this._socket.send(new Packet(PacketType.info, [this._player], ""));
+      let {_scene, bodyRef} = this._player!._body
+      // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: this._player!._body}], ""));
 
       this._engine.runRenderLoop(() => {
         this._scene.render();
