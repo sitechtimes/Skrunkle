@@ -49,7 +49,13 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
             //                              pi
 
             
-            if ( (rotation < 0 && Math.abs(rotation) < Math.PI) || ( rotation > Math.PI && rotation < 2*Math.PI)) left = true
+            if ( (rotation < 0 && Math.abs(rotation) < Math.PI) || ( rotation > Math.PI && rotation < 2*Math.PI) ) left = true
+            if ( (rotation > 0 && rotation < 0.5 * Math.PI) || (rotation > 1.5 * Math.PI && rotation < 2* Math.PI) ) front = true
+
+            if (!left && front) console.log("1") // top right
+            else if (!left && !front) console.log("2") // bottom right
+            else if (left && !front) console.log("3") // left bottom
+            else if (left && front) console.log("4") // top left
             
             if (event.keyCode == 87) this.changeX = -this.change;
             else if (event.keyCode == 65) this.changeZ = -this.change;
@@ -72,7 +78,7 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
     checkInputs(): void {
         // this.playerReference._calculateForce()
         if (this.playerReference && this.socketReference){
-            console.log(`change x: ${this.changeX}, change z: ${this.changeZ}`)
+            // console.log(`change x: ${this.changeX}, change z: ${this.changeZ}`)
             let movementDirection: Vector3 = new Vector3(this.changeX, 0, this.changeZ)
             this.socketReference.send(new Packet(PacketType.impulse, [{impulse: movementDirection}], this.playerReference.id))
         }
