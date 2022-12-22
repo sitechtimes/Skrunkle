@@ -1,7 +1,7 @@
 <template>
   <html>
     <body>
-      <div class="container video-header">
+      <div class="container">
         <video id="background-video" autoplay loop muted>
           <source src="~/assets/treeBacco.mp4" type="video/mp4" />
         </video>
@@ -47,6 +47,7 @@
           </div>
         </div>
       </div>
+      <div class="container third"></div>
     </body>
   </html>
 </template>
@@ -132,7 +133,11 @@ a {
   background-attachment: fixed;
   height: 1200px;
 }
-
+.third {
+  background-image: url("assets/bac2.jpg");
+  background-attachment: fixed;
+  height: 1200px;
+}
 h3 {
   font-weight: 700;
   font-size: 1.6rem;
