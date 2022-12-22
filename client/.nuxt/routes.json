@@ -3,21 +3,18 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
-    "chunkName": "pages/details",
-    "_name": "_2431bccf"
+    "chunkName": "pages/details"
   },
   {
     "name": "play",
     "path": "/play",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
-    "chunkName": "pages/play",
-    "_name": "_2dce26f7"
+    "chunkName": "pages/play"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_634436c2"
+    "chunkName": "pages/index"
   }
 ]
