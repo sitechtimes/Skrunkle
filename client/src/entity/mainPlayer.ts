@@ -31,10 +31,14 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
 
         const handleKeyDown = (event:any)=>{
 
-            let rotation:number = this.camera.rotation.y%(2*Math.PI)
+            let rotation:number = this.camera.rotation.y
 
             let left: boolean = false
             let front: boolean = false
+
+            let sin = Math.sin(rotation);
+            let cos = Math.cos(rotation);
+            let tan = Math.tan(rotation);
 
             //                              0
             //                              |
@@ -48,9 +52,9 @@ class CustomInput extends FreeCameraKeyboardMoveInput {
             //                              |
             //                              pi
 
-            
-            if ( (rotation < 0 && Math.abs(rotation) < Math.PI) || ( rotation > Math.PI && rotation < 2*Math.PI) ) left = true
-            if ( (rotation > 0 && rotation < 0.5 * Math.PI) || (rotation > 1.5 * Math.PI && rotation < 2* Math.PI) ) front = true
+            if (sin > 0 && cos > 0 && tan > 0){
+                console.log("A")
+            } else if ()
 
             if (!left && front) console.log("1") // top right
             else if (!left && !front) console.log("2") // bottom right
