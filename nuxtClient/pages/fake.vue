@@ -6,46 +6,19 @@
           <source src="~/assets/treeBacco.mp4" type="video/mp4" />
         </video>
         <div class="viewport-header">
-          <h1>SKRUNKLE</h1>
-          <h2>Go getem</h2>
-          <button>play now</button>
+          <img src="~/assets/skrunkleWord.png" alt="skrunk logo" class="logo" />
+          <h2 class="slogan">GO GETEM'</h2>
+          <button class="buttonsty">play now</button>
         </div>
       </div>
-
       <div class="container second">
-        <div class="item">
-          <div class="img img-first"></div>
-          <div class="card">
-            <h3>Rock climbing</h3>
-            <p>
-              The goal is to reach the summit of a formation or the endpoint of
-              a usually pre-defined route without falling
-            </p>
-            <a href="#">Learn more</a>
-          </div>
-        </div>
-        <div class="item">
-          <div class="img img-second"></div>
-          <div class="card">
-            <h3>Caving</h3>
-            <p>
-              Exploring underground through networks of tunnels and passageways,
-              which can be natural or artificial.
-            </p>
-            <a href="#">Learn more</a>
-          </div>
-        </div>
-        <div class="item">
-          <div class="img img-third"></div>
-          <div class="card">
-            <h3>Parachuting</h3>
-            <p>
-              Jumping from an aeroplane and falling through the air before
-              opening your parachute.
-            </p>
-            <a href="#">Learn more</a>
-          </div>
-        </div>
+        <h2>SURVIVE IN A HOSTILE OPEN WORLD</h2>
+        <p>
+          Explore a vast open world, rendered with the award-winning Apex
+          engine, featuring a full day/night cycle with unpredictable weather,
+          complex AI behavior, simulated ballistics, highly realistic acoustics,
+          and a dynamic 1980’s soundtrack.
+        </p>
       </div>
       <div class="container third"></div>
     </body>
@@ -62,6 +35,38 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+.slogan {
+  font-size: 3rem;
+  margin: 0rem 0rem 3rem 0rem;
+  padding: 0;
+}
+.logo {
+  width: 30rem;
+}
+.buttonsty {
+  font-family: "Open Sans", sans-serif;
+  font-size: 16px;
+  letter-spacing: 2px;
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #000;
+  cursor: pointer;
+  border: 3px solid;
+  padding: 0.25em 0.5em;
+  box-shadow: 1px 1px 0px 0px, 2px 2px 0px 0px, 3px 3px 0px 0px, 4px 4px 0px 0px,
+    5px 5px 0px 0px;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.buttonsty:active {
+  box-shadow: 0px 0px 0px 0px;
+  top: 5px;
+  left: 5px;
+}
+
 #background-video {
   height: 100vh;
   width: 100vw;
@@ -74,16 +79,12 @@ body {
   z-index: -1;
 }
 
-:root {
-  --color: #333;
-}
 body {
   font-family: "Red Hat Text", sans-serif;
 }
 
 .container {
   text-align: center;
-  color: var(--color);
   width: 100vw;
   min-height: 100vh;
   display: flex;
@@ -93,7 +94,6 @@ body {
   background-size: cover;
   background-position: center;
 
-  /*  this is where the magic happens:  */
   background-attachment: fixed;
 }
 
@@ -106,26 +106,6 @@ p {
   max-width: 52ch;
   line-height: 1.5;
   padding: 1em;
-}
-
-a {
-  display: inline-block;
-  padding: 1em 3.5em;
-  background-color: var(--color);
-  color: white;
-  text-decoration: none;
-  text-transform: uppercase;
-  border-radius: 0.3em;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  font-size: 0.875rem;
-}
-
-.blank,
-.other {
-  width: 100%;
-  min-height: 60vh;
-  background-color: var(--color);
 }
 
 .second {
@@ -144,32 +124,6 @@ h3 {
   margin-top: 1em;
 }
 
-.card > a {
-  margin-bottom: 2em;
-}
-
-.item {
-  display: flex;
-  max-width: 320px;
-  background-color: white;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 0.5em;
-  -webkit-box-shadow: 0px 29px 38px -15px rgba(0, 0, 0, 0.43);
-  -moz-box-shadow: 0px 29px 38px -15px rgba(0, 0, 0, 0.43);
-  box-shadow: 0px 29px 38px -15px rgba(0, 0, 0, 0.43);
-}
-
-.img {
-  width: 90%;
-  height: 200px;
-  background-color: lightgrey;
-  background-size: cover;
-  background-position: center;
-  margin-top: 20px;
-  border-radius: 0.3em;
-}
-
 .img-first {
   background-image: url(https://images.unsplash.com/photo-1522163182402-834f871fd851?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1606&q=80);
 }
@@ -180,10 +134,5 @@ h3 {
 
 .img-third {
   background-image: url(https://images.unsplash.com/photo-1632853073412-782bf0279d65?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80);
-}
-
-.second {
-  flex-direction: row;
-  gap: 1.6em;
 }
 </style>
