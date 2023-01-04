@@ -18,6 +18,7 @@ import { Player } from "../entity/player";
 import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
+import { Generation } from "./generation";
 
 export class World {
   private _engine: Engine;
@@ -37,6 +38,7 @@ export class World {
   private _pickedup: boolean;
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
+  private _generator: Generation
 
   constructor(canvas: HTMLCanvasElement | null) {
     this._canvas = canvas;
@@ -45,6 +47,7 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this);
+    this._generator = new Generation(this, this._scene);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
     this._pickup = false;
@@ -102,17 +105,8 @@ export class World {
     this._GUI.createHotbar();
     this._hotbar = this._GUI.hotbar;
     console.log(this._hotbar);
-    let item = MeshBuilder.CreateCylinder("item", { height: 5, diameter: 3 });
-    item.position.x = 3;
-    item.position.y = 1;
-    item.position.z = 10;
-    item.metadata = "item";
-    var myMat = new StandardMaterial("myMat", this._scene);
-    myMat.specularColor = new Color3(0.15, 0.76, 0.9);
-    myMat.diffuseColor = new Color3(0.95, 0.16, 0.9);
-    myMat.emissiveColor = new Color3(1, 0.1, 1);
-    myMat.ambientColor = new Color3(0.58, 0.6, 0.9);
-    item.material = myMat;
+    
+    this._generator.RANDOMIZE(this._generator.GENERATE.TestCyclinder())
 
     this._GUI.createHotbar();
     this._hotbar = this._GUI.hotbar;
