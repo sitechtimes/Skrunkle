@@ -149,7 +149,9 @@ export class World {
     }   
     private _castLookingRay(){
         var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
-        var hit = this._scene.pickWithRay(dray);
+        var hit: any | null = this._scene.pickWithRay(dray);
+
+        if (hit == null || hit.pickedMesh == null) return
         
         // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
         if (hit.pickedMesh && hit.pickedMesh.metadata == "item" || hit.pickedMesh.metadata == "obox" || hit.pickedMesh.metadata == "box"){
