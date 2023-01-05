@@ -106,7 +106,7 @@ export class World {
     this._hotbar = this._GUI.hotbar;
     console.log(this._hotbar);
     
-    this._generator.RANDOMIZE(this._generator.GENERATE.TestCyclinder())
+    this._generator.RANDOMIZE(this._generator.GENERATE.TestCyclinder(), 30, 200)
 
     this._GUI.createHotbar();
     this._hotbar = this._GUI.hotbar;

@@ -29,11 +29,13 @@ export class Generation {
     }, 
   }
 
-  public RANDOMIZE(item: Mesh, number: number = 5) {
-    for (let i = 1; i <= number; i++) {
-      let newItem = item.clone(`${item.name}-${i}`)
-      newItem.position.x = 10*i
-      newItem.position.y = 10*i
+  public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
+    item.position.x = (Math.random()*squareRange) - (squareRange/2)
+    item.position.z = (Math.random()*squareRange) - (squareRange/2)
+    for (let i = 1; i < count; i++) {
+      let newItem = item.clone(`${item.name}-${count}`)
+      newItem.position.x = (Math.random()*squareRange) - (squareRange/2)
+      newItem.position.z = (Math.random()*squareRange) - (squareRange/2)
     }
   }
 }
