@@ -16,10 +16,5 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
-  "types": [
-    "babylonjs",
-    "babylonjs-loaders",
-    ""
-  ],
   "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js"]
 }

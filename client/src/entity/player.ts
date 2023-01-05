@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 import { Mesh, Scene, MeshBuilder, Vector3, SceneLoader, TransformNode, DynamicTexture, Plane, StandardMaterial } from "@babylonjs/core"
-import { PlayerItem } from "../gui/items";
 
 export class Player {
 
@@ -15,7 +14,6 @@ export class Player {
     private _scene: Scene;
     private _nametag: Mesh;
     private _nametag_y_offset: number = 0.5;
-    private _inventory: Map<number, PlayerItem> = new Map()
 
     constructor(
         name: string,
@@ -117,11 +115,6 @@ export class Player {
         this._health = new_health;
     }
 
-    public heal(magnitude: number) {
-        this._health += magnitude
-        if (this._health > 100) this._health = 100
-    }
-
     public get exp(): number {
         return this._exp;
     }
@@ -145,10 +138,6 @@ export class Player {
 
     protected get scene(): Scene {
         return this._scene
-    }
-
-    public get inventory(): Map<number, PlayerItem> {
-        return this._inventory
     }
 
 }
