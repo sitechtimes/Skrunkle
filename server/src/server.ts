@@ -83,6 +83,9 @@ export class SocketServer {
               this.players.delete(msg.uid)
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
+            case "Interaction":
+              this.logger.log("Received interaction")
+              break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
               this.send(client, new Packet(PacketType.info, ['Pong!']))
