@@ -11,7 +11,7 @@ export class Player {
     private _position: Vector3;
     private _rotation: Vector3;
     private _id: string;
-    private _body: Mesh | TransformNode = new TransformNode("player-mesh");
+    protected _body: Mesh | TransformNode = new TransformNode("player-mesh");
     private _scene: Scene;
     private _nametag: Mesh;
     private _nametag_y_offset: number = 0.5;
