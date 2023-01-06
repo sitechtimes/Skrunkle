@@ -108,7 +108,7 @@ export class MainPlayer extends Player {
 
     public _sendMovement(): void{
         if (this.position && this._socket){
-            this._socket.send(new Packet(PacketType.movement, [{impulse: impulseDirection}], this.id))
+            this._socket.send(new Packet(PacketType.movement, [{position: this.position}], this.id))
         }
     }
 

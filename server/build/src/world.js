@@ -38,7 +38,10 @@ var World = /** @class */ (function () {
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
-        this._entities.push(babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene));
+        var box1 = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
+        box1.position.y = 20;
+        box1.physicsImposter = new babylonjs_1.PhysicsImpostor(box1, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        this._entities.push(box1);
         this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
@@ -84,6 +87,7 @@ var World = /** @class */ (function () {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
         playerMesh.position = new babylonjs_1.Vector3(0, 5, 0);
         playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        console.log(playerMesh.physicsImposter);
         this.players.set(id, playerMesh);
     };
     World.prototype.update_player = function (id, value) {

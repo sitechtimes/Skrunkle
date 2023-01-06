@@ -50,7 +50,7 @@ var SocketServer = /** @class */ (function () {
                             if (player !== null) {
                                 player.position = _this.world.validateEntityPosition(new babylonjs_1.Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z));
                                 msg.payload[0].position = player.position;
-                                _this.world.players.set(msg.uid, player);
+                                _this.world.update_player(msg.uid, player);
                                 _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
                             }
                             break;

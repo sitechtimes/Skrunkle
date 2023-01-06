@@ -24,7 +24,12 @@ export class World{
 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
         
-        this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
+        let box1: any = MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
+        box1.position.y = 20
+        box1.physicsImposter =  new PhysicsImpostor(box1, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+
+
+        this._entities.push(box1)
         this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
@@ -79,6 +84,7 @@ export class World{
         let playerMesh: any = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
         playerMesh.position = new Vector3(0, 5, 0)
         playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        console.log(playerMesh.physicsImposter)
         this.players.set(id, playerMesh)
     }
 

@@ -71,7 +71,7 @@ export class SocketServer {
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
                 msg.payload[0].position = player.position
-                this.world.players.set(msg.uid, player)
+                this.world.update_player(msg.uid, player)
                 this.broadCast(new Packet(PacketType.update, msg.payload[0]))
               }
               break
