@@ -8,7 +8,7 @@ export class Generation {
   constructor(world: World, scene: Scene) {
     this._world = world
     this._scene = scene
-    
+    console.log(this._world)
   }
 
   public GENERATE = {
