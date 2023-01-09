@@ -13,7 +13,7 @@ export class World {
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
     private _playerCamera: FreeCamera;
-    private _entities: any[] = [];
+    private _entities: Map<string, any>;
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;

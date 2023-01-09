@@ -1,5 +1,7 @@
 import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
+import { Entities } from './entity/entities';
+import { v4 as uuidv4 } from 'uuid';
 import * as cannon from "cannon-es";
 
 interface worldSize {
@@ -12,7 +14,7 @@ export class World{
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
-    private _entities: any[] = [];
+    private _entities: Map<string, Entities> = new Map();
     private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
@@ -24,15 +26,15 @@ export class World{
 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
         
-        let box1: any = MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
-        box1.position.y = 20
-        box1.physicsImposter =  new PhysicsImpostor(box1, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        let box: any =  MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
+        box.physicsImposter =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
 
 
-        this._entities.push(box1)
+        this._entities.set(uuidv4(), new Entities("Box test", new Vector3(0, 100, 0), box))
+
         this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
-        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene)
 
         // console.log(this._ground.position)
     }
@@ -70,6 +72,10 @@ export class World{
                 this._ticks_elapsed++;
 
                 // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
+
+                this._updateEntities()
+
+                console.log(this._entities.get(Array.from(this._entities.keys())[0])?.position.y)
             })
 
         })
@@ -80,11 +86,14 @@ export class World{
         
     }
 
+    public _updateEntities(): void{
+        // for ()
+    }
+
     public add_players(id: string): void{
         let playerMesh: any = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
         playerMesh.position = new Vector3(0, 5, 0)
         playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
-        console.log(playerMesh.physicsImposter)
         this.players.set(id, playerMesh)
     }
 

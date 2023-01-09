@@ -26,25 +26,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.World = void 0;
 var babylonjs_1 = require("babylonjs");
 var logger_1 = require("./logger");
+var entities_1 = require("./entity/entities");
+var uuid_1 = require("uuid");
 var cannon = __importStar(require("cannon-es"));
 var World = /** @class */ (function () {
     function World() {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
-        this._entities = [];
+        this._entities = new Map();
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(50, 50, 50), bottom: new babylonjs_1.Vector3(-50, 0, -50) };
         this.players = new Map();
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
-        var box1 = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
-        box1.position.y = 20;
-        box1.physicsImposter = new babylonjs_1.PhysicsImpostor(box1, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
-        this._entities.push(box1);
+        var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
+        box.physicsImposter = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
+        this._entities.set((0, uuid_1.v4)(), new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), box));
         this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
-        this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
+        this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene);
         // console.log(this._ground.position)
     }
     Object.defineProperty(World.prototype, "_get_tick", {
@@ -74,20 +75,25 @@ var World = /** @class */ (function () {
         this._scene.executeWhenReady(function () {
             _this.logger.progress("Scene is ready, running server side simulation");
             _this._engine.runRenderLoop(function () {
+                var _a;
                 _this._scene.render();
                 _this._ticks_elapsed++;
                 // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
+                _this._updateEntities();
+                console.log((_a = _this._entities.get(Array.from(_this._entities.keys())[0])) === null || _a === void 0 ? void 0 : _a.position.y);
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
             _this.logger.progress("Avg Server tick (".concat(_this._tick_time, " ms): ").concat(_this._get_tick));
         });
     };
+    World.prototype._updateEntities = function () {
+        // for ()
+    };
     World.prototype.add_players = function (id) {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
         playerMesh.position = new babylonjs_1.Vector3(0, 5, 0);
         playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
-        console.log(playerMesh.physicsImposter);
         this.players.set(id, playerMesh);
     };
     World.prototype.update_player = function (id, value) {
