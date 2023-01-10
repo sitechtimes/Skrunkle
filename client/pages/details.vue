@@ -29,10 +29,13 @@
           />
           <button
             class="customizeButton"
-            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+            :class="[
+              darkMode ? 'dark-mode-color-button' : 'light-mode-color-button',
+            ]"
           >
             Customize
           </button>
+          <button class="signInButton">Sign In</button>
         </div>
         <div
           class="box2"
@@ -46,13 +49,16 @@
             class="circle"
             :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
           ></div>
-          <img class="chicken" src="~/assets/chicken.png" alt="" />
+          <img class="chicken" src="../assets/chicken.png" alt="" />
         </div>
         <button
           @click="routePlay"
           class="joinButton"
-          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+          :class="[
+            darkMode ? 'dark-mode-color-button' : 'light-mode-color-button',
+          ]"
         >
+          <img class="play" src="../assets/play.png" alt="play button" />
           Join
         </button>
       </div>
@@ -78,9 +84,8 @@ export default {
       this.darkMode = !this.darkMode;
     },
     routePlay() {
-      // doesn't work with router.push
-      window.location.href = "/play";
-    },
+      window.location.href = "/play"
+    }
   },
 };
 </script>
@@ -104,10 +109,10 @@ export default {
   animation: animatedBackground 30s infinite linear alternate-reverse;
 }
 .light-mode {
-  background-image: url("assets/pattern.png");
+  background-image: url("../assets/pattern.png");
 }
 .dark-mode {
-  background-image: url("assets/pattern2.png");
+  background-image: url("../assets/pattern2.png");
 }
 .light-mode-color {
   background-color: #fd551b !important;
@@ -117,11 +122,19 @@ export default {
   background-color: #9b713a !important;
   border: solid rgb(214, 194, 128) 5px !important;
 }
+.light-mode-color-button {
+  border: solid #fff2d8 5px !important;
+  background-color: #f1b441 !important;
+}
+.dark-mode-color-button {
+  border: solid #f7b148 5px !important;
+  background-color: #e0761e !important;
+}
 .light-mode-color-logo {
   filter: hue-rotate(0deg);
 }
 .dark-mode-color-logo {
-  filter: hue-rotate(26deg);
+  filter: hue-rotate(23deg);
 }
 @keyframes animatedBackground {
   0% {
@@ -131,18 +144,6 @@ export default {
     background-position: 100% 0; /* The image width */
   }
 }
-.theme-light {
-  --color-primary: #feefdd;
-  --color-secondary: #000000;
-  --color-accent: #fd551b;
-  --font-color: #000000;
-}
-.theme-dark {
-  --color-primary: #feefdd;
-  --color-secondary: #fce762;
-  --color-accent: #fd551b;
-  --font-color: #000000;
-}
 .main {
   display: flex;
   justify-content: center;
@@ -150,7 +151,7 @@ export default {
 }
 .main-left {
   width: 25%;
-  margin-left: 5rem;
+  margin-left: 4rem;
   margin-right: 15rem;
 }
 .main-middle {
@@ -159,13 +160,13 @@ export default {
 }
 .main-right {
   width: 25%;
-  margin-right: 5rem;
+  margin-right: 4rem;
 }
 .box1 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 35%;
+  height: 40%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -176,7 +177,7 @@ export default {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
-  height: 62%;
+  height: 57%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -200,6 +201,7 @@ export default {
   margin: auto;
   padding: 0rem 1.5rem 0rem 1.5rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
 }
 .customizeButton {
@@ -209,20 +211,32 @@ export default {
   margin: auto;
   background-color: #feefdd;
   margin-bottom: 1rem;
-  font-size: 2.5rem;
+  font-size: 2rem;
+  border: solid rgb(247, 247, 247) 5px;
+}
+.signInButton {
+  width: 83%;
+  border-radius: 35px;
+  height: 4rem;
+  margin: auto;
+  background-color: #feefdd;
+  margin-bottom: 1rem;
+  font-size: 2rem;
   border: solid rgb(247, 247, 247) 5px;
 }
 .joinButton {
   width: 20rem;
   border-radius: 35px;
-  height: 6rem;
+  height: 7rem;
   margin: 2rem;
   margin-bottom: 0rem;
   margin-left: 5rem;
   background-color: #fd551b;
-  font-size: 3rem;
+  font-size: 4rem;
   border: solid rgb(247, 247, 247) 5px;
-  cursor: pointer;
+}
+.play {
+  width: 3rem;
 }
 .circle {
   background-color: #fd551b;
@@ -247,14 +261,12 @@ export default {
   top: 7%;
   left: 90%;
 }
-
 /* Hide default HTML checkbox */
 .switch input {
   opacity: 0;
   width: 0;
   height: 0;
 }
-
 /* The slider */
 .slider {
   position: absolute;
@@ -267,7 +279,6 @@ export default {
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
-
 .slider:before {
   position: absolute;
   content: "";
@@ -279,21 +290,17 @@ export default {
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
-
 input:checked + .slider {
   background-color: #9b713a;
 }
-
 input:focus + .slider {
   box-shadow: 0 0 1px #9b713a;
 }
-
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
 }
-
 /* Rounded sliders */
 .slider.round {
   border-radius: 34px;
@@ -301,7 +308,6 @@ input:checked + .slider:before {
   position: absolute;
   left: 0;
 }
-
 .slider.round:before {
   border-radius: 50%;
 }
