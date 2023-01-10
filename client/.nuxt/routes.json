@@ -2,36 +2,36 @@
   {
     "name": "details",
     "path": "/details",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
     "chunkName": "pages/details",
-    "_name": "_2431bccf"
+    "_name": "_469daace"
   },
   {
     "name": "intro",
     "path": "/intro",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\intro.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\intro.vue",
     "chunkName": "pages/intro",
-    "_name": "_3271c539"
+    "_name": "_26a61d83"
   },
   {
     "name": "play",
     "path": "/play",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
     "chunkName": "pages/play",
-    "_name": "_2dce26f7"
+    "_name": "_1ce89d6d"
   },
   {
     "name": "signin",
     "path": "/signin",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\signin.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\signin.vue",
     "chunkName": "pages/signin",
-    "_name": "_bf21f4b6"
+    "_name": "_32c5b69b"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
     "chunkName": "pages/index",
-    "_name": "_634436c2"
+    "_name": "_7adb862e"
   }
 ]
