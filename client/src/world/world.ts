@@ -7,13 +7,14 @@ import { Player } from '../entity/player';
 import { GUI } from '../gui/gui';
 import type { Hotbar } from '../gui/hotbar';
 import { Items, PlayerItem } from '../gui/items';
+import { Entities } from '../entity/entities';
 
 export class World {
     private _engine: Engine;
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
     private _playerCamera: FreeCamera;
-    private _entities: Map<string, any>;
+    private _entities: Map<string, Entities>;
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
@@ -107,7 +108,7 @@ export class World {
                 this._scene.render();
 
                 if (this._player) {
-                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.id, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.id))
+                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.uid, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.uid))
                     if (this._debug){
                         document.getElementById("x")!.innerText = `X: ${this._player.position.x}`
                         document.getElementById("y")!.innerText = `Y: ${this._player.position.y}`
@@ -125,13 +126,13 @@ export class World {
 
     private listen() {
         window.onunload = () => {
-            this._socket.close(this._player.id)
-            if (this._player?.id) this._socket?.close(this._player.id)
+            this._socket.close(this._player.uid)
+            if (this._player?.uid) this._socket?.close(this._player.uid)
         }
     }
 
     private _castRay(){
-        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+        var dray = this._scene.createPickingRay(960, 540, Matrix.uidentity(), this._playerCamera);	
         var hit = this._scene.pickWithRay(dray);
         // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
         if(this.chestOpen == false){
@@ -150,7 +151,7 @@ export class World {
         }
     }   
     private _castLookingRay(){
-        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+        var dray = this._scene.createPickingRay(960, 540, Matrix.uidentity(), this._playerCamera);	
         var hit: any | null = this._scene.pickWithRay(dray);
 
         if (hit == null || hit.pickedMesh == null) return
@@ -188,7 +189,7 @@ export class World {
                 this._playerCamera
             )
             if (this._debug) document.getElementById("name")!.innerText = `Name: ${this._player.name}`
-            if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.id}`
+            if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.uid}`
             this._hotbar.inventory = this._player.inventory
             /* TEMPORARILY ADDING ITEMS */
             this._hotbar.add(new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket), 1)
@@ -199,39 +200,49 @@ export class World {
             this._hotbar.add(new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket), 8)
             this._hotbar.add(new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket), 7)
             /* TEMPORARILY ADDED ITEMS */
-            console.log("Created Main Player id: " + this._player.id)
+            console.log("Created Main Player id: " + this._player.uid)
             console.log(this._player.inventory)
         
         }
 
     private _initPlayer(player: Player): void {
-        this._players.set(player.id, player)
+        this._players.set(player.uid, player)
     }
     public onSocketData(data: Packet): void {
         // console.log(data)
         switch (data?.type) {
             case "Update":
                 let playerData = data.payload
-                if (!this._players.has(playerData.id) && playerData.id != this._player.id){
+                let uid: string = data.uid
+                if (uid.charAt(0) == 'M'){// it is a mesh!
+                    if (this._entities.has(uid)){ 
+                        let entity: Entities = this._entities.get(uid)
+                        entity!.position = playerData.payload[0].position
+                        this._entities.set(uid, entity)
+                    }else{ // make it a mesh
+    
+                    }
+                }
+                if (!this._players.has(uid) && uid != this._player.uid){
                     let newPlayer: Player = new Player(
                         playerData.name, 
                         100, 
                         0, 
                         new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), 
                         new Vector3(playerData.position.x, playerData.position.y, playerData.position.z), 
-                        playerData.id, 
+                        uid, 
                         this._scene, 
                         {renderBody: true}
                     )
-                    this._players.set(playerData.id, newPlayer)
-                    console.log(`Player doesn't exist, creating a new player with id ${playerData.id}`)
-                } else if (playerData.id != this._player.id) {
-                    let player: Player = this._players.get(playerData.id)
+                    this._players.set(uid, newPlayer)
+                    console.log(`Player doesn't exist, creating a new player with id ${uid}`)
+                } else if (uid != this._player.uid) {
+                    let player: Player = this._players.get(uid)
                     player.position = playerData.position
                     player.rotation = playerData.rotation
-                    this._players.set(player.id, player)
+                    this._players.set(player.uid, player)
                     if (this._debug) document.getElementById("pcount").innerText = `Players online: ${this._players.size}`
-                }else if (playerData.id == this._player.id){
+                }else if (uid == this._player.uid){
                     this._player.position = new Vector3(playerData.position._x, playerData.position._y, playerData.position._z)
                 }
                 this._castLookingRay()
@@ -257,7 +268,7 @@ export class World {
                 //         })
                 //     }
                     if(this._pickedup==true){
-                        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
+                        var dray = this._scene.createPickingRay(960, 540, Matrix.uidentity(), this._playerCamera);	
                         var hit = this._scene.pickWithRay(dray);
                         let ray = this._playerCamera.getForwardRay()
                         let item = this._scene.getMeshByName(hit.pickedMesh.name)     
@@ -270,25 +281,26 @@ export class World {
                 var material = new StandardMaterial("box color", this._scene);
                 material.alpha = 1;
                 material.diffuseColor = new Color3(1.0, 0.2, 0.7);
-                for (let mesh of meshdata){
-                    console.log(mesh)
-                    let box = MeshBuilder.CreateBox(mesh.name, { size: 3, width: 3, height: 3}, this._scene)
-                    box.position = mesh.position
-                    box.metadata = "box"
-                    box.material = material; // <--
-                    this._entities.push(box)
-                }
+                console.log(meshdata)
+                // for (let mesh of meshdata){
+                //     console.log(mesh)
+                //     let box = MeshBuilder.CreateBox(mesh.name, { size: 3, width: 3, height: 3}, this._scene)
+                //     box.position = mesh.position
+                //     box.metadata = "box"
+                //     box.material = material; // <--
+                //     this._entities.push(box)
+                // }
                 break
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
                 // console.log(playerInfo)
-                if (this._player === null || this._player?.id === playerInfo.id) this._initClient(playerInfo._name, playerInfo._id)
+                if (this._player === null || this._player?.uid === playerInfo.uid) this._initClient(playerInfo._name, playerInfo._id)
                 else // init player
                 break
             case "Close":
-                let player: Player = this._players.get(data.payload[0].id)
+                let player: Player = this._players.get(data.payload[0].uid)
                 if (player) player.delete()
-                this._players.delete(data.payload[0].id)
+                this._players.delete(data.payload[0].uid)
                 break
             default:
                 // throw some error

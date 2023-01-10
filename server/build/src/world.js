@@ -22,6 +22,33 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __values = (this && this.__values) || function(o) {
+    var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
+    if (m) return m.call(o);
+    if (o && typeof o.length === "number") return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+    throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
+};
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.World = void 0;
 var babylonjs_1 = require("babylonjs");
@@ -29,8 +56,9 @@ var logger_1 = require("./logger");
 var entities_1 = require("./entity/entities");
 var uuid_1 = require("uuid");
 var cannon = __importStar(require("cannon-es"));
+var packet_1 = require("./packet");
 var World = /** @class */ (function () {
-    function World() {
+    function World(socket) {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
         this._entities = new Map();
@@ -39,10 +67,11 @@ var World = /** @class */ (function () {
         this.players = new Map();
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
+        this._socket = socket;
         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
-        var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
-        box.physicsImposter = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
-        this._entities.set((0, uuid_1.v4)(), new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), box));
+        this.box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
+        this.box.physicsImposter = new babylonjs_1.PhysicsImpostor(this.box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
+        this._entities.set("M-".concat((0, uuid_1.v4)()), new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), this.box));
         this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene);
@@ -75,12 +104,11 @@ var World = /** @class */ (function () {
         this._scene.executeWhenReady(function () {
             _this.logger.progress("Scene is ready, running server side simulation");
             _this._engine.runRenderLoop(function () {
-                var _a;
                 _this._scene.render();
                 _this._ticks_elapsed++;
                 // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
                 _this._updateEntities();
-                console.log((_a = _this._entities.get(Array.from(_this._entities.keys())[0])) === null || _a === void 0 ? void 0 : _a.position.y);
+                // console.log(`${this._entities.get(Array.from(this._entities.keys())[0])?.position.y} - ${this.box.position.y}`)
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
@@ -88,7 +116,22 @@ var World = /** @class */ (function () {
         });
     };
     World.prototype._updateEntities = function () {
-        // for ()
+        var e_1, _a;
+        try {
+            for (var _b = __values(this._entities), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, [{ position: value.position }]);
+                updatePacket.uid = key;
+                this._socket.broadCast(updatePacket);
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
     };
     World.prototype.add_players = function (id) {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
@@ -102,15 +145,25 @@ var World = /** @class */ (function () {
     World.prototype.delete_player = function (id) {
         this.players.delete(id);
     };
-    Object.defineProperty(World.prototype, "entities", {
-        get: function () {
-            return this._entities.map(function (entity) {
-                return { name: entity.name, position: entity.position };
-            });
-        },
-        enumerable: false,
-        configurable: true
-    });
+    World.prototype._array_entities = function () {
+        var e_2, _a;
+        var data = [];
+        try {
+            for (var _b = __values(this._entities), _c = _b.next(); !_c.done; _c = _b.next()) {
+                var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
+                data.push({ position: value.position });
+            }
+        }
+        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+        finally {
+            try {
+                if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+            }
+            finally { if (e_2) throw e_2.error; }
+        }
+        console.log(data);
+        return data;
+    };
     World.prototype.move_player = function (id, change_vector) {
         var scale = 0.5;
         var playerMesh = this.players.get(id);

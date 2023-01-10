@@ -9,7 +9,7 @@ var packet_1 = require("./packet");
 var logger_1 = require("./logger");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
-        this.world = new world_1.World();
+        this.world = new world_1.World(this);
         this.logger = new logger_1.Logger('Socket');
         this.server = new ws_1.Server({ port: SocketServer.PORT });
         this.init();
@@ -35,7 +35,7 @@ var SocketServer = /** @class */ (function () {
                         player: player,
                         players: _this.world.players.size
                     }]));
-                _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world.entities));
+                _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world._array_entities()));
             }
             // basic starter functiosn
             client.on('message', function (message) {
@@ -51,7 +51,9 @@ var SocketServer = /** @class */ (function () {
                                 player.position = _this.world.validateEntityPosition(new babylonjs_1.Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z));
                                 msg.payload[0].position = player.position;
                                 _this.world.update_player(msg.uid, player);
-                                _this.broadCast(new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]));
+                                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]);
+                                updatePacket.uid = msg.uid;
+                                _this.broadCast(updatePacket);
                             }
                             break;
                         case "Impulse":

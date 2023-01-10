@@ -3,6 +3,8 @@ import { Logger } from './logger';
 import { Entities } from './entity/entities';
 import { v4 as uuidv4 } from 'uuid';
 import * as cannon from "cannon-es";
+import { SocketServer } from './server';
+import { Packet, PacketType } from './packet';
 
 interface worldSize {
     top: Vector3,
@@ -11,6 +13,7 @@ interface worldSize {
 
 export class World{
     private _engine: Engine;
+    private _socket: SocketServer;
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
@@ -19,18 +22,20 @@ export class World{
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, any> = new Map()
+    public box: any;
     
-    constructor(){
+    constructor(socket: SocketServer){
         this._engine = new NullEngine();
         this._scene = new Scene(this._engine);
+        this._socket = socket;
 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
         
-        let box: any =  MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
-        box.physicsImposter =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
+        this.box =  MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
+        this.box.physicsImposter =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
 
 
-        this._entities.set(uuidv4(), new Entities("Box test", new Vector3(0, 100, 0), box))
+        this._entities.set(`M-${uuidv4()}`, new Entities("Box test", new Vector3(0, 100, 0), this.box))
 
         this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
@@ -75,7 +80,7 @@ export class World{
 
                 this._updateEntities()
 
-                console.log(this._entities.get(Array.from(this._entities.keys())[0])?.position.y)
+                // console.log(`${this._entities.get(Array.from(this._entities.keys())[0])?.position.y} - ${this.box.position.y}`)
             })
 
         })
@@ -87,7 +92,11 @@ export class World{
     }
 
     public _updateEntities(): void{
-        // for ()
+        for (let [key, value] of this._entities){
+            let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position}])
+            updatePacket.uid = key;
+            this._socket.broadCast(updatePacket)
+        }
     }
 
     public add_players(id: string): void{
@@ -105,10 +114,11 @@ export class World{
         this.players.delete(id)
     }
 
-    public get entities(): any[]{
-        return this._entities.map((entity: Mesh)=>{
-            return {name: entity.name, position: entity.position}
-        })
+    public _array_entities(): any[]{
+        const data: any = []
+        for (const [key, value] of this._entities) data.push({position: value.position})
+        console.log(data)
+        return data
     }
 
     public move_player(id: string, change_vector: Vector3): void{

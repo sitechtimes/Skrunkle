@@ -13,7 +13,7 @@ export class SocketServer {
   private logger: Logger
 
   constructor() {
-    this.world = new World()
+    this.world = new World(this)
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
 
@@ -51,7 +51,7 @@ export class SocketServer {
         this.send(client,
           new Packet(
             PacketType.mesh,
-            this.world.entities
+            this.world._array_entities()
           )
         )
       }
@@ -72,7 +72,9 @@ export class SocketServer {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
                 msg.payload[0].position = player.position
                 this.world.update_player(msg.uid, player)
-                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
+                let updatePacket = new Packet(PacketType.update, msg.payload[0])
+                updatePacket.uid = msg.uid
+                this.broadCast(updatePacket)
               }
               break
             case "Impulse":
