@@ -3,30 +3,28 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\details.vue",
-    "chunkName": "pages/details"
-  },
-  {
-    "name": "fake",
-    "path": "/fake",
-    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\fake.vue",
-    "chunkName": "pages/fake"
+    "chunkName": "pages/details",
+    "_name": "_2b7063fc"
   },
   {
     "name": "intro",
     "path": "/intro",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\intro.vue",
-    "chunkName": "pages/intro"
+    "chunkName": "pages/intro",
+    "_name": "_619a53a6"
   },
   {
     "name": "signin",
     "path": "/signin",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\signin.vue",
-    "chunkName": "pages/signin"
+    "chunkName": "pages/signin",
+    "_name": "_565844d8"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\nuxtClient\\\\pages\\\\index.vue",
-    "chunkName": "pages/index"
+    "chunkName": "pages/index",
+    "_name": "_04f319e8"
   }
 ]
