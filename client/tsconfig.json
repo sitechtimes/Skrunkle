@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2018",
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
@@ -16,5 +16,7 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
-  "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js"]
+  "types": ["babylonjs", "babylonjs-loaders", "@types/node", "@nuxt/types", ""],
+  "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js"],
+  "exclude": ["node_modules"]
 }
