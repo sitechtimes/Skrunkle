@@ -367,22 +367,29 @@ export class World {
         break;
       case "Mesh":
         console.log("MAKING BOXES");
-        let meshdata = data.payload;
-        var material = new StandardMaterial("box color", this._scene);
-        material.alpha = 1;
-        material.diffuseColor = new Color3(1.0, 0.2, 0.7);
-        for (let mesh of meshdata) {
-          console.log(mesh);
-          let box = MeshBuilder.CreateBox(
-            mesh.name,
-            { size: 3, width: 3, height: 3 },
-            this._scene
-          );
-          box.position = mesh.position;
-          box.metadata = "box";
-          box.material = material; // <--
-          this._entities.push(box);
+        console.log(data.payload)
+        let meshes: any[] = data.payload
+        for (let mesh in meshes) {
+          // @ts-expect-error
+          mesh._scene = this._scene
+          this._entities.push(mesh)
         }
+        // let meshdata = data.payload;
+        // var material = new StandardMaterial("box color", this._scene);
+        // material.alpha = 1;
+        // material.diffuseColor = new Color3(1.0, 0.2, 0.7);
+        // for (let mesh of meshdata) {
+        //   console.log(mesh);
+        //   let box = MeshBuilder.CreateBox(
+        //     mesh.name,
+        //     { size: 3, width: 3, height: 3 },
+        //     this._scene
+        //   );
+        //   box.position = mesh.position;
+        //   box.metadata = "box";
+        //   box.material = material; // <--
+        //   this._entities.push(box);
+        // }
         break;
       case "Info":
         let playerInfo: any = data?.payload[0].player;

@@ -24,7 +24,7 @@ export class World{
 
         this._generator = new Generation(this, this._scene)
 
-        this._generator.GENERATE.TestBox()
+        this._entities.push(this._generator.GENERATE.TestBox())
         // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
 
     }
@@ -71,9 +71,10 @@ export class World{
     }
 
     public get entities(): any[]{
-        return this._entities.map((entity: Mesh)=>{
-            return {name: entity.name, position: entity.position}
-        })
+        return this._entities
+        // return this._entities.map((entity: Mesh)=>{
+        //     return {name: entity.name, position: entity.position}
+        // })
     }
 
     public addEntity(item: Mesh) {

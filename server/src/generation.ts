@@ -25,6 +25,7 @@ export class Generation {
       myMat.ambientColor = new Color3(0.58, 0.6, 0.9);
       item.material = myMat;
 
+      
       this._world.addEntity(item)
       return item
     }, 
