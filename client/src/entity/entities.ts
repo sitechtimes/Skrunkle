@@ -1,5 +1,4 @@
 import { Vector3 } from "babylonjs"
-import { v4 as uuidv4 } from 'uuid';
 
 export class Entities{
 
@@ -8,11 +7,14 @@ export class Entities{
     private _id: string;
     private _object: any;
 
-    constructor(name: string, position: Vector3, object: any | null){
+    constructor(name: string, id: string, position: Vector3, object: any | null){
         this._name = name;
         this._position = position;
-        this._id = uuidv4();
-        if (object) this._object = object;
+        this._id = id;
+        if (object) {
+            this._object = object;
+            this._object.position = this._position;
+        }
     }
 
     public get position(): Vector3{

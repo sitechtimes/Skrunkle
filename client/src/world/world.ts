@@ -14,7 +14,7 @@ export class World {
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
     private _playerCamera: FreeCamera;
-    private _entities: Map<string, Entities>;
+    private _entities: Map<string, Entities> = new Map();
     private _socket: Socket;
     private _player: MainPlayer;
     private _players:  Map<string, Player>;
@@ -151,7 +151,7 @@ export class World {
         }
     }   
     private _castLookingRay(){
-        var dray = this._scene.createPickingRay(960, 540, Matrix.uidentity(), this._playerCamera);	
+        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
         var hit: any | null = this._scene.pickWithRay(dray);
 
         if (hit == null || hit.pickedMesh == null) return
@@ -217,13 +217,27 @@ export class World {
                 if (uid.charAt(0) == 'M'){// it is a mesh!
                     if (this._entities.has(uid)){ 
                         let entity: Entities = this._entities.get(uid)
-                        entity!.position = playerData.payload[0].position
+                        entity!.position = data.payload[0].position
                         this._entities.set(uid, entity)
+                        console.log(entity.position)
                     }else{ // make it a mesh
-    
+                        let mesh = data.payload[0]
+                        // let meshdata = data.payload
+                        var material = new StandardMaterial("box color", this._scene);
+                        material.alpha = 1;
+                        material.diffuseColor = new Color3(1.0, 0.2, 0.7);
+                        // console.log(meshdata)
+                        // for (let mesh of meshdata){
+                        let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
+                        box.position = mesh.position
+
+                        this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))
+                        //     box.metadata = "box"
+                        //     box.material = material; // <--
+                        //     this._entities.push(box)
+                        // }
                     }
-                }
-                if (!this._players.has(uid) && uid != this._player.uid){
+                }else if (!this._players.has(uid) && uid != this._player.uid){
                     let newPlayer: Player = new Player(
                         playerData.name, 
                         100, 
@@ -268,29 +282,14 @@ export class World {
                 //         })
                 //     }
                     if(this._pickedup==true){
-                        var dray = this._scene.createPickingRay(960, 540, Matrix.uidentity(), this._playerCamera);	
+                        var dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera);	
                         var hit = this._scene.pickWithRay(dray);
                         let ray = this._playerCamera.getForwardRay()
                         let item = this._scene.getMeshByName(hit.pickedMesh.name)     
                         item.position = ray.origin.clone().add(ray.direction.scale(10));
                     }
                 break
-            case "Mesh":
-                console.log("MAKING BOXES")
-                let meshdata = data.payload
-                var material = new StandardMaterial("box color", this._scene);
-                material.alpha = 1;
-                material.diffuseColor = new Color3(1.0, 0.2, 0.7);
-                console.log(meshdata)
-                // for (let mesh of meshdata){
-                //     console.log(mesh)
-                //     let box = MeshBuilder.CreateBox(mesh.name, { size: 3, width: 3, height: 3}, this._scene)
-                //     box.position = mesh.position
-                //     box.metadata = "box"
-                //     box.material = material; // <--
-                //     this._entities.push(box)
-                // }
-                break
+          
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
                 // console.log(playerInfo)

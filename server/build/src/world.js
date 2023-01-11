@@ -71,7 +71,9 @@ var World = /** @class */ (function () {
         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
         this.box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2 }, this._scene);
         this.box.physicsImposter = new babylonjs_1.PhysicsImpostor(this.box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
-        this._entities.set("M-".concat((0, uuid_1.v4)()), new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), this.box));
+        this.tempid = (0, uuid_1.v4)();
+        this._entities.set("M-".concat(this.tempid), new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), this.box));
+        // this._entities.
         this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene);
@@ -104,11 +106,13 @@ var World = /** @class */ (function () {
         this._scene.executeWhenReady(function () {
             _this.logger.progress("Scene is ready, running server side simulation");
             _this._engine.runRenderLoop(function () {
+                var _a, _b;
                 _this._scene.render();
                 _this._ticks_elapsed++;
                 // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
                 _this._updateEntities();
-                // console.log(`${this._entities.get(Array.from(this._entities.keys())[0])?.position.y} - ${this.box.position.y}`)
+                console.log((_a = _this._entities.get("M-".concat(_this.tempid))) === null || _a === void 0 ? void 0 : _a.position.y);
+                console.log("".concat(_this.box.position.y, " | ").concat((_b = _this._entities.get("M-".concat(_this.tempid))) === null || _b === void 0 ? void 0 : _b.position.y));
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
