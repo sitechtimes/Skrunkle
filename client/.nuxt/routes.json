@@ -3,35 +3,30 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
-    "chunkName": "pages/details",
-    "_name": "_2431bccf"
+    "chunkName": "pages/details"
   },
   {
     "name": "intro",
     "path": "/intro",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\intro.vue",
-    "chunkName": "pages/intro",
-    "_name": "_3271c539"
+    "chunkName": "pages/intro"
   },
   {
     "name": "play",
     "path": "/play",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
-    "chunkName": "pages/play",
-    "_name": "_2dce26f7"
+    "chunkName": "pages/play"
   },
   {
     "name": "signin",
     "path": "/signin",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\signin.vue",
-    "chunkName": "pages/signin",
-    "_name": "_bf21f4b6"
+    "chunkName": "pages/signin"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_634436c2"
+    "chunkName": "pages/index"
   }
 ]
