@@ -11,11 +11,9 @@ export class SocketServer {
   private server: Server
   private world: World
   private logger: Logger
-  private players: Map<any, any>
 
   constructor() {
-    this.players = new Map()
-    this.world = new World()
+    this.world = new World(this)
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
 
@@ -27,8 +25,8 @@ export class SocketServer {
     this.world.init()
   }
 
-  public setPlayer(uid:string|undefined, player:Player) {
-    this.players.set(uid, player)
+  public setPlayer(uid:string, player:Player) {
+    this.world.players.set(uid, player)
   }
   
   private listen() {
@@ -37,22 +35,23 @@ export class SocketServer {
     this.server.on('connection', (client: any) => {
       // save client
       this.logger.log('Client connected')
-      if(!this.players.has(client)) {
+      if(!this.world.players.has(client)) {
         let player = new Player()
-        this.players.set(player.id, player)
+        this.world.players.set(player.id, player)
+        this.world.add_players(player.id)
         this.send(client, 
           new Packet(
             PacketType.info, 
             [{
               player: player,
-              players: this.players.size 
+              players: this.world.players.size 
             }]
           )
         )
         this.send(client,
           new Packet(
             PacketType.mesh,
-            this.world.entities
+            this.world._array_entities()
           )
         )
       }
@@ -60,9 +59,9 @@ export class SocketServer {
       // basic starter functiosn
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
-        if (this.players.has(msg.uid)) {
+        if (this.world.players.has(msg.uid)) {
 
-          let player: Player = this.players.get(msg.uid)
+          let player: Player = this.world.players.get(msg.uid)
           
           switch (msg.type) {
             case "Movement":
@@ -71,17 +70,27 @@ export class SocketServer {
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                 msg.payload[0].position = player.position
-                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
+                msg.payload[0].position = player.position
+                this.world.update_player(msg.uid, player)
+                let updatePacket = new Packet(PacketType.update, msg.payload[0])
+                updatePacket.uid = msg.uid
+                this.broadCast(updatePacket)
               }
+              break
+            case "Impulse":
+              this.world.move_player(msg.uid, msg.payload[0].impulse)
               break
             case "Info":
               this.setPlayer(msg.uid, msg.payload[0])
               this.broadCast(new Packet(PacketType.info, msg.payload[0]))
               break
             case "Close":
-              this.players.delete(msg.uid)
+              this.world.players.delete(msg.uid)
+              this.world.players.delete(msg.uid)
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
+              break
+            case "Interaction":
+              this.logger.log("Received interaction")
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
@@ -113,7 +122,7 @@ export class SocketServer {
 
   public broadCast(packet:Packet) {
     this.server.clients.forEach((user) => {
-      if (this.players.get(user) !== null) {
+      if (this.world.players.get(user) !== null) {
         this.send(user, packet)
       }
     });

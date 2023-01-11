@@ -8,6 +8,7 @@ var PacketType;
     PacketType["movement"] = "Movement";
     PacketType["mesh"] = "Mesh";
     PacketType["close"] = "Close";
+    PacketType["interaction"] = "Interaction";
 })(PacketType = exports.PacketType || (exports.PacketType = {}));
 var Packet = /** @class */ (function () {
     function Packet(packetType, data) {
