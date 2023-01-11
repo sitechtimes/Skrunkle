@@ -36,6 +36,7 @@ export class World {
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
+  private _itemchosen: string;
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
@@ -52,6 +53,7 @@ export class World {
     this.chestOpen = false;
     this._pickup = false;
     this._pickedup = false;
+    this._itemchosen = "";
   }
 
   public init(): void {
@@ -213,12 +215,20 @@ export class World {
       console.log("hit");
       this._pickup = true;
 
-      if ((hit!.pickedMesh!.metadata = "item")) {
+      if ((hit!.pickedMesh!.metadata == "item")) {
         this._scene.onKeyboardObservable.add((kbInfo) => {
           switch (kbInfo.type) {
             case KeyboardEventTypes.KEYDOWN:
               if (kbInfo.event.key == "f") {
                 this._pickedup = true;
+                var dray = this._scene.createPickingRay(
+                  960,
+                  540,
+                  Matrix.Identity(),
+                  this._playerCamera
+                );
+                var hit = this._scene.pickWithRay(dray);
+                this._itemchosen = hit!.pickedMesh!.name
                 document.getElementById("PickedupItem")!.innerHTML =
                   "Picked Up";
               }
@@ -353,15 +363,8 @@ export class World {
         //         })
         //     }
         if (this._pickedup == true) {
-          var dray = this._scene.createPickingRay(
-            960,
-            540,
-            Matrix.Identity(),
-            this._playerCamera
-          );
-          var hit = this._scene.pickWithRay(dray);
           let ray = this._playerCamera!.getForwardRay();
-          let item = this._scene.getMeshByName(hit!.pickedMesh!.name);
+          let item = this._scene.getMeshByName(this._itemchosen);
           item!.position = ray.origin.clone().add(ray.direction.scale(10));
         }
         break;
@@ -379,7 +382,7 @@ export class World {
             this._scene
           );
           box.position = mesh.position;
-          box.metadata = "box";
+          box.metadata = "item";
           box.material = material; // <--
           this._entities.push(box);
         }
