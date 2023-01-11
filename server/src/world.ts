@@ -23,7 +23,7 @@ export class World{
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, any> = new Map()
     public box: any;
-    public tempid: string;
+    public temp: Entities;
     
     constructor(socket: SocketServer){
         this._engine = new NullEngine();
@@ -31,19 +31,21 @@ export class World{
         this._socket = socket;
 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-        
-        this.box =  MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
-        this.box.physicsImposter =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0.9 }, this._scene);
-
-        this.tempid = uuidv4()
-
-        this._entities.set(`M-${this.tempid}`, new Entities("Box test", new Vector3(0, 100, 0), this.box))
-
-        // this._entities.
 
         this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
-        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, this._scene)
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+        
+        this.box =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
+        this.box.physicsImposter =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+
+        this.temp = new Entities("Box test", new Vector3(0, 100, 0), this.box);
+
+
+        this._entities.set(`M-${this.temp.id}`, this.temp)
+
+        // this._entities.
+
 
         // console.log(this._ground.position)
     }
@@ -84,8 +86,7 @@ export class World{
 
                 this._updateEntities()
 
-                console.log(this._entities.get(`M-${this.tempid}`)?.position.y)
-                console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.tempid}`)?.position.y}`)
+                console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             })
 
         })

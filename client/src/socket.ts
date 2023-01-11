@@ -2,7 +2,7 @@ import type { World } from "./world/world";
 import { Packet, PacketType } from "./packet";
 
 export class Socket {
-  static readonly url: string = 'ws://10.94.168.208:2000'
+  static readonly url: string = 'ws://localhost:2000'
   private server: any
   private status: boolean = false
   private worldReference: World;
