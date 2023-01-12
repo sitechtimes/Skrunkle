@@ -39,6 +39,7 @@ var SocketServer = /** @class */ (function () {
             // basic starter functiosn
             client.on('message', function (message) {
                 var msg = JSON.parse(message);
+                console.log(JSON.parse(message));
                 if (_this.world.players.has(msg.uid)) {
                     var player = _this.world.players.get(msg.uid);
                     switch (msg.type) {

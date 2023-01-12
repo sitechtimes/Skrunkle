@@ -189,7 +189,7 @@ export class World {
                 this._playerCamera
             )
             if (this._debug) document.getElementById("name")!.innerText = `Name: ${this._player.name}`
-            if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.uid}`
+            if (this._debug) document.getElementById("id")!.innerText = `UserID: ${this._player.id}`
             this._hotbar.inventory = this._player.inventory
             /* TEMPORARILY ADDING ITEMS */
             this._hotbar.add(new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket), 1)
@@ -200,7 +200,7 @@ export class World {
             this._hotbar.add(new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket), 8)
             this._hotbar.add(new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket), 7)
             /* TEMPORARILY ADDED ITEMS */
-            console.log("Created Main Player id: " + this._player.uid)
+            console.log("Created Main Player id: " + this._player.id)
             console.log(this._player.inventory)
         
         }
@@ -291,6 +291,7 @@ export class World {
           
             case "Info":
                 let playerInfo: any = data?.payload[0].player;
+                console.log(playerInfo)
                 // console.log(playerInfo)
                 if (this._player === null || this._player?.uid === playerInfo.uid) this._initClient(playerInfo._name, playerInfo._id)
                 else // init player

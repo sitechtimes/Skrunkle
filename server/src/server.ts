@@ -59,6 +59,7 @@ export class SocketServer {
       // basic starter functiosn
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
+        console.log(JSON.parse(message))
         if (this.world.players.has(msg.uid)) {
 
           let player: Player = this.world.players.get(msg.uid)

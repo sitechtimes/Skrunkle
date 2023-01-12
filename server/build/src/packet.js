@@ -11,9 +11,10 @@ var PacketType;
     PacketType["interaction"] = "Interaction";
 })(PacketType = exports.PacketType || (exports.PacketType = {}));
 var Packet = /** @class */ (function () {
-    function Packet(packetType, data) {
+    function Packet(packetType, data, uid) {
         this.type = packetType;
         this.payload = data;
+        this.uid = uid;
     }
     return Packet;
 }());
