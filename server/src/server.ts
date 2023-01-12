@@ -5,6 +5,7 @@ import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
 import { Packet, PacketType } from './packet'
 import { Logger } from './logger'
+import { v4 as uuidv4 } from 'uuid';
 
 export class SocketServer {
   static readonly PORT: number = 2000
@@ -36,14 +37,13 @@ export class SocketServer {
       // save client
       this.logger.log('Client connected')
       if(!this.world.players.has(client)) {
-        let player = new Player()
-        this.world.players.set(player.id, player)
-        this.world.add_players(player.id)
+        let playerid: string = uuidv4()
+        let player: Player = this.world.add_players(playerid)
         this.send(client, 
           new Packet(
             PacketType.info, 
             [{
-              player: player,
+              player: player.serialize(),
               players: this.world.players.size 
             }]
           )
@@ -69,6 +69,7 @@ export class SocketServer {
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
+                console.log("HEHE")
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
                 msg.payload[0].position = player.position
                 this.world.update_player(msg.uid, player)

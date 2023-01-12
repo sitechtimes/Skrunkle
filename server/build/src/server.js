@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketServer = void 0;
 var ws_1 = require("ws");
 var world_1 = require("./world");
-var player_1 = require("./entity/player");
 var babylonjs_1 = require("babylonjs");
 var packet_1 = require("./packet");
 var logger_1 = require("./logger");
+var uuid_1 = require("uuid");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
         this.world = new world_1.World(this);
@@ -28,11 +28,10 @@ var SocketServer = /** @class */ (function () {
             // save client
             _this.logger.log('Client connected');
             if (!_this.world.players.has(client)) {
-                var player = new player_1.Player();
-                _this.world.players.set(player.id, player);
-                _this.world.add_players(player.id);
+                var playerid = (0, uuid_1.v4)();
+                var player = _this.world.add_players(playerid);
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
-                        player: player,
+                        player: player.serialize(),
                         players: _this.world.players.size
                     }]));
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world._array_entities()));
@@ -48,6 +47,7 @@ var SocketServer = /** @class */ (function () {
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             if (player !== null) {
+                                console.log("HEHE");
                                 player.position = _this.world.validateEntityPosition(new babylonjs_1.Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z));
                                 msg.payload[0].position = player.position;
                                 _this.world.update_player(msg.uid, player);

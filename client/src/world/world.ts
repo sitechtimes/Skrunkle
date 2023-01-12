@@ -219,7 +219,6 @@ export class World {
                         let entity: Entities = this._entities.get(uid)
                         entity!.position = data.payload[0].position
                         this._entities.set(uid, entity)
-                        console.log(entity.position)
                     }else{ // make it a mesh
                         let mesh = data.payload[0]
                         // let meshdata = data.payload

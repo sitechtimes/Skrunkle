@@ -56,6 +56,7 @@ var logger_1 = require("./logger");
 var entities_1 = require("./entity/entities");
 var cannon = __importStar(require("cannon-es"));
 var packet_1 = require("./packet");
+var player_1 = require("./entity/player");
 var World = /** @class */ (function () {
     function World(socket) {
         this._tick_time = 5000; // in ms
@@ -72,7 +73,7 @@ var World = /** @class */ (function () {
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
         this.box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
-        this.box.physicsImposter = new babylonjs_1.PhysicsImpostor(this.box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+        this.box.physicsImpostor = new babylonjs_1.PhysicsImpostor(this.box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
         this.temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), this.box);
         this._entities.set("M-".concat(this.temp.id), this.temp);
         // this._entities.
@@ -91,7 +92,7 @@ var World = /** @class */ (function () {
         if ((entityPosition.x < this.worldSize.bottom.x || entityPosition.x > this.worldSize.top.x) ||
             (entityPosition.y < this.worldSize.bottom.y || entityPosition.y > this.worldSize.top.y) ||
             (entityPosition.z < this.worldSize.bottom.z || entityPosition.z > this.worldSize.top.z)) {
-            console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " + this.worldSize.bottom + " and " + this.worldSize.top);
+            // console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " +  this.worldSize.bottom + " and " + this.worldSize.top)
             return new babylonjs_1.Vector3(0, 10, 0);
         }
         else
@@ -105,12 +106,14 @@ var World = /** @class */ (function () {
         this._scene.executeWhenReady(function () {
             _this.logger.progress("Scene is ready, running server side simulation");
             _this._engine.runRenderLoop(function () {
-                var _a;
                 _this._scene.render();
                 _this._ticks_elapsed++;
-                // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
+                // if (Array.from(this.players.keys()).length > 0) {
+                //     let id: string = Array.from(this.players.keys())[0]
+                //     console.log(`${id}: ${this.players.get(id).position}`)
+                // }
                 _this._updateEntities();
-                console.log("".concat(_this.box.position.y, " | ").concat((_a = _this._entities.get("M-".concat(_this.temp.id))) === null || _a === void 0 ? void 0 : _a.position.y));
+                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
@@ -137,9 +140,10 @@ var World = /** @class */ (function () {
     };
     World.prototype.add_players = function (id) {
         var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
-        playerMesh.position = new babylonjs_1.Vector3(0, 5, 0);
-        playerMesh.physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
-        this.players.set(id, playerMesh);
+        var physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        var player = new player_1.Player(playerMesh, physicsImposter, "player.name", 100, 100, new babylonjs_1.Vector3(0, 0, 0), id);
+        this.players.set(id, player);
+        return player;
     };
     World.prototype.update_player = function (id, value) {
         this.players.set(id, value);

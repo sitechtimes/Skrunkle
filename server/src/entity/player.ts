@@ -1,4 +1,4 @@
-import { Vector3 } from "babylonjs"
+import { Mesh, PhysicsImpostor, Vector3 } from "babylonjs"
 import { v4 as uuidv4 } from 'uuid';
 import { generateUsername } from "unique-username-generator";
 
@@ -9,19 +9,27 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
+    private _body?: Mesh | null; 
 
     constructor(
+        body: Mesh,
+        physicsImposter: PhysicsImpostor,
         name?: string|undefined, 
         health?: number|undefined, 
         exp?: number|undefined, 
-        position?: Vector3|undefined, 
+        position?: Vector3|undefined,
         id?: string|undefined
     ){
         this._name = name || generateUsername();
         this._health = health || 100;
         this._exp = exp || 0;
         this._position = position || new Vector3(0, 0, 0);
-        this._id = uuidv4();
+        if (!id) this._id = uuidv4();
+        else this._id = id;
+
+        this._body = body;
+        console.log(body)
+        this._body.physicsImpostor = physicsImposter;
     }
 
     public get position(): Vector3{
@@ -61,6 +69,12 @@ export class Player{
 
     public get id(): string{
         return this._id;
+    }
+
+    public serialize(): Player{
+        let player: Player = this
+        delete player._body
+        return player
     }
 
 }

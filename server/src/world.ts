@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as cannon from "cannon-es";
 import { SocketServer } from './server';
 import { Packet, PacketType } from './packet';
+import { Player } from './entity/player';
 
 interface worldSize {
     top: Vector3,
@@ -21,7 +22,7 @@ export class World{
     private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
-    public players: Map<string, any> = new Map()
+    public players: Map<string, Player> = new Map()
     public box: any;
     public temp: Entities;
     
@@ -37,10 +38,9 @@ export class World{
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
         
         this.box =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
-        this.box.physicsImposter =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+        this.box.physicsImpostor =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
 
         this.temp = new Entities("Box test", new Vector3(0, 100, 0), this.box);
-
 
         this._entities.set(`M-${this.temp.id}`, this.temp)
 
@@ -62,7 +62,7 @@ export class World{
             (entityPosition.y < this.worldSize.bottom.y || entityPosition.y > this.worldSize.top.y) ||
             (entityPosition.z < this.worldSize.bottom.z || entityPosition.z > this.worldSize.top.z) 
         ) {
-            console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " +  this.worldSize.bottom + " and " + this.worldSize.top)
+            // console.log("EXCEEDED LIMITS: " + entityPosition + " compared to " +  this.worldSize.bottom + " and " + this.worldSize.top)
             return new Vector3(0, 10, 0);
         }
         else return entityPosition;
@@ -82,11 +82,14 @@ export class World{
                 this._scene.render();
                 this._ticks_elapsed++;
 
-                // if (Array.from(this.players.keys()).length > 0) console.log(this.players.get(Array.from(this.players.keys())[0]).position)
+                // if (Array.from(this.players.keys()).length > 0) {
+                //     let id: string = Array.from(this.players.keys())[0]
+                //     console.log(`${id}: ${this.players.get(id).position}`)
+                // }
 
                 this._updateEntities()
 
-                console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
+                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             })
 
         })
@@ -105,11 +108,12 @@ export class World{
         }
     }
 
-    public add_players(id: string): void{
-        let playerMesh: any = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
-        playerMesh.position = new Vector3(0, 5, 0)
-        playerMesh.physicsImposter = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
-        this.players.set(id, playerMesh)
+    public add_players(id: string): Player{
+        let playerMesh: Mesh = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
+        let physicsImposter: PhysicsImpostor = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
+        let player: Player = new Player(playerMesh, physicsImposter, "player.name", 100, 100, new Vector3(0, 0,0 ), id)
+        this.players.set(id, player)
+        return player
     }
 
     public update_player(id: string, value: any): void{
