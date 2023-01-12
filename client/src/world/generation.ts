@@ -31,6 +31,21 @@ export class Generation {
 
       return item;
     },
+    TestBox: (mesh:any): Mesh => {
+      var material = new StandardMaterial("box color", this._scene);
+      material.alpha = 1;
+      material.diffuseColor = new Color3(1.0, 0.2, 0.7);
+      let box = MeshBuilder.CreateBox(
+        mesh.name,
+        { size: 3, width: 3, height: 3 },
+        this._scene
+      );
+      box.position = mesh.position;
+      box.metadata = "box";
+      box.material = material;
+
+      return box
+    }
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {

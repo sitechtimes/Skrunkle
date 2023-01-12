@@ -369,21 +369,10 @@ export class World {
         console.log("MAKING BOXES");
         console.log(data.payload)
         let meshdata = data.payload;
-        var material = new StandardMaterial("box color", this._scene);
-        material.alpha = 1;
-        material.diffuseColor = new Color3(1.0, 0.2, 0.7);
         for (let mesh of meshdata) {
           switch (mesh.type) {
             case "Box":
-              let box = MeshBuilder.CreateBox(
-                mesh.name,
-                { size: 3, width: 3, height: 3 },
-                this._scene
-              );
-              box.position = mesh.position;
-              box.metadata = "box";
-              box.material = material; // <--
-              this._entities.push(box);
+              this._entities.push(this._generator.GENERATE.TestBox(mesh));
               break
             case "Cylinder":
               this._entities.push(this._generator.GENERATE.TestCyclinder(mesh))
