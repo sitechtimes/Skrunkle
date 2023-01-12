@@ -362,7 +362,7 @@ export class World {
         //             }
         //         })
         //     }
-        if (this._pickedup == true) {
+        if (this._pickedup == true && this._scene.getMeshByName(this._itemchosen)!.metadata == "item") {
           let ray = this._playerCamera!.getForwardRay();
           let item = this._scene.getMeshByName(this._itemchosen);
           item!.position = ray.origin.clone().add(ray.direction.scale(10));

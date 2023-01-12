@@ -1,8 +1,5 @@
 import { World } from "./world";
 import {
-  MeshBuilder,
-  StandardMaterial,
-  Color3,
   Scene,
   Mesh,
   SceneLoader
