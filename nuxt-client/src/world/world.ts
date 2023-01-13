@@ -365,16 +365,16 @@ export class World {
         break;
       case "Mesh":
         console.log("MAKING BOXES");
-        console.log(data.payload)
+        console.log(data.payload);
         let meshdata = data.payload;
         for (let mesh of meshdata) {
           switch (mesh.type) {
             case "Box":
               this._entities.push(this._generator.GENERATE.TestBox(mesh));
-              break
+              break;
             case "Cylinder":
-              this._entities.push(this._generator.GENERATE.TestCyclinder(mesh))
-              break
+              this._entities.push(this._generator.GENERATE.TestCyclinder(mesh));
+              break;
           }
         }
         break;

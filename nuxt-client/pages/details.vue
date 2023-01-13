@@ -84,8 +84,8 @@ export default {
       this.darkMode = !this.darkMode;
     },
     routePlay() {
-      window.location.href = "/play"
-    }
+      this.$router.push("/play")
+    },
   },
 };
 </script>

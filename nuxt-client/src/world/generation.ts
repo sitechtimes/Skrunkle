@@ -18,9 +18,9 @@ export class Generation {
   }
 
   public GENERATE = {
-    TestCyclinder: (mesh:any): Mesh => {
+    TestCyclinder: (mesh: any): Mesh => {
       let item = MeshBuilder.CreateCylinder("item", { height: 5, diameter: 3 });
-      item.position = mesh.position
+      item.position = mesh.position;
       item.metadata = mesh.type;
       var myMat = new StandardMaterial("myMat", this._scene);
       myMat.specularColor = new Color3(0.15, 0.76, 0.9);
@@ -31,7 +31,7 @@ export class Generation {
 
       return item;
     },
-    TestBox: (mesh:any): Mesh => {
+    TestBox: (mesh: any): Mesh => {
       var material = new StandardMaterial("box color", this._scene);
       material.alpha = 1;
       material.diffuseColor = new Color3(1.0, 0.2, 0.7);
@@ -44,8 +44,8 @@ export class Generation {
       box.metadata = "box";
       box.material = material;
 
-      return box
-    }
+      return box;
+    },
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
