@@ -69,7 +69,7 @@ var World = /** @class */ (function () {
         this._scene = new babylonjs_1.Scene(this._engine);
         this._socket = socket;
         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.CannonJSPlugin(true, 10, cannon));
-        this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 100, height: 100 }, this._scene);
+        this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
         this.box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
@@ -110,7 +110,8 @@ var World = /** @class */ (function () {
                 _this._ticks_elapsed++;
                 // if (Array.from(this.players.keys()).length > 0) {
                 //     let id: string = Array.from(this.players.keys())[0]
-                //     console.log(`${id}: ${this.players.get(id).position}`)
+                //     let p: Player = this.players.get(id)
+                //     console.log(`${id}: ${p.body}`)
                 // }
                 _this._updateEntities();
                 // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)

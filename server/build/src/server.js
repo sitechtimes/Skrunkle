@@ -33,13 +33,12 @@ var SocketServer = /** @class */ (function () {
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.info, [{
                         player: player.serialize(),
                         players: _this.world.players.size
-                    }]));
+                    }], player.id));
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world._array_entities()));
             }
             // basic starter functiosn
             client.on('message', function (message) {
                 var msg = JSON.parse(message);
-                console.log(JSON.parse(message));
                 if (_this.world.players.has(msg.uid)) {
                     var player = _this.world.players.get(msg.uid);
                     switch (msg.type) {
@@ -48,11 +47,10 @@ var SocketServer = /** @class */ (function () {
                             // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
                             // this.send(client, new Packet(PacketType.update, [player]))
                             if (player !== null) {
-                                console.log("HEHE");
                                 player.position = _this.world.validateEntityPosition(new babylonjs_1.Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z));
                                 msg.payload[0].position = player.position;
                                 _this.world.update_player(msg.uid, player);
-                                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, msg.payload[0]);
+                                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, msg.payload[0], player.id);
                                 updatePacket.uid = msg.uid;
                                 _this.broadCast(updatePacket);
                             }

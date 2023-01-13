@@ -108,14 +108,13 @@ export class World {
                 this._scene.render();
 
                 if (this._player) {
-                    this._socket?.send(new Packet(PacketType.movement, [{id: this._player.uid, name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.uid))
+                    this._socket?.send(new Packet(PacketType.movement, [{name: this._player.name, position: this._player.position, rotation: this._player.rotation, current: this._hotbar.current }], this._player.id))
                     if (this._debug){
                         document.getElementById("x")!.innerText = `X: ${this._player.position.x}`
                         document.getElementById("y")!.innerText = `Y: ${this._player.position.y}`
                         document.getElementById("z")!.innerText = `Z: ${this._player.position.z}`
                     }
 
-                    if (this._player.position) this._player._sendMovement()
                 }
             })
 
@@ -228,6 +227,7 @@ export class World {
                         // console.log(meshdata)
                         // for (let mesh of meshdata){
                         let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
+                        box.material = material
                         box.position = mesh.position
 
                         this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))

@@ -9,7 +9,7 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
-    private _body?: Mesh | null; 
+    private _body: Mesh | null; 
 
     constructor(
         body: Mesh,
@@ -28,8 +28,8 @@ export class Player{
         else this._id = id;
 
         this._body = body;
-        console.log(body)
         this._body.physicsImpostor = physicsImposter;
+
     }
 
     public get position(): Vector3{
@@ -38,6 +38,7 @@ export class Player{
 
     public set position(new_position: Vector3){
         this._position = new_position;
+        if (this.body) this._body!.position = this.position
     }
 
     public get name(): string{
@@ -71,8 +72,12 @@ export class Player{
         return this._id;
     }
 
+    public get body(): any{
+        return this._body;
+    }
+
     public serialize(): Player{
-        let player: Player = this
+        let player: Player = {...this}
         delete player._body
         return player
     }

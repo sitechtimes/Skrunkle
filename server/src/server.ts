@@ -45,7 +45,8 @@ export class SocketServer {
             [{
               player: player.serialize(),
               players: this.world.players.size 
-            }]
+            }],
+            player.id
           )
         )
         this.send(client,
@@ -59,7 +60,6 @@ export class SocketServer {
       // basic starter functiosn
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
-        console.log(JSON.parse(message))
         if (this.world.players.has(msg.uid)) {
 
           let player: Player = this.world.players.get(msg.uid)
@@ -70,11 +70,10 @@ export class SocketServer {
               // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
-                console.log("HEHE")
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
                 msg.payload[0].position = player.position
                 this.world.update_player(msg.uid, player)
-                let updatePacket = new Packet(PacketType.update, msg.payload[0])
+                let updatePacket = new Packet(PacketType.update, msg.payload[0], player.id)
                 updatePacket.uid = msg.uid
                 this.broadCast(updatePacket)
               }

@@ -33,7 +33,7 @@ export class World{
 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
 
-        this._ground = MeshBuilder.CreateGround("ground", {width: 100, height: 100}, this._scene);
+        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
         
@@ -84,7 +84,8 @@ export class World{
 
                 // if (Array.from(this.players.keys()).length > 0) {
                 //     let id: string = Array.from(this.players.keys())[0]
-                //     console.log(`${id}: ${this.players.get(id).position}`)
+                //     let p: Player = this.players.get(id)
+                //     console.log(`${id}: ${p.body}`)
                 // }
 
                 this._updateEntities()
