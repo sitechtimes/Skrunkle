@@ -21,7 +21,7 @@ export class Generation {
     TestCyclinder: (mesh: any): Mesh => {
       let item = MeshBuilder.CreateCylinder("item", { height: 5, diameter: 3 });
       item.position = mesh.position;
-      item.metadata = mesh.type;
+      item.metadata = mesh.name;
       var myMat = new StandardMaterial("myMat", this._scene);
       myMat.specularColor = new Color3(0.15, 0.76, 0.9);
       myMat.diffuseColor = new Color3(0.95, 0.16, 0.9);
@@ -41,7 +41,7 @@ export class Generation {
         this._scene
       );
       box.position = mesh.position;
-      box.metadata = "box";
+      box.metadata = mesh.name;
       box.material = material;
 
       return box;

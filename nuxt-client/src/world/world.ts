@@ -30,7 +30,6 @@ export class World {
   private _player: MainPlayer | undefined;
   private _players: Map<string, Player>;
   private _GUI: GUI;
-  // @ts-expect-error
   private _hotbar: Hotbar;
   private _debug: boolean = true;
   public chestOpen: boolean;
