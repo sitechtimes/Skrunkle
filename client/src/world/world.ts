@@ -109,6 +109,7 @@ export class World {
     console.log(this._hotbar);
 
     this._generator.GENERATE.TestCyclinder();
+    this._generator.GENERATE.TestCyclinder2();
 
     this._GUI.createHotbar();
     this._hotbar = this._GUI.hotbar;

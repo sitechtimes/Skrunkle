@@ -20,15 +20,27 @@ export class Generation {
       let item: any = SceneLoader.ImportMeshAsync(
         "",
         "meshes/",
-        "tree.glb",
+        "treeModel2.glb",
         this._scene
       );
       item.position.x = 3;
       item.position.y = 1;
       item.position.z = 10;
       item.metadata = "item";
-
       return item;
+    },
+    TestCyclinder2: async (): Promise<Mesh> => {
+      let item2: any = SceneLoader.ImportMeshAsync(
+        "",
+        "meshes/",
+        "treemesh.glb",
+        this._scene
+      );
+      item2.position.x = 45;
+      item2.position.y = 1;
+      item2.position.z = 20;
+      item2.metadata = "item";
+      return item2;
     },
   };
 
