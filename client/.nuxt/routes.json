@@ -2,31 +2,31 @@
   {
     "name": "details",
     "path": "/details",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\details.vue",
     "chunkName": "pages/details"
   },
   {
     "name": "intro",
     "path": "/intro",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\intro.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\intro.vue",
     "chunkName": "pages/intro"
   },
   {
     "name": "play",
     "path": "/play",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\play.vue",
     "chunkName": "pages/play"
   },
   {
     "name": "signin",
     "path": "/signin",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\signin.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\signin.vue",
     "chunkName": "pages/signin"
   },
   {
     "name": "index",
     "path": "/",
-    "component": "C:\\\\Users\\\\edwin.wright\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
+    "component": "C:\\\\Users\\\\ashley.chan\\\\Documents\\\\GitHub\\\\BabylonDemo\\\\client\\\\pages\\\\index.vue",
     "chunkName": "pages/index"
   }
 ]

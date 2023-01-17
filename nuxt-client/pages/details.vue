@@ -84,7 +84,7 @@ export default {
       this.darkMode = !this.darkMode;
     },
     routePlay() {
-      this.$router.push("/play")
+      this.$router.push("/play");
     },
   },
 };
