@@ -2,7 +2,9 @@ export enum PacketType{
     update = "Update",
     info = "Info",
     movement = "Movement",
-    close = "Close"
+    mesh = "Mesh",
+    close = "Close",
+    interaction = "Interaction"
 }
 
 export class Packet{
@@ -11,9 +13,10 @@ export class Packet{
     public payload: any; 
     public uid?: string | undefined
 
-    constructor(packetType: PacketType, data: Array<any>){
+    constructor(packetType: PacketType, data: Array<any>, uid: string){
         this.type = packetType;
         this.payload = data;
+        this.uid = uid
     }
 
 }

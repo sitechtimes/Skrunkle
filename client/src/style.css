@@ -3,3 +3,50 @@
   padding: 0;
   margin: 0;
 }
+.customLoadingScreenDiv{
+  width: 100vw;
+  height: 100vh;
+  background-color: #FFB238;
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+}
+.hello{
+  width: 100vw;
+  height: 100vh;
+  background-color: #FFB238;
+  z-index: 1000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  
+}
+.chicken{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 35%;
+height: auto;
+}
+.load{
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 65rem;
+  height: 3rem;
+  background: linear-gradient(#FABC3C, #F55536);
+  border: solid black 5px;
+  box-shadow: 8px 10px black;
+}
+
+#debug{
+  position: absolute;
+  color: green;
+  font-size: larger;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}

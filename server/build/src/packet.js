@@ -6,12 +6,15 @@ var PacketType;
     PacketType["update"] = "Update";
     PacketType["info"] = "Info";
     PacketType["movement"] = "Movement";
+    PacketType["mesh"] = "Mesh";
     PacketType["close"] = "Close";
+    PacketType["interaction"] = "Interaction";
 })(PacketType = exports.PacketType || (exports.PacketType = {}));
 var Packet = /** @class */ (function () {
-    function Packet(packetType, data) {
+    function Packet(packetType, data, uid) {
         this.type = packetType;
         this.payload = data;
+        this.uid = uid;
     }
     return Packet;
 }());
