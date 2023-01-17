@@ -36,9 +36,9 @@ export class Generation {
         "treemesh.glb",
         this._scene
       );
-      item2.position.x = 45;
+      item2.position.x = 15;
       item2.position.y = 1;
-      item2.position.z = 20;
+      item2.position.z = 0;
       item2.metadata = "item";
       return item2;
     },
