@@ -72,10 +72,14 @@ var World = /** @class */ (function () {
         this._ground = babylonjs_1.MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
-        this.box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
-        this.box.physicsImpostor = new babylonjs_1.PhysicsImpostor(this.box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
-        this.temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(0, 100, 0), this.box);
-        this._entities.set("M-".concat(this.temp.id), this.temp);
+        for (var x = 0; x < 10; x++) {
+            for (var z = 0; z < 10; z++) {
+                var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
+                box.physicsImpostor = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+                var temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(z * 10, 100, x * 10), box);
+                this._entities.set("M-".concat(temp.id), temp);
+            }
+        }
         // this._entities.
         // console.log(this._ground.position)
     }
@@ -114,7 +118,6 @@ var World = /** @class */ (function () {
                 //     console.log(`${id}: ${p.body}`)
                 // }
                 _this._updateEntities();
-                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
@@ -140,7 +143,7 @@ var World = /** @class */ (function () {
         }
     };
     World.prototype.add_players = function (id) {
-        var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
+        var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 3, width: 3, height: 4 }, this._scene);
         var physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         var player = new player_1.Player(playerMesh, physicsImposter, "player.name", 100, 100, new babylonjs_1.Vector3(0, 0, 0), id);
         this.players.set(id, player);
@@ -168,7 +171,6 @@ var World = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
-        console.log(data);
         return data;
     };
     World.prototype.move_player = function (id, change_vector) {

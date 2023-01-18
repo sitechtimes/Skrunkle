@@ -23,8 +23,6 @@ export class World{
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, Player> = new Map()
-    public box: any;
-    public temp: Entities;
     
     constructor(socket: SocketServer){
         this._engine = new NullEngine();
@@ -36,13 +34,21 @@ export class World{
         this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
+        for (let x = 0; x < 10; x ++){
+
+            for (let z = 0; z < 10; z ++){
+
+                let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
+                box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
         
-        this.box =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
-        this.box.physicsImpostor =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+                let temp: Entities = new Entities("Box test", new Vector3(z * 10, 100, x * 10), box);
+        
+                this._entities.set(`M-${temp.id}`, temp)
+            }
 
-        this.temp = new Entities("Box test", new Vector3(0, 100, 0), this.box);
-
-        this._entities.set(`M-${this.temp.id}`, this.temp)
+        }
+        
 
         // this._entities.
 
@@ -90,7 +96,6 @@ export class World{
 
                 this._updateEntities()
 
-                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             })
 
         })
@@ -110,7 +115,7 @@ export class World{
     }
 
     public add_players(id: string): Player{
-        let playerMesh: Mesh = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
+        let playerMesh: Mesh = MeshBuilder.CreateBox(id, {size: 3, width: 3, height: 4}, this._scene)
         let physicsImposter: PhysicsImpostor = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         let player: Player = new Player(playerMesh, physicsImposter, "player.name", 100, 100, new Vector3(0, 0,0 ), id)
         this.players.set(id, player)
@@ -128,7 +133,6 @@ export class World{
     public _array_entities(): any[]{
         const data: any = []
         for (const [key, value] of this._entities) data.push({position: value.position})
-        console.log(data)
         return data
     }
 

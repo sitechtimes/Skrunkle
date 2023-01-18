@@ -1,4 +1,5 @@
-import { Scene, Engine, Vector3, MeshBuilder, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial, KeyboardEventTypes, ParticleSystem,} from '@babylonjs/core';
+import { Scene, Engine, Vector3, MeshBuilder, CannonJSPlugin, HemisphericLight, FreeCamera, StandardMaterial, Color3, RayHelper,  PointerEventTypes, Matrix, BlurPostProcess, NodeMaterial, KeyboardEventTypes, ParticleSystem, DebugLayer, PhysicsImpostor, PhysicsViewer} from '@babylonjs/core';
+import * as cannon from "cannon-es";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer"
 import { Socket } from "../socket"
@@ -13,6 +14,7 @@ export class World {
     private _engine: Engine;
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
+    private _physicsViewer: PhysicsViewer;
     private _playerCamera: FreeCamera;
     private _entities: Map<string, Entities> = new Map();
     private _socket: Socket;
@@ -29,28 +31,37 @@ export class World {
         this._canvas = canvas;
         this._engine = new Engine(this._canvas);
         this._scene = new Scene(this._engine);
-        this._GUI = new GUI(this._scene);
+        this._physicsViewer = new PhysicsViewer(this._scene)
+         this._GUI = new GUI(this._scene);
         this._players = new Map<string, Player>;
         this._testMaterial =  new StandardMaterial("_testMaterial", this._scene);
         this._guiOpen = false;
         this.chestOpen = false;
         this._pickup = false;
         this._pickedup = false
+
+        this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
+
     }
 
     public init(): void {
         this._scene.useRightHandedSystem = true;
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         this._playerCamera = new FreeCamera("FreeCamera", new Vector3(0, 6, 0), this._scene);
-        var ground = MeshBuilder.CreateGround("ground", { width: 500, height: 500 }, this._scene);
+        var ground = MeshBuilder.CreateGround("ground", { width: 1000, height: 1000 }, this._scene);
+        var groundMat = new StandardMaterial("groundMat", this._scene);
+        groundMat.diffuseColor = new Color3(0.5, 0.5, 0.5);
+        groundMat.emissiveColor = new Color3(0.2, 0.2, 0.2);
+        ground.material = groundMat;
         ground.position = new Vector3(0, 0, 0)
         ground.checkCollisions = true;
+        ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+        
         var light = new HemisphericLight(
             "light",
             new Vector3(0, 1, 0),
             this._scene
         );
-
 //   this._scene.onPointerObservable.add((pointerInfo) => {
 //     switch (pointerInfo.type) {
 //       case PointerEventTypes.POINTERWHEEL:
@@ -229,6 +240,11 @@ export class World {
                         let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
                         box.material = material
                         box.position = mesh.position
+                        box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1000000, restitution: 0 }, this._scene);
+
+                        this._physicsViewer.showImpostor(box.physicsImpostor, box);
+
+                        console.log("showed ")
 
                         this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))
                         //     box.metadata = "box"
