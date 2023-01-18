@@ -13,11 +13,11 @@ export class Generation {
 
   public GENERATE = {
     Cylinder: (name?: string): Mesh => {
-      let item = MeshBuilder.CreateCylinder("item", { height: 5, diameter: 3 });
+      let item = MeshBuilder.CreateCylinder("Cylinder", { height: 5, diameter: 3 });
       item.position.x = 3;
       item.position.y = 1;
       item.position.z = 10;
-      item.metadata = name ?? "Cylinder"
+      item.metadata = `${name}-${Math.random()*100000}` ?? `Cylinder-${Math.random()*100000}`
       var myMat = new StandardMaterial("myMat", this._scene);
       myMat.specularColor = new Color3(0.15, 0.76, 0.9);
       myMat.diffuseColor = new Color3(0.95, 0.16, 0.9);
@@ -29,8 +29,8 @@ export class Generation {
       return item
     }, 
     Box: (name?: string): Mesh => {
-      let item = MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene)
-      item.metadata = name ?? "Box"
+      let item = MeshBuilder.CreateBox("Box", { size: 2, height: 2, width: 2}, this._scene)
+      item.metadata = `${name}-${Math.random()*100000}` ?? `Box-${Math.random()*100000}`
 
       this._world.addEntity(item)
       return item
@@ -44,7 +44,7 @@ export class Generation {
     item.position.z = (Math.random()*squareRange) - (squareRange/2)
     items.push(item)
     for (let i = 1; i < count; i++) {
-      let newItem: Mesh = this.GENERATE[item.metadata as "Cylinder" | "Box"]()
+      let newItem: Mesh = this.GENERATE[item.name as "Cylinder" | "Box"]()
       newItem.position.x = (Math.random()*squareRange) - (squareRange/2)
       newItem.position.z = (Math.random()*squareRange) - (squareRange/2)
       this._world.addEntity(newItem)

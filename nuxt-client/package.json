@@ -11,6 +11,7 @@
     "@babylonjs/core": "^5.42.0",
     "@babylonjs/gui": "^5.42.0",
     "@babylonjs/loaders": "^5.42.0",
+    "@nuxt/types": "^2.15.8",
     "nuxt": "3.0.0",
     "prettier": "^2.8.2"
   },

@@ -6,7 +6,6 @@ import {
   HemisphericLight,
   FreeCamera,
   StandardMaterial,
-  Color3,
   Matrix,
   KeyboardEventTypes,
 } from "@babylonjs/core";
@@ -30,11 +29,13 @@ export class World {
   private _player: MainPlayer | undefined;
   private _players: Map<string, Player>;
   private _GUI: GUI;
+  // @ts-expect-error
   private _hotbar: Hotbar;
   private _debug: boolean = true;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
+  // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
 
@@ -67,6 +68,7 @@ export class World {
     );
     ground.position = new Vector3(0, 0, 0);
     ground.checkCollisions = true;
+    // @ts-expect-error
     var light = new HemisphericLight(
       "light",
       new Vector3(0, 1, 0),
