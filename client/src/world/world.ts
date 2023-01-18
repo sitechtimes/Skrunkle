@@ -14,7 +14,6 @@ export class World {
     private _engine: Engine;
     private _scene: Scene;
     private _canvas: HTMLCanvasElement | null;
-    private _physicsViewer: PhysicsViewer;
     private _playerCamera: FreeCamera;
     private _entities: Map<string, Entities> = new Map();
     private _socket: Socket;
@@ -127,6 +126,7 @@ export class World {
                     }
 
                 }
+
             })
 
         })
@@ -242,10 +242,8 @@ export class World {
                         box.position = mesh.position
                         box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1000000, restitution: 0 }, this._scene);
 
-                        this._physicsViewer.showImpostor(box.physicsImpostor, box);
-
-                        console.log("showed ")
-
+                        new PhysicsViewer(this._scene).showImpostor(box.physicsImpostor, box)
+                        
                         this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))
                         //     box.metadata = "box"
                         //     box.material = material; // <--

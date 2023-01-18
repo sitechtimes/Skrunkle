@@ -23,7 +23,7 @@ export class Entities{
 
     public set position(new_position: Vector3){
         this._position = new_position;
-        if (this._object.position) this._object.position = this._position
+        if (this._object) this._object.position = this._position
     }
 
     public get name(): string{

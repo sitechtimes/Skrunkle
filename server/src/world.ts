@@ -35,9 +35,9 @@ export class World{
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
-        for (let x = 0; x < 10; x ++){
+        for (let x = 0; x < 5; x ++){
 
-            for (let z = 0; z < 10; z ++){
+            for (let z = 0; z < 5; z ++){
 
                 let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
                 box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
