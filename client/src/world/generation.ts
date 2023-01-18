@@ -2,7 +2,8 @@ import { World } from "./world";
 import {
   Scene,
   Mesh,
-  SceneLoader
+  SceneLoader,
+  TransformNode
 } from "@babylonjs/core";
 
 export class Generation {
@@ -23,10 +24,12 @@ export class Generation {
         "treeModel2.glb",
         this._scene
       );
-      item.position.x = 3;
-      item.position.y = 1;
-      item.position.z = 10;
-      item.metadata = "item";
+      var CoT = new TransformNode("root");
+      item.parent = CoT;
+      CoT.position.x += 13;
+      CoT.position.y += 1;
+      CoT.position.z += 10;
+      CoT.metadata = "item";
       return item;
     },
     TestCyclinder2: async (): Promise<Mesh> => {
@@ -36,10 +39,12 @@ export class Generation {
         "treemesh.glb",
         this._scene
       );
-      item2.position.x = 15;
-      item2.position.y = 1;
-      item2.position.z = 0;
-      item2.metadata = "item";
+      var CoT = new TransformNode("root");
+      item2.parent = CoT;
+      CoT.position.x += 15;
+      CoT.position.y += 1;
+      CoT.position.z += 0;
+      CoT.metadata = "item";
       return item2;
     },
   };
