@@ -228,9 +228,11 @@ export class World {
                     if (this._entities.has(uid)){ 
                         let entity: Entities = this._entities.get(uid)
                         entity!.position = data.payload[0].position
+                        entity!.rotation = data.payload[0].rotation
                         this._entities.set(uid, entity)
                     }else{ // make it a mesh
                         let mesh = data.payload[0]
+                        console.log(mesh)
                         // let meshdata = data.payload
                         var material = new StandardMaterial("box color", this._scene);
                         material.alpha = 1;
@@ -239,12 +241,13 @@ export class World {
                         // for (let mesh of meshdata){
                         let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
                         box.material = material
-                        box.position = mesh.position
                         box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1000000, restitution: 0 }, this._scene);
-
                         new PhysicsViewer(this._scene).showImpostor(box.physicsImpostor, box)
+
+                        let entity = new Entities("mesh.name", uid ,mesh.position, mesh.rotation , box)
+
                         
-                        this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))
+                        this._entities.set(uid, entity)
                         //     box.metadata = "box"
                         //     box.material = material; // <--
                         //     this._entities.push(box)

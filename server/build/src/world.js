@@ -76,7 +76,7 @@ var World = /** @class */ (function () {
             for (var z = 0; z < 5; z++) {
                 var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
                 box.physicsImpostor = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
-                var temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(z * 10, 100, x * 10), box);
+                var temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(z * 10, 100, x * 10), new babylonjs_1.Vector3(0, 0, 0), box);
                 this._entities.set("M-".concat(temp.id), temp);
             }
         }
@@ -129,8 +129,7 @@ var World = /** @class */ (function () {
         try {
             for (var _b = __values(this._entities), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
-                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, [{ position: value.position }]);
-                updatePacket.uid = key;
+                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, [{ position: value.position, rotation: value.rotation }], key);
                 this._socket.broadCast(updatePacket);
             }
         }
