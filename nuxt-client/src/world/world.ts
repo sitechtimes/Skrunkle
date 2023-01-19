@@ -173,8 +173,8 @@ export class World {
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
     if (this.chestOpen == false) {
       if (
-        (hit!.pickedMesh && hit!.pickedMesh.metadata == "box") ||
-        hit!.pickedMesh!.metadata == "obox"
+        (hit!.pickedMesh && hit!.pickedMesh.metadata == "Box") ||
+        hit!.pickedMesh!.metadata == "Box"
       ) {
         console.log("hit");
         this.chestOpen = true;
@@ -206,25 +206,24 @@ export class World {
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
     if (
       (hit!.pickedMesh && hit!.pickedMesh.metadata == "item") ||
-      hit!.pickedMesh!.metadata == "obox" ||
-      hit!.pickedMesh!.metadata == "box"
+      hit!.pickedMesh!.metadata == "Cylinder" ||
+      hit!.pickedMesh!.metadata == "Box"
     ) {
       console.log("hit");
       this._pickup = true;
-
-      if ((hit!.pickedMesh!.metadata = "item")) {
-        this._scene.onKeyboardObservable.add((kbInfo) => {
-          switch (kbInfo.type) {
-            case KeyboardEventTypes.KEYDOWN:
-              if (kbInfo.event.key == "f") {
-                this._pickedup = true;
-                document.getElementById("PickedupItem")!.innerHTML =
-                  "Picked Up";
-              }
-              break;
-          }
-        });
-      }
+      
+      this._scene.onKeyboardObservable.add((kbInfo) => {
+        switch (kbInfo.type) {
+          case KeyboardEventTypes.KEYDOWN:
+            if (kbInfo.event.key == "f") {
+              this._pickedup = true;
+              document.getElementById("PickedupItem")!.innerHTML =
+                "Picked Up";
+            }
+            break;
+        }
+      });
+      
     } else {
       this._pickup = false;
     }

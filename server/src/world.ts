@@ -24,7 +24,7 @@ export class World{
 
         this._generator = new Generation(this, this._scene)
 
-        this._generator.GENERATE.Box()
+        this._entities.push(this._generator.GENERATE.Box())
         // this._generator.GENERATE.TestCylinder()
         this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 20, 50)
         // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
