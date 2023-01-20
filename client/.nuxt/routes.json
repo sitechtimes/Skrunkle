@@ -3,21 +3,18 @@
     "name": "details",
     "path": "/details",
     "component": "C:\\\\Users\\\\thomas.anderson\\\\Documents\\\\babylon\\\\client\\\\pages\\\\details.vue",
-    "chunkName": "pages/details",
-    "_name": "_767ccadb"
+    "chunkName": "pages/details"
   },
   {
     "name": "play",
     "path": "/play",
     "component": "C:\\\\Users\\\\thomas.anderson\\\\Documents\\\\babylon\\\\client\\\\pages\\\\play.vue",
-    "chunkName": "pages/play",
-    "_name": "_e6de972a"
+    "chunkName": "pages/play"
   },
   {
     "name": "index",
     "path": "/",
     "component": "C:\\\\Users\\\\thomas.anderson\\\\Documents\\\\babylon\\\\client\\\\pages\\\\index.vue",
-    "chunkName": "pages/index",
-    "_name": "_47ed05ab"
+    "chunkName": "pages/index"
   }
 ]
