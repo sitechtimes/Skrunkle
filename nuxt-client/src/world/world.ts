@@ -121,7 +121,6 @@ export class World {
       this._engine.runRenderLoop(() => {
         this._scene.render();
         if (this._player) {
-          console.log(this._player.position);
           this._socket?.send(
             new Packet(
               PacketType.movement,
@@ -211,19 +210,17 @@ export class World {
     ) {
       console.log("hit");
       this._pickup = true;
-      
+
       this._scene.onKeyboardObservable.add((kbInfo) => {
         switch (kbInfo.type) {
           case KeyboardEventTypes.KEYDOWN:
             if (kbInfo.event.key == "f") {
               this._pickedup = true;
-              document.getElementById("PickedupItem")!.innerHTML =
-                "Picked Up";
+              document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
             }
             break;
         }
       });
-      
     } else {
       this._pickup = false;
     }

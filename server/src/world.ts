@@ -78,7 +78,7 @@ export class World{
                 type: entity.metadata,
                 position: entity.position,
                 name: entity.name,
-                metdata: entity.metadata
+                metadata: entity.metadata
             }
         })
     }
