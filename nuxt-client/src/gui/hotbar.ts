@@ -123,9 +123,6 @@ export class Hotbar {
         case "Digit0":
           this.current = 10;
           break;
-        case "KeyE":
-          this.current?.use();
-          break;
       }
     };
     onwheel = (event) => {
@@ -138,9 +135,6 @@ export class Hotbar {
           this.increment();
           break;
       }
-    };
-    onclick = () => {
-      this.current?.use();
     };
   }
 
@@ -157,6 +151,10 @@ export class Hotbar {
 
   public healthChange(new_health: number) {
     this._healthBar!.text = `Health: ${new_health}`;
+  }
+
+  public use() {
+    this.current?.use()
   }
 
   public add(item: PlayerItem, slot: number): boolean {

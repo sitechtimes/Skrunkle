@@ -19,7 +19,7 @@ export class Generation {
 
   public GENERATE = {
     TestCyclinder: (mesh: any): Mesh => {
-      let item = MeshBuilder.CreateCylinder("Cylinder", {
+      let item = MeshBuilder.CreateCylinder(mesh.name, {
         height: 5,
         diameter: 3,
       });

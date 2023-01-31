@@ -27,29 +27,25 @@ export class PlayerItem {
     // call entity generation
   }
 
-  public use() {
+  public use(id: any) {
     console.log("item used");
     switch (this._type) {
       case "Damage":
         // TODO: use the hitbox detection
-        let targetID: string =
-          "asdf"; /* DETECT TARGET WITH POINTER EVENT THING */
-        if (targetID) {
-          this.#_socket.send(
-            new Packet(
-              PacketType.interaction,
-              [
-                {
-                  id: this.#_player.id,
-                  target: targetID,
-                  type: this._type,
-                  magnitude: this._magnitude,
-                },
-              ],
-              this.#_player.id
-            )
-          );
-        }
+        this.#_socket.send(
+          new Packet(
+            PacketType.interaction,
+            [
+              {
+                id: this.#_player.id,
+                target: id,
+                type: this._type,
+                magnitude: this._magnitude,
+              },
+            ],
+            this.#_player.id
+          )
+        );
         break;
       case "Heal":
         this.#_player.heal(this._magnitude);

@@ -151,6 +151,13 @@ export class World {
       });
     });
 
+    onclick = () => {
+      let dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera)
+      let hit = this._scene.pickWithRay(dray)
+
+      
+    }
+
     this.listen();
   }
 
