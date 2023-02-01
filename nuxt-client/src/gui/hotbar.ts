@@ -153,8 +153,8 @@ export class Hotbar {
     this._healthBar!.text = `Health: ${new_health}`;
   }
 
-  public use() {
-    this.current?.use()
+  public use(id: string) {
+    this.current?.use(id)
   }
 
   public add(item: PlayerItem, slot: number): boolean {

@@ -85,6 +85,7 @@ export class SocketServer {
               break
             case "Interaction":
               this.logger.log("Received interaction")
+              this.broadCast(new Packet(PacketType.interaction, msg.payload[0]))
               break
             case "ping":
               this.logger.log("Received Ping from client. Pong!")

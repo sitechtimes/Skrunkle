@@ -52,7 +52,7 @@ export class Player {
     /*NAME TAG*/
     if (!options.mainPlayer) {
       this._nametag = MeshBuilder.CreatePlane(
-        "NamePlane",
+        this._id,
         { width: 2, height: 2 },
         this._scene
       ); // fix ltr
@@ -81,6 +81,7 @@ export class Player {
       planeMat.diffuseTexture = planeTexture;
 
       this._nametag.material = planeMat;
+      this._nametag.metadata = "Player"
       this._nametag.billboardMode = Mesh.BILLBOARDMODE_ALL;
       this._nametag.position = new Vector3(
         this._position.x,
@@ -103,12 +104,13 @@ export class Player {
   }
 
   private _setBody(scene: any) {
-    let parent: TransformNode = new Mesh("player-group", this._scene);
+    let parent: TransformNode = new Mesh(this._id, this._scene);
     for (let child of scene.meshes) {
       child.position = new Vector3(0, 0, 0);
       child.parent = parent;
     }
     parent.position = new Vector3(0, 0, 0);
+    parent.metadata = "Player"
     // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
     // parent.scaling = new Vector3(0.25, 0.25, 0.25)
     this._body = parent;
@@ -165,6 +167,14 @@ export class Player {
   public heal(magnitude: number) {
     this._health += magnitude;
     if (this._health > 100) this._health = 100;
+  }
+
+  public damage(magnitude: number) {
+    this._health -= magnitude;
+    if (this._health <= 0) {
+      console.log("dead")
+      this._health = 100;
+    }
   }
 
   public get exp(): number {
