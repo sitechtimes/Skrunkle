@@ -152,13 +152,18 @@ export class World {
     });
 
     onclick = () => {
-      let dray = this._scene.createPickingRay(960, 540, Matrix.Identity(), this._playerCamera)
-      let hit = this._scene.pickWithRay(dray)
+      let dray = this._scene.createPickingRay(
+        960,
+        540,
+        Matrix.Identity(),
+        this._playerCamera
+      );
+      let hit = this._scene.pickWithRay(dray);
 
-      if (hit?.pickedMesh?.metadata == "Player") {
-        this._hotbar.use(hit.pickedMesh.name)
+      if (hit?.pickedMesh?.metadata == "Player" || this._hotbar.current!._type == "Heal") {
+        this._hotbar.use(hit?.pickedMesh?.name);
       }
-    }
+    };
 
     this.listen();
   }
@@ -398,11 +403,24 @@ export class World {
         this._players.delete(data.payload[0].id);
         break;
       case "Interaction":
-        let target: Player | undefined = this._players.get(data.payload.target)
-        target?.damage(data.payload.magnitude)
-        console.log(target?.id, this._player?.id)
-        if (target == this._player?.id) {
-          this._hotbar.healthChange(target!.health)
+        let target: Player | MainPlayer | undefined;
+        if (data.payload.target == this._player?.id) {
+          target = this._player!;
+        } else {
+          target = this._players.get(data.payload.target);
+        }
+        switch (data.payload.type) {
+          case "Damage":
+            target?.damage(data.payload.magnitude);
+            break;
+          case "Heal":
+            target?.heal(data.payload.magnitude);
+            break;
+        }
+        console.log(target?.id, this._player?.id);
+        console.log(target?.health);
+        if (target?.id == this._player?.id) {
+          this._hotbar.healthChange(target!.health);
         }
 
         break;

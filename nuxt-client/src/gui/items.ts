@@ -31,7 +31,6 @@ export class PlayerItem {
     console.log("item used");
     switch (this._type) {
       case "Damage":
-        // TODO: use the hitbox detection
         this.#_socket.send(
           new Packet(
             PacketType.interaction,

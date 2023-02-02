@@ -81,7 +81,7 @@ export class Player {
       planeMat.diffuseTexture = planeTexture;
 
       this._nametag.material = planeMat;
-      this._nametag.metadata = "Player"
+      this._nametag.metadata = "Player";
       this._nametag.billboardMode = Mesh.BILLBOARDMODE_ALL;
       this._nametag.position = new Vector3(
         this._position.x,
@@ -110,7 +110,7 @@ export class Player {
       child.parent = parent;
     }
     parent.position = new Vector3(0, 0, 0);
-    parent.metadata = "Player"
+    parent.metadata = "Player";
     // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
     // parent.scaling = new Vector3(0.25, 0.25, 0.25)
     this._body = parent;
@@ -172,7 +172,7 @@ export class Player {
   public damage(magnitude: number) {
     this._health -= magnitude;
     if (this._health <= 0) {
-      console.log("dead")
+      console.log("dead");
       this._health = 100;
     }
   }

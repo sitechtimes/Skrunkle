@@ -38,7 +38,7 @@ export class Hotbar {
       this._guiSlots.set(i, temp);
 
       temp.onPointerClickObservable.add(() => {
-        this.current = i;
+        this.currentSlot = i;
       });
 
       if (this._slots.has(i)) {
@@ -64,7 +64,7 @@ export class Hotbar {
       this._healthBar = <TextBlock>this._mainGUI.getChildren()[0]._children[4];
     }
 
-    this.current = 1;
+    this.currentSlot = 1;
   }
 
   private loadSlot(item: PlayerItem, slot: number) {
@@ -94,34 +94,34 @@ export class Hotbar {
     onkeydown = (event) => {
       switch (event.code) {
         case "Digit1":
-          this.current = 1;
+          this.currentSlot = 1;
           break;
         case "Digit2":
-          this.current = 2;
+          this.currentSlot = 2;
           break;
         case "Digit3":
-          this.current = 3;
+          this.currentSlot = 3;
           break;
         case "Digit4":
-          this.current = 4;
+          this.currentSlot = 4;
           break;
         case "Digit5":
-          this.current = 5;
+          this.currentSlot = 5;
           break;
         case "Digit6":
-          this.current = 6;
+          this.currentSlot = 6;
           break;
         case "Digit7":
-          this.current = 7;
+          this.currentSlot = 7;
           break;
         case "Digit8":
-          this.current = 8;
+          this.currentSlot = 8;
           break;
         case "Digit9":
-          this.current = 9;
+          this.currentSlot = 9;
           break;
         case "Digit0":
-          this.current = 10;
+          this.currentSlot = 10;
           break;
       }
     };
@@ -140,21 +140,21 @@ export class Hotbar {
 
   // on scroll wheel
   public async increment() {
-    if (this._currentSlot === 10) this.current = 1;
-    else this.current = this._currentSlot + 1;
+    if (this._currentSlot === 10) this.currentSlot = 1;
+    else this.currentSlot = this._currentSlot + 1;
   }
 
   public async decrement() {
-    if (this._currentSlot === 1) this.current = 10;
-    else this.current = this._currentSlot - 1;
+    if (this._currentSlot === 1) this.currentSlot = 10;
+    else this.currentSlot = this._currentSlot - 1;
   }
 
   public healthChange(new_health: number) {
     this._healthBar!.text = `Health: ${new_health}`;
   }
 
-  public use(id: string) {
-    this.current?.use(id)
+  public use(id?: string) {
+    this.current?.use(id);
   }
 
   public add(item: PlayerItem, slot: number): boolean {
@@ -166,12 +166,12 @@ export class Hotbar {
     return true;
   }
 
-  public get current(): any {
+  public get current(): PlayerItem|undefined {
     // this is to stop circular data json error
     return this._slots.get(this._currentSlot);
   }
 
-  public set current(slot: number) {
+  public set currentSlot(slot: number) {
     if (this._currentSlot !== 0) {
       let oldControl = this._guiSlots.get(this._currentSlot);
       oldControl.children[0].background = "#cccccc";
