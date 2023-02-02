@@ -23,6 +23,7 @@ export class World{
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, Player> = new Map()
+    private temp: any;
     
     constructor(socket: SocketServer){
         this._engine = new NullEngine();
@@ -39,15 +40,16 @@ export class World{
 
             for (let z = 0; z < 5; z ++){
 
-                let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
-                box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
-        
-                let temp: Entities = new Entities("Box test", new Vector3(z * 10, 100, x * 10), box);
-        
-                this._entities.set(`M-${temp.id}`, temp)
+                
             }
 
         }
+        let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
+        box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
+
+        let temp: Entities = new Entities("Box test", new Vector3(1 * 10, 100, 1 * 10), box);
+
+        this._entities.set(`M-${temp.id}`, temp)
         
 
         // this._entities.
@@ -93,7 +95,6 @@ export class World{
                 //     let p: Player = this.players.get(id)
                 //     console.log(`${id}: ${p.body}`)
                 // }
-
                 this._updateEntities()
 
             })
@@ -108,8 +109,7 @@ export class World{
 
     public _updateEntities(): void{
         for (let [key, value] of this._entities){
-            let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position}])
-            updatePacket.uid = key;
+            let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: value.object.physicsImpostor.getLinearVelocity(), angularVelocity: value.object.physicsImpostor.getAngularVelocity()}], key)
             this._socket.broadCast(updatePacket)
         }
     }

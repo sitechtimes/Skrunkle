@@ -219,16 +219,17 @@ export class World {
         this._players.set(player.uid, player)
     }
     public onSocketData(data: Packet): void {
-        // console.log(data)
         switch (data?.type) {
             case "Update":
                 let playerData = data.payload
                 let uid: string = data.uid
                 if (uid.charAt(0) == 'M'){// it is a mesh!
                     if (this._entities.has(uid)){ 
+                        let mesh = data.payload[0]
                         let entity: Entities = this._entities.get(uid)
-                        entity!.position = data.payload[0].position
+                        entity.update(mesh.linearVelocity, mesh.angularVelocity, mesh.position)
                         this._entities.set(uid, entity)
+                        console.log(mesh)
                     }else{ // make it a mesh
                         let mesh = data.payload[0]
                         // let meshdata = data.payload
@@ -239,12 +240,14 @@ export class World {
                         // for (let mesh of meshdata){
                         let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
                         box.material = material
-                        box.position = mesh.position
                         box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1000000, restitution: 0 }, this._scene);
+
+                        let entity = new Entities("mesh.name", uid ,mesh.position, box)
+                        entity.update(mesh.linearVelocity, mesh.angularVelocity, mesh.position)
 
                         new PhysicsViewer(this._scene).showImpostor(box.physicsImpostor, box)
                         
-                        this._entities.set(uid, new Entities("mesh.name", uid ,mesh.position, box))
+                        this._entities.set(uid, entity)
                         //     box.metadata = "box"
                         //     box.material = material; // <--
                         //     this._entities.push(box)

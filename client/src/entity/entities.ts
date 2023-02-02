@@ -1,4 +1,4 @@
-import { Vector3 } from "babylonjs"
+import { Vector3, Quaternion } from "babylonjs"
 
 export class Entities{
 
@@ -22,7 +22,7 @@ export class Entities{
     }
 
     public set position(new_position: Vector3){
-        this._position = new_position;
+        this._position = new Vector3(new_position._x, new_position._y, new_position._z);
         if (this._object) this._object.position = this._position
     }
 
@@ -40,6 +40,12 @@ export class Entities{
 
     public get object(): any{
         return this._object
+    }
+
+    public update(linearVelocity: Vector3, angularVelocity: Vector3, position: Vector3){
+        this.object.physicsImpostor.setAngularVelocity(angularVelocity);
+        this.object.physicsImpostor.setLinearVelocity(linearVelocity);
+        this.object.position = position;
     }
 
 }

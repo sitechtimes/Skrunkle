@@ -74,12 +74,12 @@ var World = /** @class */ (function () {
         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
         for (var x = 0; x < 5; x++) {
             for (var z = 0; z < 5; z++) {
-                var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
-                box.physicsImpostor = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
-                var temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(z * 10, 100, x * 10), box);
-                this._entities.set("M-".concat(temp.id), temp);
             }
         }
+        var box = babylonjs_1.MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10 }, this._scene);
+        box.physicsImpostor = new babylonjs_1.PhysicsImpostor(box, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
+        var temp = new entities_1.Entities("Box test", new babylonjs_1.Vector3(1 * 10, 100, 1 * 10), box);
+        this._entities.set("M-".concat(temp.id), temp);
         // this._entities.
         // console.log(this._ground.position)
     }
@@ -129,8 +129,7 @@ var World = /** @class */ (function () {
         try {
             for (var _b = __values(this._entities), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
-                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, [{ position: value.position }]);
-                updatePacket.uid = key;
+                var updatePacket = new packet_1.Packet(packet_1.PacketType.update, [{ position: value.position, linearVelocity: value.object.physicsImpostor.getLinearVelocity(), angularVelocity: value.object.physicsImpostor.getAngularVelocity() }], key);
                 this._socket.broadCast(updatePacket);
             }
         }
