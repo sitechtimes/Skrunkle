@@ -3,7 +3,6 @@ import {
   Scene,
   Mesh,
   SceneLoader,
-  TransformNode
 } from "@babylonjs/core";
 
 export class Generation {
@@ -18,42 +17,34 @@ export class Generation {
 
   public GENERATE = {
     TestCyclinder: async (): Promise<any> => {
-      let item: any = SceneLoader.ImportMeshAsync(
+      let item: any = await SceneLoader.ImportMeshAsync(
         "",
         "meshes/",
         "treeModel2.glb",
-        this._scene
-      )
-      const oldRoot = item;
-      const newRoot = TransformNode.prototype.clone.call(item.meshes[0], "__new_root__", null, true);
-      for (const child of oldRoot.getChildren()) {
-          child.parent = newRoot;
-      }
-      oldRoot.dispose();
-      newRoot!.position.x = 0;
-      newRoot!.position.y = 1;
-      newRoot!.position.z = 18;
-      return newRoot;
+        this._scene); 
+        for (let mesh of item.meshes){
+          mesh.position.x = 10;}
     },
     TestCyclinder2: async (): Promise<any> => {
-      let item2: any = SceneLoader.ImportMeshAsync(
+      let item2: any = await SceneLoader.ImportMeshAsync(
         "",
         "meshes/",
         "treemesh.glb",
-        this._scene
-      );
-      item2.metadata = "item";
-      const oldRoot = item2;
-      const newRoot = TransformNode.prototype.clone.call(item2.meshes[0], "newRoot", null, true);
-      for (const child of oldRoot.getChildren()) {
-          child.parent = newRoot;
+        this._scene);
+      for (let mesh of item2.meshes){
+        mesh.position.x = 50;
       }
-      oldRoot.dispose();
-      newRoot!.position.x = 10;
-      newRoot!.position.y = 1;
-      newRoot!.position.z = 10;
+      // const oldRoot = item2;
+      // const newRoot = TransformNode.prototype.clone.call(item2.meshes[0], "newRoot", null, true);
+      // for (const child of oldRoot.getChildren()) {
+      //     child.parent = newRoot;
+      // }
+      // oldRoot.dispose();
+      // newRoot!.position.x = 10;
+      // newRoot!.position.y = 1;
+      // newRoot!.position.z = 10;
 
-      return newRoot;
+      // return newRoot;
     },
   };
 

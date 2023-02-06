@@ -125,7 +125,7 @@ export class World {
       this._engine.runRenderLoop(() => {
         this._scene.render();
         if (this._player) {
-          console.log(this._player.position);
+          // console.log(this._player.position);
           this._socket?.send(
             new Packet(
               PacketType.movement,
