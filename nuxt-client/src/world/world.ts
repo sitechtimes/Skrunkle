@@ -8,6 +8,8 @@ import {
   StandardMaterial,
   Matrix,
   KeyboardEventTypes,
+  Mesh,
+  AbstractMesh,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -160,7 +162,7 @@ export class World {
       );
       let hit = this._scene.pickWithRay(dray);
 
-      if (hit?.pickedMesh?.metadata == "Player" || this._hotbar.current!._type == "Heal") {
+      if ((hit?.pickedMesh?.metadata == "Player" && this._hotbar.current?._class == "Ranged") || (hit?.pickedMesh?.metadata == "Player" && this._hotbar.current?._class == "Melee" && (this._evaluateDistance(hit!.pickedMesh!) < 10)) || this._hotbar.current!._type == "Heal") {
         this._hotbar.use(hit?.pickedMesh?.name);
       }
     };
@@ -206,6 +208,22 @@ export class World {
       this.chestOpen = false;
       document.getElementById("chestOpen")!.remove();
     }
+  }
+  private _evaluateDistance(mesh: AbstractMesh): number {
+    // thank you precalc
+    let totalVector = [
+      mesh.position.x - this._player!.position.x,
+      mesh.position.y - this._player!.position.y,
+      mesh.position.z - this._player!.position.z,
+    ]
+
+    let vectorMagnitude = Math.sqrt(
+      (totalVector[0]*totalVector[0])+
+      (totalVector[1]*totalVector[1])+
+      (totalVector[2]*totalVector[2])
+    )
+    
+    return vectorMagnitude
   }
   private _castLookingRay() {
     var dray = this._scene.createPickingRay(
@@ -273,6 +291,7 @@ export class World {
       new PlayerItem(Items.spork, this._player, this._hotbar, this._socket),
       5
     );
+    this._hotbar.add(new PlayerItem(Items.slingshot, this._player, this._hotbar, this._socket), 6)
     this._hotbar.add(
       new PlayerItem(Items.bandage, this._player, this._hotbar, this._socket),
       10
