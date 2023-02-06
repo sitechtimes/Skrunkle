@@ -1,5 +1,5 @@
 .nuxt
 node_modules
-.ouput
+.output
 dist
 .vite

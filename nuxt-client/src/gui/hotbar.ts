@@ -166,7 +166,7 @@ export class Hotbar {
     return true;
   }
 
-  public get current(): PlayerItem|undefined {
+  public get current(): PlayerItem | undefined {
     // this is to stop circular data json error
     return this._slots.get(this._currentSlot);
   }
