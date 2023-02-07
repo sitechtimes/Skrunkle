@@ -18,7 +18,7 @@ export class Entities{
     }
 
     public get position(): Vector3{
-        return this._position;
+        return this._object.position;
     }
 
     public set position(new_position: Vector3){
@@ -43,9 +43,9 @@ export class Entities{
     }
 
     public update(linearVelocity: Vector3, angularVelocity: Vector3, position: Vector3){
-        this.object.physicsImpostor.setAngularVelocity(angularVelocity);
-        this.object.physicsImpostor.setLinearVelocity(linearVelocity);
-        this.object.position = position;
+        this._object.physicsImpostor.setAngularVelocity(angularVelocity);
+        this._object.physicsImpostor.setLinearVelocity(linearVelocity);
+        this._object.position = position;
     }
 
 }

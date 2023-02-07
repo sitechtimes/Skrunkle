@@ -47,7 +47,7 @@ export class World{
         let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
         box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
 
-        let temp: Entities = new Entities("Box test", new Vector3(1 * 10, 100, 1 * 10), box);
+        let temp: Entities = new Entities("Box test", new Vector3(1 * 10, 1000, 1 * 10), box);
 
         this._entities.set(`M-${temp.id}`, temp)
         
@@ -110,6 +110,7 @@ export class World{
     public _updateEntities(): void{
         for (let [key, value] of this._entities){
             let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: value.object.physicsImpostor.getLinearVelocity(), angularVelocity: value.object.physicsImpostor.getAngularVelocity()}], key)
+            // let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: new Vector3(1, 1, 1), angularVelocity: new Vector3(1, 1, 1)}], key)
             this._socket.broadCast(updatePacket)
         }
     }
