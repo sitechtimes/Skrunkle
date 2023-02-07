@@ -8,7 +8,6 @@ import {
   StandardMaterial,
   Matrix,
   KeyboardEventTypes,
-  Mesh,
   AbstractMesh,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
@@ -163,11 +162,7 @@ export class World {
       let hit = this._scene.pickWithRay(dray);
 
       if (
-        (hit?.pickedMesh?.metadata == "Player" &&
-          this._hotbar.current?._class == "Ranged") ||
-        (hit?.pickedMesh?.metadata == "Player" &&
-          this._hotbar.current?._class == "Melee" &&
-          this._evaluateDistance(hit!.pickedMesh!) < 10) ||
+        (this._evaluateDistance(hit!.pickedMesh!) <= this._hotbar.current?._range!) ||
         this._hotbar.current!._type == "Heal"
       ) {
         this._hotbar.use(hit?.pickedMesh?.name);
