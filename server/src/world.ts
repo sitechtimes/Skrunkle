@@ -1,6 +1,7 @@
 import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
+import { Generation } from './generation';
 
 interface worldSize {
     top: Vector3,
@@ -15,12 +16,18 @@ export class World{
     private _entities: any[] = [];
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
+    public _generator: Generation
 
     constructor(){
         this._engine = new NullEngine();
         this._scene = new Scene(this._engine);
 
-        this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
+        this._generator = new Generation(this, this._scene)
+
+        this._entities.push(this._generator.GENERATE.Box())
+        // this._generator.GENERATE.TestCylinder()
+        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 20, 50)
+        // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
 
     }
 
@@ -67,8 +74,17 @@ export class World{
 
     public get entities(): any[]{
         return this._entities.map((entity: Mesh)=>{
-            return {name: entity.name, position: entity.position}
+            return {
+                type: entity.metadata,
+                position: entity.position,
+                name: entity.name,
+                metadata: entity.metadata
+            }
         })
+    }
+
+    public addEntity(item: Mesh) {
+        this._entities.push(item)
     }
     
 }
