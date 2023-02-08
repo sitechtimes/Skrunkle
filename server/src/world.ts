@@ -1,4 +1,4 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
+import { Quaternion, Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
 import { Entities } from './entity/entities';
 import { v4 as uuidv4 } from 'uuid';
@@ -40,16 +40,16 @@ export class World{
 
             for (let z = 0; z < 5; z ++){
 
+                let box: any =  MeshBuilder.CreateBox("box", { size: 7}, this._scene)
+                box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
+                box.physicsImpostor.setAngularVelocity(new Quaternion(x, 0, z, 1))
+                let temp: Entities = new Entities("Box test", new Vector3(x * 10, 100, z * 10), box);
+        
+                this._entities.set(`M-${temp.id}`, temp)
                 
             }
 
         }
-        let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
-        box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
-
-        let temp: Entities = new Entities("Box test", new Vector3(1 * 10, 1000, 1 * 10), box);
-
-        this._entities.set(`M-${temp.id}`, temp)
         
 
         // this._entities.

@@ -39,7 +39,7 @@ export class World {
         this._pickup = false;
         this._pickedup = false
 
-        this._scene.enablePhysics(new Vector3(0, 9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
 
     }
 
@@ -229,7 +229,6 @@ export class World {
                         let entity: Entities = this._entities.get(uid)
                         entity.update(mesh.linearVelocity, mesh.angularVelocity, mesh.position)
                         this._entities.set(uid, entity)
-                        console.log(entity.position)
                     }else{ // make it a mesh
                         let mesh = data.payload[0]
                         // let meshdata = data.payload
@@ -238,14 +237,14 @@ export class World {
                         material.diffuseColor = new Color3(1.0, 0.2, 0.7);
                         // console.log(meshdata)
                         // for (let mesh of meshdata){
-                        let box = MeshBuilder.CreateBox("mesh.name", { size: 3, width: 3, height: 3}, this._scene)
-                        // box.material = material
-                        box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 100000, restitution: 0.35 }, this._scene);
+                        let box = MeshBuilder.CreateBox("mesh.name", { size: 7}, this._scene)
+                        box.material = material
+                        box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 100, restitution: 0 }, this._scene);
 
                         let entity = new Entities("mesh.name", uid ,mesh.position, box)
-                        // entity.update(mesh.linearVelocity, mesh.angularVelocity, mesh.position)
+                        entity.update(mesh.linearVelocity, mesh.angularVelocity, mesh.position)
 
-                        // new PhysicsViewer(this._scene).showImpostor(box.physicsImpostor, box)
+                        new PhysicsViewer(this._scene).showImpostor(box.physicsImpostor, box)
                         
                         this._entities.set(uid, entity)
                         //     box.metadata = "box"
