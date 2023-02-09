@@ -1,5 +1,8 @@
-import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh } from "babylonjs"
+import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3 } from "babylonjs"
 import { World } from "./world"
+import { state_machine } from "./state_machine"
+import { Entities } from "./entity/entities"
+import { Vec3 } from "cannon-es"
 
 
 export class Generation {
@@ -25,11 +28,23 @@ export class Generation {
       myMat.ambientColor = new Color3(0.58, 0.6, 0.9);
       item.material = myMat;
 
+      let physicsImpostor = new PhysicsImpostor(item, PhysicsImpostor.CylinderImpostor, {mass: 100, restitution: 0.1 }, this._scene)
+      item.physicsImpostor = physicsImpostor
+
+      let entity: Entities = new Entities("generated-cylinder", new Vector3(0, 0, 0), item)
+      state_machine.entities.set(entity.id, entity)
+
       return item
     }, 
     Box: (name?: string): Mesh => {
       let item = MeshBuilder.CreateBox(`${name ?? "Box"}-${Math.random()*100000}` ?? `Box-${Math.random()*100000}`, { size: 2, height: 2, width: 2}, this._scene)
       item.metadata = "Box"
+
+      let physicsImpostor = new PhysicsImpostor(item, PhysicsImpostor.BoxImpostor, {mass: 100, restitution: 0.1 }, this._scene)
+      item.physicsImpostor = physicsImpostor
+
+      let entity: Entities = new Entities("generated-box", new Vector3(0, 0, 0), item)
+      state_machine.entities.set(entity.id, entity)
 
       return item
     }

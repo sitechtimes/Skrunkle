@@ -2,6 +2,7 @@ import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, Me
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
+import { state_machine } from "./state_machine"
 
 interface worldSize {
     top: Vector3,
@@ -52,8 +53,7 @@ export class World{
     public init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
-
-        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
 
         this._scene.executeWhenReady(()=>{
 
@@ -62,6 +62,7 @@ export class World{
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
                 this._ticks_elapsed++;
+                state_machine.update();
             })
 
         })
@@ -69,7 +70,8 @@ export class World{
         this.logger.interval_logger(this._tick_time, ()=>{
             this.logger.progress(`Avg Server tick (${this._tick_time} ms): ${this._get_tick}`)
         })
-        
+
+        state_machine.setWorld(this)
     }
 
     public get entities(): any[]{
