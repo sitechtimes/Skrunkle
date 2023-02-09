@@ -65,10 +65,18 @@ onMounted(async () => {
   overflow: hidden;
   padding: 0;
   margin: 0;
+  background-color: #f1b441;
 }
 .section {
   display: flex;
   justify-content: center;
-  margin-top: 10rem;
+  margin-top: 10%;
+}
+.input {
+  width: 20rem;
+  height: 1.5rem;
+}
+button {
+  margin-top: 1rem;
 }
 </style>
