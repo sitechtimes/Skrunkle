@@ -16,6 +16,14 @@
       <p id="PickedupItem"></p>
     </div>
 
+    <!-- <div id="chat">
+      <section class="message-history"></section>
+      <form @submit.prevent="" class="message-bar">
+        <input type="text" required>
+        <button>Send</button>
+      </form>
+    </div> -->
+
     <canvas
       id="renderCanvas"
       ref="renderCanvas"

@@ -4,7 +4,8 @@ export enum PacketType{
     movement = "Movement",
     mesh = "Mesh",
     close = "Close",
-    interaction = "Interaction"
+    interaction = "Interaction",
+    chat = "Chat"
 }
 
 export class Packet{
