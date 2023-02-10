@@ -1,33 +1,35 @@
-import { Vector3 } from "babylonjs"
+import { Quaternion, Vector3, Mesh, MeshBuilder, PhysicsImpostor, Scene } from "babylonjs"
+import { v4 as uuidv4 } from 'uuid';
 
 export class Entities{
 
-    private _position: Vector3;
     private _name: string;
-    private _id: string;
     private _object: any;
+    private _id: string;
 
-    constructor(name: string, id: string, position: Vector3, object: any | null){
+    constructor(name: string, position: Vector3, object: Mesh){
         this._name = name;
-        this._position = position;
-        this._id = id;
+        this._id = `M-${uuidv4()}`
         if (object) {
             this._object = object;
-            this._object.position = this._position;
+            this._object.position = position;
         }
-    }
-
-    public get position(): Vector3{
-        return this._object.position;
     }
 
     public get metadata(): string{
         return this._object.metadata
     }
 
+    public get position(): Vector3{
+        return this._object.position;
+    }
+
+    public get rotation(): Vector3{
+        return this._object.rotation;
+    }
+
     public set position(new_position: Vector3){
-        this._position = new Vector3(new_position._x, new_position._y, new_position._z);
-        if (this._object) this._object.position = this._position
+        if (this._object.position) this._object.position = new_position
     }
 
     public get name(): string{
@@ -44,10 +46,6 @@ export class Entities{
 
     public get object(): any{
         return this._object
-    }
-
-    public set object(new_object: any){
-        this._object = new_object
     }
 
     public update(linearVelocity: Vector3, angularVelocity: Vector3, position: Vector3){
