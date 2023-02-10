@@ -19,6 +19,7 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
+import { Chat } from "../chat/chat";
 
 export class World {
   private _engine: Engine;
@@ -39,6 +40,7 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
+  private _chat: Chat | undefined;
 
   constructor(canvas: HTMLCanvasElement | null) {
     this._canvas = canvas;
@@ -47,6 +49,7 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this);
+    this._chat = new Chat(this._socket, this._player!)
     this._generator = new Generation(this, this._scene);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
@@ -310,6 +313,7 @@ export class World {
       7
     );
     /* TEMPORARILY ADDED ITEMS */
+    this._chat = new Chat(this._socket, this._player)
     console.log("Created Main Player id: " + this._player.id);
     console.log(this._player.inventory);
   }
@@ -448,6 +452,9 @@ export class World {
         }
 
         break;
+      case "Chat":
+        this._chat?.receiveMessage(data.payload)
+        break
       default:
         // throw some error
         break;
