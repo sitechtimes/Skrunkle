@@ -16,13 +16,17 @@
       <p id="PickedupItem"></p>
     </div>
 
-    <!-- <div id="chat">
-      <section class="message-history"></section>
+    <div id="chat" class="hidden">
+      <section class="message-history">
+        <ul>
+          <li>TEST</li>
+        </ul>
+      </section>
       <form @submit.prevent="" class="message-bar">
-        <input type="text" required>
+        <input type="text" id="chat-box" required>
         <button>Send</button>
       </form>
-    </div> -->
+    </div>
 
     <canvas
       id="renderCanvas"
@@ -85,6 +89,21 @@ export default {
   background: linear-gradient(#fabc3c, #f55536);
   border: solid black 5px;
   box-shadow: 8px 10px black;
+}
+.hidden {
+  background-color: rgba(245, 85, 54, 0.2) !important;
+}
+#chat {
+  background-color: rgba(245, 85, 54, 0.7);
+  display: flex;
+  height: 500px;
+  width: 500px;
+  z-index: 100;
+  position: absolute;
+  right: 0;
+}
+#chat > form, section {
+  background-color: #fabc3c;
 }
 
 #debug {

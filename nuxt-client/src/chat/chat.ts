@@ -7,17 +7,37 @@ export class Chat {
   private _socket: Socket
   private _player: MainPlayer
   private _chatWindow: HTMLDivElement
+  private _chatBox: HTMLInputElement
   private _messages: ChatMessage[] = []
 
   constructor(socket: Socket, player: MainPlayer) {
     this._socket = socket
     this._player = player
     this._chatWindow = <HTMLDivElement>document.getElementById("chat")
+    this._chatBox = <HTMLInputElement>document.getElementById("chat-box")
+    this.listen()
+  }
+
+  private listen() {
+    onkeydown = (event) => {
+      switch (event.code) {
+        case "Slash":
+          this.toggleChat()
+          break
+        case "Escape":
+          this._chatWindow.classList.add("hidden")
+          document.getElementById("renderCanvas")?.focus()
+      }
+    }
   }
   
   public toggleChat() {
     // you can alter the css with this if you want
-    this._chatWindow.style.display = "none"
+    if (!this._chatWindow.classList.toggle("hidden")){
+      this._chatBox.focus()
+    } else {
+      document.getElementById("renderCanvas")?.focus()
+    }
   }
 
   public sendMessage(msg: string) {
@@ -26,6 +46,7 @@ export class Chat {
 
   public receiveMessage(message: ChatMessage) {
     this._messages.push(message)
+    // add it to DOM
   }
 }
 
