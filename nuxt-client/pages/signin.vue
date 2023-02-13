@@ -51,6 +51,9 @@
           </div>
         </div>
       </div>
+      <div class="noBaccoImg">
+        <img src="../assets/chickennobg.gif" alt="" />
+      </div>
     </section>
   </div>
 </template>
@@ -65,7 +68,8 @@ onMounted(async () => {
   overflow: hidden;
   padding: 0;
   margin: 0;
-  background-color: #f1b441;
+}
+.noBaccoImg {
 }
 .section {
   display: flex;
