@@ -25,7 +25,7 @@ export class World{
 
         this._generator = new Generation(this, this._scene)
 
-        this._entities.push(this._generator.GENERATE.Box())
+        this._generator.GENERATE.Box()
         // this._generator.GENERATE.TestCylinder()
         this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 20, 50)
         // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
@@ -74,19 +74,5 @@ export class World{
         state_machine.setWorld(this)
     }
 
-    public get entities(): any[]{
-        return this._entities.map((entity: Mesh)=>{
-            return {
-                type: entity.metadata,
-                position: entity.position,
-                name: entity.name,
-                metadata: entity.metadata
-            }
-        })
-    }
-
-    public addEntity(item: Mesh) {
-        this._entities.push(item)
-    }
     
 }

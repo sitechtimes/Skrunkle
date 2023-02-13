@@ -3,15 +3,18 @@ import { World } from "./world"
 import { state_machine } from "./state_machine"
 import { Entities, createEntity } from "./entity/entities"
 import { Vec3 } from "cannon-es"
+import { Logger } from "./logger"
 
 
 export class Generation {
   private _world: World
   private _scene: Scene
+  private logger: Logger
   
   constructor(world: World, scene: Scene) {
     this._world = world
     this._scene = scene
+    this.logger = new Logger("Generation")
   }
 
   public GENERATE = {
@@ -30,6 +33,7 @@ export class Generation {
 
       let entity = createEntity(this._scene, "generate_cylinder", item.position, item, PhysicsImpostor.CylinderImpostor, 90, 1)
       state_machine.add_entity(entity.id, entity)
+
 
       return entity
     }, 
@@ -53,8 +57,9 @@ export class Generation {
       newItem.position.x = (Math.random()*squareRange) - (squareRange/2)
       newItem.position.z = (Math.random()*squareRange) - (squareRange/2)
       items.push(newItem)
+      console.log("Generated mesh " + i)
     }
-    
+
     return items
   }
 }

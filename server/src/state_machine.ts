@@ -3,10 +3,11 @@ import { Entities } from "./entity/entities";
 import { Logger } from "./logger";
 import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
+import { Player } from "./entity/player";
 
 class State_machine{
 
-    public players: Map<string, Entities> = new Map();
+    public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
 
     private logger: Logger = new Logger("STATE_MACHINE");
@@ -39,7 +40,7 @@ class State_machine{
     }
 
     private broadcast_entity(): void{
-        for (let uid of Object.keys(this.entities)){
+        for (let uid of this.entities.keys()){
             let entity: Entities = this.entities.get(uid);
             let updatePacket: Packet = new Packet(PacketType.update, [
                 {
@@ -53,29 +54,30 @@ class State_machine{
     }
 
     private broadcast_player(): void{
-        for (let uid of Object.keys(this.players)){
-            let player_entity: Entities = this.entities.get(uid);
+        for (let uid of this.players.keys()){
+            let player_entity: Player = this.players.get(uid);
             let updatePacket: Packet = new Packet(PacketType.update, [
                 {
                     position: player_entity.position, 
-                    linearVelocity: player_entity.object.physicsImpostor.getLinearVelocity(), 
-                    angularVelocity: player_entity.object.physicsImpostor.getAngularVelocity()
+                    // rotaton: player_entity.rotation
+                    // linearVelocity: player_entity.object.physicsImpostor.getLinearVelocity(), 
+                    // angularVelocity: player_entity.object.physicsImpostor.getAngularVelocity()
                 }
             ], uid)
             this.socket_ref.broadCast(updatePacket)
         }
     }
 
-    public update_player(uid: string, entity: Entities){
-        this.players.set(uid, entity);
+    public update_player(uid: string, player: Player){
+        this.players.set(uid, player);
     }
 
     public update_entity(uid: string, entity: Entities){
         this.entities.set(uid, entity);
     }
 
-    public add_player(uid: string, entity: Entities){
-        this.players.set(uid, entity);
+    public add_player(uid: string, player: Player){
+        this.players.set(uid, player);
     }
 
     public add_entity(uid: string, entity: Entities){
@@ -99,7 +101,6 @@ class State_machine{
             this.logger.error("State Machine does not have world reference")
             return
         }
-
         this.broadcast_entity()
         this.broadcast_player()
     }

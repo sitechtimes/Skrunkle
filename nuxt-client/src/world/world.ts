@@ -318,7 +318,7 @@ export class World {
     this._players.set(player.id, player);
   }
   public onSocketData(data: Packet): void {
-    // console.log(data)
+    console.log(data)
     switch (data?.type) {
       case "Update":
         let playerData = data.payload;
@@ -331,14 +331,14 @@ export class World {
             100,
             0,
             new Vector3(
-              playerData.position.x,
-              playerData.position.y,
-              playerData.position.z
+              playerData[0].position.x,
+              playerData[0].position.y,
+              playerData[0].position.z
             ),
             new Vector3(
-              playerData.position.x,
-              playerData.position.y,
-              playerData.position.z
+              playerData[0].position.x,
+              playerData[0].position.y,
+              playerData[0].position.z
             ),
             playerData.id,
             this._scene,
