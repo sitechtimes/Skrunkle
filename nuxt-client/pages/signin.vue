@@ -4,7 +4,7 @@
       <div class="container">
         <div class="columns">
           <div class="columnn-mini">
-            <h2 class="title has-text-cen`tered">Welcome back!</h2>
+            <h2 class="title">Welcome back!</h2>
 
             <Notification :message="error" v-if="error" />
 
@@ -51,10 +51,10 @@
           </div>
         </div>
       </div>
-      <div class="noBaccoImg">
-        <img src="../assets/chickennobg.gif" alt="" />
-      </div>
     </section>
+    <div>
+      <img class="noBaccoImg" src="../assets/chickennobg.gif" alt="" />
+    </div>
   </div>
 </template>
 <script setup>
@@ -69,12 +69,30 @@ onMounted(async () => {
   padding: 0;
   margin: 0;
 }
+.title {
+  font-size: 4rem;
+}
 .noBaccoImg {
+  animation: moveSlideshow 12s linear infinite;
+}
+@keyframes moveSlideshow {
+  0% {
+    transform: translateX(-15%);
+  }
+  100% {
+    transform: translateX(105%);
+  }
 }
 .section {
   display: flex;
   justify-content: center;
-  margin-top: 10%;
+  margin-top: 5%;
+}
+form {
+  margin: 1rem 1rem 0rem 1rem;
+}
+p {
+  margin-left: 1rem;
 }
 .input {
   width: 20rem;
