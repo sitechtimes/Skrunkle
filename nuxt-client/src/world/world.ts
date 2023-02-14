@@ -318,7 +318,6 @@ export class World {
     this._players.set(player.id, player);
   }
   public onSocketData(data: Packet): void {
-    console.log(data)
     switch (data?.type) {
       case "Update":
         let playerData = data.payload;
@@ -350,8 +349,8 @@ export class World {
           );
         } else if (playerData.id != this._player!.id) {
           let player: Player | undefined = this._players.get(playerData.id);
-          player!.position = playerData.position;
-          player!.rotation = playerData.rotation;
+          player!.position = playerData[0].position;
+          // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
@@ -399,20 +398,11 @@ export class World {
         }
         break;
       case "Mesh":
-        console.log("MAKING BOXES");
-        console.log(data.payload);
-        let meshdata = data.payload;
-        for (let mesh of meshdata) {
-          switch (mesh.type) {
-            case "Box":
-              this._entities.push(this._generator.GENERATE.TestBox(mesh));
-              break;
-            case "Cylinder":
-              this._entities.push(this._generator.GENERATE.TestCyclinder(mesh));
-              break;
-          }
-        }
-        break;
+        
+        let uid = data.uid
+
+ 
+        
       case "Info":
         let playerInfo: any = data?.payload[0].player;
         console.log(playerInfo);

@@ -42,7 +42,7 @@ class State_machine{
     private broadcast_entity(): void{
         for (let uid of this.entities.keys()){
             let entity: Entities = this.entities.get(uid);
-            let updatePacket: Packet = new Packet(PacketType.update, [
+            let updatePacket: Packet = new Packet(PacketType.mesh, [
                 {
                     position: entity.position, 
                     linearVelocity: entity.object.physicsImpostor.getLinearVelocity(), 
