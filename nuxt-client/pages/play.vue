@@ -18,11 +18,11 @@
 
     <div id="chat" class="hidden">
       <section class="message-history">
-        <ul>
+        <ul id="chat-ul">
           <li>TEST</li>
         </ul>
       </section>
-      <form @submit.prevent="" class="message-bar">
+      <form class="message-bar" id="chat-send">
         <input type="text" id="chat-box" required>
         <button>Send</button>
       </form>
@@ -90,11 +90,8 @@ export default {
   border: solid black 5px;
   box-shadow: 8px 10px black;
 }
-.hidden {
-  background-color: rgba(245, 85, 54, 0.2) !important;
-}
 #chat {
-  background-color: rgba(245, 85, 54, 0.7);
+  background-color: rgba(245, 85, 54, 0.2);
   display: flex;
   height: 500px;
   width: 500px;
@@ -102,8 +99,8 @@ export default {
   position: absolute;
   right: 0;
 }
-#chat > form, section {
-  background-color: #fabc3c;
+#chat:focus-within {
+  background-color: rgba(245, 85, 54, 0.7);
 }
 
 #debug {
