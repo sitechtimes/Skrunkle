@@ -1,4 +1,4 @@
-import { Vector3 } from "babylonjs"
+import { Scene, Mesh, PhysicsImpostor, Vector3 } from "babylonjs"
 
 export class Entities{
 
@@ -58,8 +58,8 @@ export class Entities{
 
 }
 
-export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
+export function createEntity(scene: Scene, uid: string, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
     let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
     mesh.physicsImpostor = entityImposter
-    return new Entities(name, position, mesh)
+    return new Entities(name, uid, position, mesh)
 }

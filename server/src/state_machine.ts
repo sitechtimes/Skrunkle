@@ -44,6 +44,8 @@ class State_machine{
             let entity: Entities = this.entities.get(uid);
             let updatePacket: Packet = new Packet(PacketType.mesh, [
                 {
+                    name: entity.name,
+                    metadata: entity.metadata,
                     position: entity.position, 
                     linearVelocity: entity.object.physicsImpostor.getLinearVelocity(), 
                     angularVelocity: entity.object.physicsImpostor.getAngularVelocity()

@@ -19,6 +19,8 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
+import { state_machine } from "../state_machine";
+import { createEntity, Entities } from "../entity/entities";
 
 export class World {
   private _engine: Engine;
@@ -400,7 +402,16 @@ export class World {
       case "Mesh":
         
         let uid = data.uid
-
+        let payload = data.payload[0]
+        
+        if (state_machine.entities.has(uid)){
+          let entity: Entities = state_machine.entities.get(uid)
+          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
+          state_machine.update_entity(uid, entity)
+        }else{
+          let mesh: Mesh = this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
+        }
+        
  
         
       case "Info":

@@ -18,7 +18,7 @@ export class Generation {
   }
 
   public GENERATE = {
-    TestCyclinder: (mesh: any): Mesh => {
+    Cylinder: (mesh: any): Mesh => {
       let item = MeshBuilder.CreateCylinder(mesh.name, {
         height: 5,
         diameter: 3,
@@ -34,7 +34,7 @@ export class Generation {
 
       return item;
     },
-    TestBox: (mesh: any): Mesh => {
+    Box: (mesh: any): Mesh => {
       var material = new StandardMaterial("box color", this._scene);
       material.alpha = 1;
       material.diffuseColor = new Color3(1.0, 0.2, 0.7);
