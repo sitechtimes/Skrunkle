@@ -1,4 +1,4 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
+import { Quaternion, Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
 import { Entities } from './entity/entities';
 import { v4 as uuidv4 } from 'uuid';
@@ -36,8 +36,7 @@ export class World{
 =======
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public players: Map<string, Player> = new Map()
-    public box: any;
-    public temp: Entities;
+    private temp: any;
     
     constructor(socket: SocketServer){
         this._engine = new NullEngine();
@@ -49,13 +48,22 @@ export class World{
         this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
         // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
+        for (let x = 0; x < 5; x ++){
+
+            for (let z = 0; z < 5; z ++){
+
+                let box: any =  MeshBuilder.CreateBox("box", { size: 7}, this._scene)
+                box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0, friction: 5 }, this._scene);
+                box.physicsImpostor.setAngularVelocity(new Quaternion(x, 0, z, 1))
+                let temp: Entities = new Entities("Box test", new Vector3(x * 10, 100, z * 10), box);
         
-        this.box =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
-        this.box.physicsImpostor =  new PhysicsImpostor(this.box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+                this._entities.set(`M-${temp.id}`, temp)
+                
+            }
 
-        this.temp = new Entities("Box test", new Vector3(0, 100, 0), this.box);
-
-        this._entities.set(`M-${this.temp.id}`, this.temp)
+        }
+        
 
         // this._entities.
 
@@ -104,10 +112,8 @@ export class World{
                 //     let p: Player = this.players.get(id)
                 //     console.log(`${id}: ${p.body}`)
                 // }
-
                 this._updateEntities()
 
-                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             })
 
         })
@@ -120,14 +126,14 @@ export class World{
 
     public _updateEntities(): void{
         for (let [key, value] of this._entities){
-            let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position}])
-            updatePacket.uid = key;
+            let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: value.object.physicsImpostor.getLinearVelocity(), angularVelocity: value.object.physicsImpostor.getAngularVelocity()}], key)
+            // let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: new Vector3(1, 1, 1), angularVelocity: new Vector3(1, 1, 1)}], key)
             this._socket.broadCast(updatePacket)
         }
     }
 
     public add_players(id: string): Player{
-        let playerMesh: Mesh = MeshBuilder.CreateBox(id, {size: 2, width: 2, height: 4}, this._scene)
+        let playerMesh: Mesh = MeshBuilder.CreateBox(id, {size: 3, width: 3, height: 4}, this._scene)
         let physicsImposter: PhysicsImpostor = new PhysicsImpostor(playerMesh, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         let player: Player = new Player(playerMesh, physicsImposter, "player.name", 100, 100, new Vector3(0, 0,0 ), id)
         this.players.set(id, player)
@@ -145,7 +151,6 @@ export class World{
     public _array_entities(): any[]{
         const data: any = []
         for (const [key, value] of this._entities) data.push({position: value.position})
-        console.log(data)
         return data
     }
 

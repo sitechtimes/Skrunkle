@@ -1,4 +1,4 @@
-import { Vector3 } from "babylonjs"
+import { Quaternion, Vector3 } from "babylonjs"
 import { v4 as uuidv4 } from 'uuid';
 
 export class Entities{
@@ -18,6 +18,10 @@ export class Entities{
 
     public get position(): Vector3{
         return this._object.position;
+    }
+
+    public get rotation(): Vector3{
+        return this._object.rotation;
     }
 
     public set position(new_position: Vector3){

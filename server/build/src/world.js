@@ -76,7 +76,6 @@ var World = /** @class */ (function () {
                 //     console.log(`${id}: ${p.body}`)
                 // }
                 _this._updateEntities();
-                // console.log(`${this.box.position.y} | ${this._entities.get(`M-${this.temp.id}`)?.position.y}`)
             });
         });
         this.logger.interval_logger(this._tick_time, function () {
@@ -88,8 +87,8 @@ var World = /** @class */ (function () {
         try {
             for (var _b = __values(this._entities), _c = _b.next(); !_c.done; _c = _b.next()) {
                 var _d = __read(_c.value, 2), key = _d[0], value = _d[1];
-                var updatePacket = new packet_1.Packet(PacketType.update, [{ position: value.position }]);
-                updatePacket.uid = key;
+                var updatePacket = new packet_1.Packet(PacketType.update, [{ position: value.position, linearVelocity: value.object.physicsImpostor.getLinearVelocity(), angularVelocity: value.object.physicsImpostor.getAngularVelocity() }], key);
+                // let updatePacket: Packet = new Packet(PacketType.update, [{position: value.position, linearVelocity: new Vector3(1, 1, 1), angularVelocity: new Vector3(1, 1, 1)}], key)
                 this._socket.broadCast(updatePacket);
             }
         }
@@ -102,7 +101,7 @@ var World = /** @class */ (function () {
         }
     };
     World.prototype.add_players = function (id) {
-        var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 2, width: 2, height: 4 }, this._scene);
+        var playerMesh = babylonjs_1.MeshBuilder.CreateBox(id, { size: 3, width: 3, height: 4 }, this._scene);
         var physicsImposter = new babylonjs_1.PhysicsImpostor(playerMesh, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 1 }, this._scene);
         var player = new player_1.Player(playerMesh, physicsImposter, "player.name", 100, 100, new babylonjs_1.Vector3(0, 0, 0), id);
         this.players.set(id, player);
@@ -130,7 +129,6 @@ var World = /** @class */ (function () {
             }
             finally { if (e_2) throw e_2.error; }
         }
-        console.log(data);
         return data;
     };
     World.prototype.move_player = function (id, change_vector) {
