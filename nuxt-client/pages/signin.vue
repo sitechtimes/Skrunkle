@@ -77,22 +77,46 @@ onMounted(async () => {
 }
 @keyframes moveSlideshow {
   0% {
-    transform: translateX(-15%);
+    transform: translateX(-50%);
   }
   100% {
-    transform: translateX(105%);
+    transform: translateX(290%);
   }
 }
 .section {
   display: flex;
   justify-content: center;
-  margin-top: 5%;
+  padding: 5%;
+  background-image: linear-gradient(
+    0deg,
+    hsl(0deg 0% 100%) 0%,
+    hsl(32deg 100% 95%) 11%,
+    hsl(32deg 100% 90%) 22%,
+    hsl(32deg 100% 86%) 33%,
+    hsl(32deg 100% 81%) 44%,
+    hsl(32deg 100% 76%) 56%,
+    hsl(32deg 100% 71%) 67%,
+    hsl(33deg 100% 66%) 78%,
+    hsl(33deg 100% 61%) 89%,
+    hsl(35deg 99% 53%) 100%
+  );
+}
+.container {
+  background-color: white;
+  border-radius: 35px;
+  padding: 3rem;
+  border: solid white 5px;
 }
 form {
   margin: 1rem 1rem 0rem 1rem;
 }
 p {
   margin-left: 1rem;
+}
+input {
+  background-color: #feefdd;
+  border-radius: 35px;
+  height: 3rem;
 }
 .input {
   width: 20rem;
