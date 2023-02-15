@@ -8,7 +8,7 @@ export class Chat {
   private _player: MainPlayer
   private _chatWindow: HTMLDivElement
   private _chatBox: HTMLInputElement
-  private _chatForm: HTMLFormElement
+  private _chatButton: HTMLButtonElement
   private _chatUl: HTMLUListElement
   private _messages: ChatMessage[] = []
 
@@ -17,7 +17,7 @@ export class Chat {
     this._player = player
     this._chatWindow = <HTMLDivElement>document.getElementById("chat")
     this._chatBox = <HTMLInputElement>document.getElementById("chat-box")
-    this._chatForm = <HTMLFormElement>document.getElementById("chat-send")
+    this._chatButton = <HTMLButtonElement>document.getElementById("chat-send")
     this._chatUl = <HTMLUListElement>document.getElementById("chat-ul")
     this.listen()
   }
@@ -33,12 +33,6 @@ export class Chat {
           document.getElementById("renderCanvas")?.focus()
       }
     }
-    this._chatForm.addEventListener("submit", (event) => {
-      event.preventDefault()
-      if (this._chatBox.textContent) {
-        this.sendMessage(this._chatBox.textContent)
-      } 
-    })
   }
   
   public toggleChat() {

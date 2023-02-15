@@ -460,4 +460,8 @@ export class World {
         break;
     }
   }
+
+  public get chat (): Chat|undefined {
+    return this._chat
+  }
 }
