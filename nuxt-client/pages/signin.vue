@@ -36,9 +36,7 @@
               </div>
 
               <div class="control">
-                <button type="submit" class="button is-dark is-fullwidth">
-                  Log In
-                </button>
+                <button type="submit" class="buttonSubmit">Log In</button>
               </div>
             </form>
 
@@ -64,10 +62,13 @@ onMounted(async () => {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
 * {
   overflow: hidden;
   padding: 0;
   margin: 0;
+  font-family: "Titan One", cursive;
+  box-sizing: border-box;
 }
 .title {
   font-size: 4rem;
@@ -86,7 +87,7 @@ onMounted(async () => {
 .section {
   display: flex;
   justify-content: center;
-  padding: 5%;
+  padding: 3%;
   background-image: linear-gradient(
     0deg,
     hsl(0deg 0% 100%) 0%,
@@ -107,8 +108,16 @@ onMounted(async () => {
   padding: 3rem;
   border: solid white 5px;
 }
+.buttonSubmit {
+  border: solid #fff2d8 5px;
+  width: 20rem;
+  border-radius: 35px;
+  height: 4rem;
+  background-color: #f1b441;
+  font-size: 2rem;
+}
 form {
-  margin: 1rem 1rem 0rem 1rem;
+  padding: 1rem 0rem 0rem 6rem;
 }
 p {
   margin-left: 1rem;
@@ -116,11 +125,10 @@ p {
 input {
   background-color: #feefdd;
   border-radius: 35px;
-  height: 3rem;
 }
 .input {
   width: 20rem;
-  height: 1.5rem;
+  height: 3rem;
 }
 button {
   margin-top: 1rem;
