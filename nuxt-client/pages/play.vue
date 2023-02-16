@@ -22,8 +22,8 @@
           <li>TEST</li>
         </ul>
       </section>
-      <form @submit.prevent="sendChat" class="message-bar" >
-        <input type="text" id="chat-box" v-model="chatMessage" required>
+      <form @submit.prevent="sendChat" class="message-bar">
+        <input type="text" id="chat-box" v-model="chatMessage" required />
         <button id="chat-send">Send</button>
       </form>
     </div>
@@ -43,22 +43,22 @@ export default {
   data() {
     return {
       chatMessage: undefined,
-      world: undefined
-    }
+      world: undefined,
+    };
   },
   mounted() {
     const canvas = this.$refs.renderCanvas;
     const world = new World(<HTMLCanvasElement>canvas);
     world.init();
-    this.world = world
+    this.world = world;
   },
   methods: {
     sendChat() {
-      let chat = this.world.chat
-      chat.sendMessage(this.chatMessage)
-      this.chatMessage = undefined
-    }
-  }
+      let chat = this.world.chat;
+      chat.sendMessage(this.chatMessage);
+      this.chatMessage = undefined;
+    },
+  },
 };
 </script>
 

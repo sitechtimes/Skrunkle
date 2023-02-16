@@ -4,7 +4,7 @@ export enum PacketType {
   movement = "Movement",
   close = "Close",
   interaction = "Interaction",
-  chat = "Chat"
+  chat = "Chat",
 }
 
 export class Packet {
