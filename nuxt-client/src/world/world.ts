@@ -9,8 +9,10 @@ import {
   Matrix,
   KeyboardEventTypes,
   AbstractMesh,
+  CannonJSPlugin
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
+import * as cannon from "cannon-es";
 import { MainPlayer } from "../entity/mainPlayer";
 import { Socket } from "../socket";
 import { Packet, PacketType } from "../packet";
@@ -21,6 +23,7 @@ import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
+import { PhysicsImpostor } from "babylonjs";
 
 export class World {
   private _engine: Engine;
@@ -54,6 +57,8 @@ export class World {
     this.chestOpen = false;
     this._pickup = false;
     this._pickedup = false;
+
+    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
   public init(): void {
@@ -77,6 +82,7 @@ export class World {
       new Vector3(0, 1, 0),
       this._scene
     );
+
 
     //   this._scene.onPointerObservable.add((pointerInfo) => {
     //     switch (pointerInfo.type) {
@@ -240,7 +246,7 @@ export class World {
 
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
     if (
-      (hit!.pickedMesh && hit!.pickedMesh.metadata == "item") ||
+      (hit!.pickedMesh != null  && hit!.pickedMesh.metadata == "item") ||
       hit!.pickedMesh!.metadata == "Cylinder" ||
       hit!.pickedMesh!.metadata == "Box"
     ) {
@@ -410,13 +416,19 @@ export class World {
           state_machine.update_entity(uid, entity)
         }else{
           let mesh: Mesh = this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
+
+          let imposter = PhysicsImpostor.BoxImpostor
+          if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
+          let entity: Entities = createEntity(this._scene, uid, payload.name, payload.position, mesh, imposter, 90, 0.1)
+          state_machine.add_entity(uid, entity)
         }
+        break
         
  
         
       case "Info":
+        console.log(data);
         let playerInfo: any = data?.payload[0].player;
-        console.log(playerInfo);
         if (this._player === null || this._player?.id === playerInfo.id) {
           this._initClient(playerInfo._name, playerInfo._id);
         }

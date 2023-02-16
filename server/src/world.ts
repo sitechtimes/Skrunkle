@@ -1,8 +1,9 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
 import { state_machine } from "./state_machine"
+import { createEntity, Entities } from './entity/entities';
 
 interface worldSize {
     top: Vector3,

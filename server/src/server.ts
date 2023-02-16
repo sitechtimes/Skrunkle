@@ -49,13 +49,8 @@ export class SocketServer {
             [{
               player: player,
               players: this.players.size 
-            }]
-          )
-        )
-        this.send(client,
-          new Packet(
-            PacketType.mesh,
-            this.world.entities
+            }],
+            player.id
           )
         )
       }

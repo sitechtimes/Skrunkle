@@ -21,7 +21,7 @@ export class Generation {
     Cylinder: (name?: string): Entities => {
       let item = MeshBuilder.CreateCylinder(`${name ?? "Cylinder"}-${Math.random()*100000}` ?? `Cylinder-${Math.random()*100000}`, { height: 5, diameter: 3 });
       item.position.x = 3;
-      item.position.y = 1;
+      item.position.y = 100;
       item.position.z = 10;
       item.metadata = "Cylinder"
       var myMat = new StandardMaterial("myMat", this._scene);
