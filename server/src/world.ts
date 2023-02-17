@@ -1,4 +1,4 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
@@ -15,7 +15,7 @@ export class World{
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
-    private _entities: any[] = [];
+    private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public _generator: Generation
@@ -25,11 +25,6 @@ export class World{
         this._scene = new Scene(this._engine);
 
         this._generator = new Generation(this, this._scene)
-
-        this._generator.GENERATE.Box()
-        // this._generator.GENERATE.TestCylinder()
-        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 20, 50)
-        // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
 
     }
 
@@ -73,6 +68,13 @@ export class World{
         })
 
         state_machine.setWorld(this)
+
+        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
+        this._ground.position = new Vector3(0, 0, 0)
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
+        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
+        this._generator.RANDOMIZE(this._generator.GENERATE.Box(), 100, 100)
     }
 
     

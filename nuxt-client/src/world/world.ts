@@ -44,6 +44,7 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
+  private _itemchosen: number;
 
   constructor(canvas: HTMLCanvasElement | null) {
     this._canvas = canvas;
@@ -57,6 +58,7 @@ export class World {
     this.chestOpen = false;
     this._pickup = false;
     this._pickedup = false;
+    this._itemchosen = 0;
 
     this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
   }
@@ -71,7 +73,7 @@ export class World {
     );
     var ground = MeshBuilder.CreateGround(
       "ground",
-      { width: 500, height: 500 },
+      { width: 1000, height: 1000 },
       this._scene
     );
     ground.position = new Vector3(0, 0, 0);
@@ -245,6 +247,8 @@ export class World {
     var hit = this._scene.pickWithRay(dray);
 
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
+      console.log(hit?.pickedMesh)
+    if (!hit?.pickedMesh) return
     if (
       (hit!.pickedMesh != null  && hit!.pickedMesh.metadata == "item") ||
       hit!.pickedMesh!.metadata == "Cylinder" ||
@@ -253,20 +257,29 @@ export class World {
       console.log("hit");
       this._pickup = true;
 
-      this._scene.onKeyboardObservable.add((kbInfo) => {
-        switch (kbInfo.type) {
-          case KeyboardEventTypes.KEYDOWN:
-            if (kbInfo.event.key == "f") {
-              this._pickedup = true;
-              document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
-            }
+      if ((hit!.pickedMesh!.id != "ground")) {
+        this._scene.onKeyboardObservable.add((kbInfo) => {
+          switch (kbInfo.type) {
+            case KeyboardEventTypes.KEYDOWN:
+              if (kbInfo.event.key == "f") {
+                this._pickedup = true;
+                var dray = this._scene.createPickingRay(
+                  960,
+                  540,
+                  Matrix.Identity(),
+                  this._playerCamera
+                );
+                var hit = this._scene.pickWithRay(dray);
+                this._itemchosen = hit!.pickedMesh!.uniqueId;
+                document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
+              }
             break;
         }
       });
     } else {
       this._pickup = false;
     }
-  }
+    }}
   private _initClient(name: string, id: string): void {
     this._player = new MainPlayer(
       name,
@@ -393,15 +406,8 @@ export class World {
         //         })
         //     }
         if (this._pickedup == true) {
-          var dray = this._scene.createPickingRay(
-            960,
-            540,
-            Matrix.Identity(),
-            this._playerCamera
-          );
-          var hit = this._scene.pickWithRay(dray);
           let ray = this._playerCamera!.getForwardRay();
-          let item = this._scene.getMeshByName(hit!.pickedMesh!.name);
+          let item = this._scene.getMeshByUniqueId(this._itemchosen)
           item!.position = ray.origin.clone().add(ray.direction.scale(10));
         }
         break;
@@ -420,6 +426,7 @@ export class World {
           let imposter = PhysicsImpostor.BoxImpostor
           if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
           let entity: Entities = createEntity(this._scene, uid, payload.name, payload.position, mesh, imposter, 90, 0.1)
+          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
           state_machine.add_entity(uid, entity)
         }
         break

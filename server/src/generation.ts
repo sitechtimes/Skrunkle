@@ -19,7 +19,7 @@ export class Generation {
 
   public GENERATE = {
     Cylinder: (name?: string): Entities => {
-      let item = MeshBuilder.CreateCylinder(`${name ?? "Cylinder"}-${Math.random()*100000}` ?? `Cylinder-${Math.random()*100000}`, { height: 5, diameter: 3 });
+      let item = MeshBuilder.CreateCylinder(`${name ?? "Cylinder"}-${Math.random()*100000}` ?? `Cylinder-${Math.random()*100000}`, { height: 5, diameter: 3 }, this._scene);
       item.position.x = 3;
       item.position.y = 100;
       item.position.z = 10;
@@ -34,13 +34,20 @@ export class Generation {
       let entity = createEntity(this._scene, "generate_cylinder", item.position, item, PhysicsImpostor.CylinderImpostor, 90, 1)
       state_machine.add_entity(entity.id, entity)
 
-
       return entity
     }, 
     Box: (name?: string): Entities => {
       let item = MeshBuilder.CreateBox(`${name ?? "Box"}-${Math.random()*100000}` ?? `Box-${Math.random()*100000}`, { size: 2, height: 2, width: 2}, this._scene)
+      item.position.x = 3;
+      item.position.y = 100;
+      item.position.z = 10;
       item.metadata = "Box"
-
+      var myMat = new StandardMaterial("myMat", this._scene);
+      myMat.specularColor = new Color3(0.15, 0.76, 0.9);
+      myMat.diffuseColor = new Color3(0.95, 0.16, 0.9);
+      myMat.emissiveColor = new Color3(1, 0.1, 1);
+      myMat.ambientColor = new Color3(0.58, 0.6, 0.9);
+      item.material = myMat;
       let entity = createEntity(this._scene, "generate_box", item.position, item, PhysicsImpostor.BoxImpostor, 90, 1)
       state_machine.add_entity(entity.id, entity)
 
