@@ -17,7 +17,7 @@
     "skipLibCheck": true
   },
   "types": ["babylonjs", "babylonjs-loaders", "@types/node", "@nuxt/types", ""],
-  "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js"],
+  "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js", "./.nitro/types/nitro.d.ts"],
   "exclude": ["node_modules"],
   "extends": "./.nuxt/tsconfig.json"
 }

@@ -36,7 +36,7 @@
               </div>
 
               <div class="control">
-                <button type="submit" class="buttonSubmit">Log In</button>
+                <button type="submit" class="buttonSubmit" @click="submitForm">Log In</button>
               </div>
             </form>
 
@@ -56,9 +56,9 @@
   </div>
 </template>
 <script setup>
-onMounted(async () => {
-  console.log(await $fetch("/api/users"));
-});
+async function submitForm() {
+  console.log(await $fetch("/api/test", { method: "get" }));
+}
 </script>
 
 <style>
@@ -115,6 +115,7 @@ onMounted(async () => {
   height: 4rem;
   background-color: #f1b441;
   font-size: 2rem;
+  cursor: pointer;
 }
 form {
   padding: 1rem 0rem 0rem 6rem;
