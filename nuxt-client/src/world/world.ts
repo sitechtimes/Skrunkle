@@ -9,8 +9,10 @@ import {
   Matrix,
   KeyboardEventTypes,
   AbstractMesh,
+  CannonJSPlugin
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
+import * as cannon from "cannon-es";
 import { MainPlayer } from "../entity/mainPlayer";
 import { Socket } from "../socket";
 import { Packet, PacketType } from "../packet";
@@ -19,6 +21,9 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
+import { state_machine } from "../state_machine";
+import { createEntity, Entities } from "../entity/entities";
+import { PhysicsImpostor } from "babylonjs";
 
 export class World {
   private _engine: Engine;
@@ -39,6 +44,7 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
+  private _itemchosen: number;
 
   constructor(canvas: HTMLCanvasElement | null) {
     this._canvas = canvas;
@@ -52,6 +58,9 @@ export class World {
     this.chestOpen = false;
     this._pickup = false;
     this._pickedup = false;
+    this._itemchosen = 0;
+
+    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
   public init(): void {
@@ -64,7 +73,7 @@ export class World {
     );
     var ground = MeshBuilder.CreateGround(
       "ground",
-      { width: 500, height: 500 },
+      { width: 1000, height: 1000 },
       this._scene
     );
     ground.position = new Vector3(0, 0, 0);
@@ -75,6 +84,7 @@ export class World {
       new Vector3(0, 1, 0),
       this._scene
     );
+
 
     //   this._scene.onPointerObservable.add((pointerInfo) => {
     //     switch (pointerInfo.type) {
@@ -237,28 +247,39 @@ export class World {
     var hit = this._scene.pickWithRay(dray);
 
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
+      console.log(hit?.pickedMesh)
+    if (!hit?.pickedMesh) return
     if (
-      (hit!.pickedMesh && hit!.pickedMesh.metadata == "item") ||
+      (hit!.pickedMesh != null  && hit!.pickedMesh.metadata == "item") ||
       hit!.pickedMesh!.metadata == "Cylinder" ||
       hit!.pickedMesh!.metadata == "Box"
     ) {
       console.log("hit");
       this._pickup = true;
 
-      this._scene.onKeyboardObservable.add((kbInfo) => {
-        switch (kbInfo.type) {
-          case KeyboardEventTypes.KEYDOWN:
-            if (kbInfo.event.key == "f") {
-              this._pickedup = true;
-              document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
-            }
+      if ((hit!.pickedMesh!.id != "ground")) {
+        this._scene.onKeyboardObservable.add((kbInfo) => {
+          switch (kbInfo.type) {
+            case KeyboardEventTypes.KEYDOWN:
+              if (kbInfo.event.key == "f") {
+                this._pickedup = true;
+                var dray = this._scene.createPickingRay(
+                  960,
+                  540,
+                  Matrix.Identity(),
+                  this._playerCamera
+                );
+                var hit = this._scene.pickWithRay(dray);
+                this._itemchosen = hit!.pickedMesh!.uniqueId;
+                document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
+              }
             break;
         }
       });
     } else {
       this._pickup = false;
     }
-  }
+    }}
   private _initClient(name: string, id: string): void {
     this._player = new MainPlayer(
       name,
@@ -318,7 +339,6 @@ export class World {
     this._players.set(player.id, player);
   }
   public onSocketData(data: Packet): void {
-    // console.log(data)
     switch (data?.type) {
       case "Update":
         let playerData = data.payload;
@@ -331,14 +351,14 @@ export class World {
             100,
             0,
             new Vector3(
-              playerData.position.x,
-              playerData.position.y,
-              playerData.position.z
+              playerData[0].position.x,
+              playerData[0].position.y,
+              playerData[0].position.z
             ),
             new Vector3(
-              playerData.position.x,
-              playerData.position.y,
-              playerData.position.z
+              playerData[0].position.x,
+              playerData[0].position.y,
+              playerData[0].position.z
             ),
             playerData.id,
             this._scene,
@@ -350,8 +370,8 @@ export class World {
           );
         } else if (playerData.id != this._player!.id) {
           let player: Player | undefined = this._players.get(playerData.id);
-          player!.position = playerData.position;
-          player!.rotation = playerData.rotation;
+          player!.position = playerData[0].position;
+          // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
@@ -386,36 +406,36 @@ export class World {
         //         })
         //     }
         if (this._pickedup == true) {
-          var dray = this._scene.createPickingRay(
-            960,
-            540,
-            Matrix.Identity(),
-            this._playerCamera
-          );
-          var hit = this._scene.pickWithRay(dray);
           let ray = this._playerCamera!.getForwardRay();
-          let item = this._scene.getMeshByName(hit!.pickedMesh!.name);
+          let item = this._scene.getMeshByUniqueId(this._itemchosen)
           item!.position = ray.origin.clone().add(ray.direction.scale(10));
         }
         break;
       case "Mesh":
-        console.log("MAKING BOXES");
-        console.log(data.payload);
-        let meshdata = data.payload;
-        for (let mesh of meshdata) {
-          switch (mesh.type) {
-            case "Box":
-              this._entities.push(this._generator.GENERATE.TestBox(mesh));
-              break;
-            case "Cylinder":
-              this._entities.push(this._generator.GENERATE.TestCyclinder(mesh));
-              break;
-          }
+        
+        let uid = data.uid
+        let payload = data.payload[0]
+        
+        if (state_machine.entities.has(uid)){
+          let entity: Entities = state_machine.entities.get(uid)
+          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
+          state_machine.update_entity(uid, entity)
+        }else{
+          let mesh: Mesh = this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
+
+          let imposter = PhysicsImpostor.BoxImpostor
+          if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
+          let entity: Entities = createEntity(this._scene, uid, payload.name, payload.position, mesh, imposter, 90, 0.1)
+          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
+          state_machine.add_entity(uid, entity)
         }
-        break;
+        break
+        
+ 
+        
       case "Info":
+        console.log(data);
         let playerInfo: any = data?.payload[0].player;
-        console.log(playerInfo);
         if (this._player === null || this._player?.id === playerInfo.id) {
           this._initClient(playerInfo._name, playerInfo._id);
         }

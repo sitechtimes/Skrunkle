@@ -127,9 +127,9 @@ export class Player {
     }
     if (this._nametag) {
       this._nametag.position = new Vector3(
-        this._position._x,
-        this._position._y + this._nametag_y_offset,
-        this._position._z
+        this._position.x,
+        this._position.y + this._nametag_y_offset,
+        this._position.z
       );
     }
   }

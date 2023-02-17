@@ -5,6 +5,7 @@ import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
 import { Packet, PacketType } from './packet'
 import { Logger } from './logger'
+import { state_machine } from './state_machine'
 
 export class SocketServer {
   static readonly PORT: number = 2000
@@ -21,6 +22,8 @@ export class SocketServer {
 
     this.init()
     this.listen()
+
+    state_machine.setSocket(this)
   }
 
   private init() {
@@ -39,20 +42,15 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         let player = new Player()
-        this.players.set(player.id, player)
+        state_machine.add_player(player.id, player)
         this.send(client, 
           new Packet(
             PacketType.info, 
             [{
               player: player,
               players: this.players.size 
-            }]
-          )
-        )
-        this.send(client,
-          new Packet(
-            PacketType.mesh,
-            this.world.entities
+            }],
+            player.id
           )
         )
       }
@@ -71,8 +69,7 @@ export class SocketServer {
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                 msg.payload[0].position = player.position
-                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
+                state_machine.update_player(msg.uid, player)
               }
               break
             case "Info":
@@ -80,7 +77,7 @@ export class SocketServer {
               this.broadCast(new Packet(PacketType.info, msg.payload[0]))
               break
             case "Close":
-              this.players.delete(msg.uid)
+              state_machine
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
             case "Interaction":
