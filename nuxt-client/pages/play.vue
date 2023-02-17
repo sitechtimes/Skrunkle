@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="customLoadingScreenDiv">
-      <img class="chicken" src="/skrunkler.gif" alt="logo" />
+      <img class="chicken" src="~/assets/skrunkler.gif" alt="logo" />
       <div class="load"></div>
     </div>
 
@@ -14,6 +14,10 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
+    </div>
+
+    <div id="chatIcon">
+      <img src="~/assets/chat.png" alt="" class="chatIcon" />
     </div>
 
     <div id="chat" class="hidden">
@@ -124,5 +128,17 @@ export default {
   top: 0;
   left: 0;
   z-index: 999;
+}
+
+.chatIcon {
+  background-color: white;
+  display: flex;
+  height: 70px;
+  width: 70px;
+  z-index: 100;
+  position: absolute;
+  right: 0;
+  padding: 1rem;
+  border-radius: 4rem;
 }
 </style>
