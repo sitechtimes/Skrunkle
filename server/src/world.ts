@@ -1,7 +1,9 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
+import { state_machine } from "./state_machine"
+import { createEntity, Entities } from './entity/entities';
 
 interface worldSize {
     top: Vector3,
@@ -13,7 +15,7 @@ export class World{
     private _scene: Scene;
     private _tick_time: number = 5000; // in ms
     private _ticks_elapsed: number = 0;
-    private _entities: any[] = [];
+    private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
     public _generator: Generation
@@ -23,11 +25,6 @@ export class World{
         this._scene = new Scene(this._engine);
 
         this._generator = new Generation(this, this._scene)
-
-        this._entities.push(this._generator.GENERATE.Box())
-        // this._generator.GENERATE.TestCylinder()
-        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 20, 50)
-        // this._entities.push(MeshBuilder.CreateBox("box", { size: 2, height: 2, width: 2}, this._scene))
 
     }
 
@@ -52,8 +49,7 @@ export class World{
     public init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
-
-        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
 
         this._scene.executeWhenReady(()=>{
 
@@ -62,6 +58,7 @@ export class World{
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
                 this._ticks_elapsed++;
+                state_machine.update();
             })
 
         })
@@ -69,22 +66,16 @@ export class World{
         this.logger.interval_logger(this._tick_time, ()=>{
             this.logger.progress(`Avg Server tick (${this._tick_time} ms): ${this._get_tick}`)
         })
-        
+
+        state_machine.setWorld(this)
+
+        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
+        this._ground.position = new Vector3(0, 0, 0)
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
+        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
+        this._generator.RANDOMIZE(this._generator.GENERATE.Box(), 100, 100)
     }
 
-    public get entities(): any[]{
-        return this._entities.map((entity: Mesh)=>{
-            return {
-                type: entity.metadata,
-                position: entity.position,
-                name: entity.name,
-                metadata: entity.metadata
-            }
-        })
-    }
-
-    public addEntity(item: Mesh) {
-        this._entities.push(item)
-    }
     
 }
