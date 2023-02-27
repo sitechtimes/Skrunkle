@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="customLoadingScreenDiv">
-      <img class="chicken" src="/skrunkler.gif" alt="logo" />
+      <img class="chicken" src="~/assets/skrunkler.gif" alt="logo" />
       <div class="load"></div>
     </div>
 
@@ -16,6 +16,22 @@
       <p id="PickedupItem"></p>
     </div>
 
+    <div id="chatIcon">
+      <img src="~/assets/chat.png" alt="" class="chatIcon" />
+    </div>
+
+    <div id="chat" class="hidden">
+      <section class="message-history">
+        <ul id="chat-ul">
+          <li>TEST</li>
+        </ul>
+      </section>
+      <form @submit.prevent="sendChat" class="message-bar">
+        <input type="text" id="chat-box" v-model="chatMessage" required />
+        <button id="chat-send">Send</button>
+      </form>
+    </div>
+
     <canvas
       id="renderCanvas"
       ref="renderCanvas"
@@ -28,10 +44,24 @@
 <script lang="ts">
 import { World } from "../src/world/world";
 export default {
+  data() {
+    return {
+      chatMessage: undefined,
+      world: undefined,
+    };
+  },
   mounted() {
     const canvas = this.$refs.renderCanvas;
     const world = new World(<HTMLCanvasElement>canvas);
     world.init();
+    this.world = world;
+  },
+  methods: {
+    sendChat() {
+      let chat = this.world.chat;
+      chat.sendMessage(this.chatMessage);
+      this.chatMessage = undefined;
+    },
   },
 };
 </script>
@@ -78,6 +108,18 @@ export default {
   border: solid black 5px;
   box-shadow: 8px 10px black;
 }
+#chat {
+  background-color: rgba(245, 85, 54, 0.2);
+  display: flex;
+  height: 500px;
+  width: 500px;
+  z-index: 100;
+  position: absolute;
+  right: 0;
+}
+#chat:focus-within {
+  background-color: rgba(245, 85, 54, 0.7);
+}
 
 #debug {
   position: absolute;
@@ -86,5 +128,17 @@ export default {
   top: 0;
   left: 0;
   z-index: 999;
+}
+
+.chatIcon {
+  background-color: white;
+  display: flex;
+  height: 70px;
+  width: 70px;
+  z-index: 100;
+  position: absolute;
+  right: 0;
+  padding: 1rem;
+  border-radius: 4rem;
 }
 </style>

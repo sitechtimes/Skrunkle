@@ -21,6 +21,7 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
+import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 import { PhysicsImpostor } from "babylonjs";
@@ -44,6 +45,7 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
+  private _chat: Chat | undefined;
   private _itemchosen: number;
 
   constructor(canvas: HTMLCanvasElement | null) {
@@ -53,6 +55,7 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this);
+    this._chat = new Chat(this._socket, this._player!);
     this._generator = new Generation(this, this._scene);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
@@ -172,7 +175,8 @@ export class World {
       let hit = this._scene.pickWithRay(dray);
 
       if (
-        (this._evaluateDistance(hit!.pickedMesh!) <= this._hotbar.current?._range!) ||
+        this._evaluateDistance(hit!.pickedMesh!) <=
+          this._hotbar.current?._range! ||
         this._hotbar.current!._type == "Heal"
       ) {
         this._hotbar.use(hit?.pickedMesh?.name);
@@ -331,6 +335,7 @@ export class World {
       7
     );
     /* TEMPORARILY ADDED ITEMS */
+    this._chat = new Chat(this._socket, this._player);
     console.log("Created Main Player id: " + this._player.id);
     console.log(this._player.inventory);
   }
@@ -468,9 +473,16 @@ export class World {
         }
 
         break;
+      case "Chat":
+        this._chat?.receiveMessage(data.payload);
+        break;
       default:
         // throw some error
         break;
     }
+  }
+
+  public get chat(): Chat | undefined {
+    return this._chat;
   }
 }

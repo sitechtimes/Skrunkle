@@ -17,7 +17,7 @@ export class PlayerItem {
   constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket) {
     this._name = item.name;
     this._type = item.type;
-    this._range = item.range
+    this._range = item.range;
     this._magnitude = item.magnitude;
     this._img = item.img;
     this.#_player = player;
@@ -82,29 +82,35 @@ export const Items = {
     type: "Damage",
     magnitude: 5,
     img: "img-link",
-    range: 7
+    range: 7,
   },
-  spork: <Item>{ name: "Spork", type: "Damage", magnitude: 7, img: "img-link", range: 4 },
+  spork: <Item>{
+    name: "Spork",
+    type: "Damage",
+    magnitude: 7,
+    img: "img-link",
+    range: 4,
+  },
   shovel: <Item>{
     name: "Shovel",
     type: "Damage",
     magnitude: 10,
     img: "img-link",
-    range: 10
+    range: 10,
   },
   dagger: <Item>{
     name: "Dagger",
     type: "Damage",
     magnitude: 35,
     img: "img-link",
-    range: 3
+    range: 3,
   },
   skillet: <Item>{
     name: "Cast Iron Skillet",
     type: "Damage",
     magnitude: 10,
     img: "img-link",
-    range: 5
+    range: 5,
   },
   bandage: <Item>{
     name: "Bandage",
@@ -123,7 +129,7 @@ export const Items = {
     type: "Damage",
     magnitude: 15,
     img: "img-link",
-    range: 25
+    range: 25,
   },
   rope: <Item>{ name: "Rope", type: "Utility", magnitude: 50, img: "img-link" },
 };
