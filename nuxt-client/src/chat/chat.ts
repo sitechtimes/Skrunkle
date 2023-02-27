@@ -58,7 +58,7 @@ export class Chat {
     this._chatUl.insertAdjacentHTML(
       "beforeend",
       `
-      <li>${message.msg}</li>
+      <li>${message.name} - ${message.msg}</li>
     `
     );
   }
