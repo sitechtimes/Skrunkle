@@ -26,6 +26,32 @@ export class World{
 
         this._generator = new Generation(this, this._scene)
 
+<<<<<<< Updated upstream
+=======
+        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
+        // this._ground.rotation = new Vector3(Math.PI / 2, 0, 0);
+        this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+
+        for (let x = 0; x < 5; x ++){
+
+            for (let z = 0; z < 5; z ++){
+
+                let box: any =  MeshBuilder.CreateBox("box", { size: 10, height: 10, width: 10}, this._scene)
+                box.physicsImpostor =  new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 90, restitution: 0 }, this._scene);
+        
+                let temp: Entities = new Entities("Box test", new Vector3(z * 10, 100, x * 10), new Vector3(0.1, 0.1, 0.1), box);
+        
+                this._entities.set(`M-${temp.id}`, temp)
+            }
+
+        }
+        
+
+        // this._entities.
+
+
+        // console.log(this._ground.position)
+>>>>>>> Stashed changes
     }
 
     private get _get_tick(): number{

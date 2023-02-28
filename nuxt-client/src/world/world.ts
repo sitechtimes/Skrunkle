@@ -247,7 +247,6 @@ export class World {
     var hit = this._scene.pickWithRay(dray);
 
     // new RayHelper(dray).show(this._scene, new Color3(.3,1,.3));
-      console.log(hit?.pickedMesh)
     if (!hit?.pickedMesh) return
     if (
       (hit!.pickedMesh != null  && hit!.pickedMesh.metadata == "item") ||
