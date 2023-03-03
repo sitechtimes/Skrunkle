@@ -65,12 +65,8 @@ export class SocketServer {
                 state_machine.update_player(msg.uid, player)
               }
               break
-            case "Info": // wtf is this shit for
-              this.setPlayer(msg.uid, msg.payload[0])
-              this.broadCast(new Packet(PacketType.info, msg.payload[0]))
-              break
+     
             case "Close":
-              state_machine
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
             case "Interaction":

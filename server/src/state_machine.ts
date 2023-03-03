@@ -49,7 +49,7 @@ class State_machine{
     private broadcast_player(): void{
         for (let uid of this.players.keys()){
             let player_entity: Player = this.players.get(uid);
-            this.socket_ref.broadCast(player_entity.serialize())
+            this.socket_ref.broadCast(player_entity.serialize(PacketType.update))
         }
     }
 

@@ -338,7 +338,7 @@ export class World {
     this._chat = new Chat(this._socket, this._player);
 
     console.log("Created Main Player id: " + this._player.id);
-    console.log(this._player.inventory);
+    // console.log(this._player.inventory);
   }
 
   private _initPlayer(player: Player): void {
@@ -437,7 +437,6 @@ export class World {
         }
         break
         
- 
         
       case "Info":
         let playerInfo: any = data?.payload[0];
