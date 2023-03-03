@@ -42,31 +42,14 @@ class State_machine{
     private broadcast_entity(): void{
         for (let uid of this.entities.keys()){
             let entity: Entities = this.entities.get(uid);
-            let updatePacket: Packet = new Packet(PacketType.mesh, [
-                {
-                    name: entity.name,
-                    metadata: entity.metadata,
-                    position: entity.position, 
-                    linearVelocity: entity.object.physicsImpostor.getLinearVelocity(), 
-                    angularVelocity: entity.object.physicsImpostor.getAngularVelocity()
-                }
-            ], uid)
-            this.socket_ref.broadCast(updatePacket)
+            this.socket_ref.broadCast(entity.serialize())
         }
     }
 
     private broadcast_player(): void{
         for (let uid of this.players.keys()){
             let player_entity: Player = this.players.get(uid);
-            let updatePacket: Packet = new Packet(PacketType.update, [
-                {
-                    position: player_entity.position, 
-                    // rotaton: player_entity.rotation
-                    // linearVelocity: player_entity.object.physicsImpostor.getLinearVelocity(), 
-                    // angularVelocity: player_entity.object.physicsImpostor.getAngularVelocity()
-                }
-            ], uid)
-            this.socket_ref.broadCast(updatePacket)
+            this.socket_ref.broadCast(player_entity.serialize())
         }
     }
 
@@ -92,6 +75,14 @@ class State_machine{
 
     public delete_entity(uid: string){
         this.entities.delete(uid)
+    }
+
+    public has_player(uid: string): boolean{
+        return this.players.has(uid);
+    }
+
+    public has_entity(uid: string): boolean{
+        return this.entities.has(uid);
     }
 
     public update(){

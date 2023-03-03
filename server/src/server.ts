@@ -41,18 +41,11 @@ export class SocketServer {
       // save client
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
-        let player = new Player()
+        let player = new Player(this.world.scene)
+        this.setPlayer(player.id, player)
         state_machine.add_player(player.id, player)
-        this.send(client, 
-          new Packet(
-            PacketType.info, 
-            [{
-              player: player,
-              players: this.players.size 
-            }],
-            player.id
-          )
-        )
+
+        this.send(client, player.serialize(PacketType.info, { players: this.players.size }))
       }
 
       // basic starter functiosn
@@ -72,7 +65,7 @@ export class SocketServer {
                 state_machine.update_player(msg.uid, player)
               }
               break
-            case "Info":
+            case "Info": // wtf is this shit for
               this.setPlayer(msg.uid, msg.payload[0])
               this.broadCast(new Packet(PacketType.info, msg.payload[0]))
               break

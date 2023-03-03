@@ -1,5 +1,6 @@
 import { Quaternion, Vector3, Mesh, MeshBuilder, PhysicsImpostor, Scene } from "babylonjs"
 import { v4 as uuidv4 } from 'uuid';
+import { Packet, PacketType } from "../packet";
 
 export class Entities{
 
@@ -52,6 +53,20 @@ export class Entities{
         this._object.physicsImpostor.setAngularVelocity(new Vector3(angularVelocity._x, angularVelocity._y, angularVelocity._z));
         this._object.physicsImpostor.setLinearVelocity(new Vector3(linearVelocity._x, linearVelocity._y, linearVelocity._z));
         this._object.position = position;
+    }
+
+    public serialize(): Packet{
+        let updatePacket: Packet = new Packet(PacketType.mesh, [
+            {
+                name: this._object.name,
+                metadata: this.metadata,
+                position: this._object.position, 
+                linearVelocity: this._object.physicsImpostor.getLinearVelocity(), 
+                angularVelocity: this._object.physicsImpostor.getAngularVelocity(),
+                boundingBox: this._object.getBoundingInfo()
+            }
+        ], this._id)
+        return updatePacket
     }
 
 }
