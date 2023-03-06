@@ -12,9 +12,9 @@ export class Packet{
 
     public type: String;
     public payload: any; 
-    public uid: string;
+    public uid?: string;
 
-    constructor(packetType: PacketType, data: Array<any>, uid: string){
+    constructor(packetType: PacketType, data: Array<any>, uid?: string){
         this.type = packetType;
         this.payload = data;
         this.uid = uid

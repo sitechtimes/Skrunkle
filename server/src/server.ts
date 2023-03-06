@@ -44,7 +44,6 @@ export class SocketServer {
         let player = new Player(this.world.scene)
         this.players.set(player.id, player)
         state_machine.add_player(player.id, player)
-
         this.send(client, player.serialize(PacketType.info, { players: this.players.size }))
       }
 
@@ -52,7 +51,7 @@ export class SocketServer {
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
         if (this.players.has(msg.uid)) {
-
+          this.logger.log(msg.type)
           let player: Player = this.players.get(msg.uid)
           
           switch (msg.type) {
@@ -62,7 +61,7 @@ export class SocketServer {
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                state_machine.update_player(msg.uid, player)
+                state_machine.update_player(msg.uid!, player)
               }
               break
      
