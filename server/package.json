@@ -5,7 +5,8 @@
   "main": "./build/src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "concurrently \"tsc -w\" \"nodemon .\""
+    "dev": "concurrently \"tsc -w\" \"nodemon .\"",
+    "watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",

@@ -161,7 +161,7 @@ export class Hotbar {
     this._slots.set(slot, item);
     this._playerInventory.set(slot, item);
     this.loadSlot(item, slot);
-    console.log(slot, item);
+    // console.log(slot, item);
 
     return true;
   }
