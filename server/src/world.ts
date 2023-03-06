@@ -28,6 +28,10 @@ export class World{
 
     }
 
+    public get scene(): Scene{
+        return this._scene;
+    }
+
     private get _get_tick(): number{
         let ticks = Math.round(this._ticks_elapsed/this._tick_time * 1000);
         this._ticks_elapsed = 0;

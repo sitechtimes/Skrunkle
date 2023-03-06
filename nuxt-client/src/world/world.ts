@@ -336,8 +336,9 @@ export class World {
     );
     /* TEMPORARILY ADDED ITEMS */
     this._chat = new Chat(this._socket, this._player);
+
     console.log("Created Main Player id: " + this._player.id);
-    console.log(this._player.inventory);
+    // console.log(this._player.inventory);
   }
 
   private _initPlayer(player: Player): void {
@@ -436,13 +437,12 @@ export class World {
         }
         break
         
- 
         
       case "Info":
-        console.log(data);
-        let playerInfo: any = data?.payload[0].player;
-        if (this._player === null || this._player?.id === playerInfo.id) {
-          this._initClient(playerInfo._name, playerInfo._id);
+        let playerInfo: any = data?.payload[0];
+        if (this._player === undefined) {
+          console.log(playerInfo)
+          this._initClient(playerInfo.name, data.uid);
         }
         // init player
         else break;
