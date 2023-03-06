@@ -42,7 +42,7 @@ export class SocketServer {
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
         let player = new Player(this.world.scene)
-        this.setPlayer(player.id, player)
+        this.players.set(player.id, player)
         state_machine.add_player(player.id, player)
 
         this.send(client, player.serialize(PacketType.info, { players: this.players.size }))
