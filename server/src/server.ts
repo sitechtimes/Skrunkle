@@ -43,6 +43,7 @@ export class SocketServer {
       if(!this.players.has(client)) {
         let player = new Player()
         state_machine.add_player(player.id, player)
+        this.players.set(player.id, player)
         this.send(client, 
           new Packet(
             PacketType.info, 

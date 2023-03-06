@@ -43,7 +43,6 @@ export class Chat {
   }
 
   public sendMessage(msg: string) {
-    console.log("Sensd message")
     this._socket.send(
       new Packet(
         PacketType.chat,
