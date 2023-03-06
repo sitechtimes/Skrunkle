@@ -49,6 +49,11 @@ export class Generation {
 
       return box;
     },
+    ENTITY: (mesh: any): Mesh => {
+      // spawn dropped entity
+      
+      return
+    }
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
