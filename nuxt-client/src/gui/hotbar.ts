@@ -1,5 +1,6 @@
 import { AdvancedDynamicTexture, Control, TextBlock } from "@babylonjs/gui";
 import type { PlayerItem } from "./items";
+import { Generation } from "../world/generation";
 
 export class Hotbar {
   private _mainGUI: AdvancedDynamicTexture;
@@ -11,6 +12,7 @@ export class Hotbar {
   private _guiSlots: Map<number, any>;
   private _healthBar: TextBlock | null = null;
   private _playerInventory: Map<number, PlayerItem>;
+  private _generator: Generation | undefined
 
   constructor(mainGUI: AdvancedDynamicTexture) {
     this._mainGUI = mainGUI;
@@ -19,7 +21,8 @@ export class Hotbar {
     this._playerInventory = new Map();
   }
 
-  public async init() {
+  public async init(gen: Generation) {
+    this._generator = gen
     await this.load();
     this.listen();
   }
@@ -88,6 +91,25 @@ export class Hotbar {
       text.color = "black";
       text.fontSize = 10;
     }
+
+    this._guiSlots.set(slot, temp);
+  }
+
+  private releaseSlot(slot: number = this._currentSlot) {
+    let grid: any = this._mainGUI.getChildren()[0].children[0];
+    let children = grid._childControls;
+    let temp = children.filter(
+      (control: Control) => control.name === `slot-${slot}`
+    )[0];
+
+    if (temp.children.length > 1) {
+      let text = temp.children[1];
+      text.text = "";
+      text.color = "black";
+      text.fontSize = 10;
+    }
+
+    this._guiSlots.set(slot, temp)
   }
 
   private listen() {
@@ -122,6 +144,9 @@ export class Hotbar {
           break;
         case "Digit0":
           this.currentSlot = 10;
+          break;
+        case "KeyZ":
+          this.drop();
           break;
       }
     };
@@ -164,6 +189,12 @@ export class Hotbar {
     // console.log(slot, item);
 
     return true;
+  }
+
+  public drop() {
+    this._slots.delete(this._currentSlot)
+    this.releaseSlot(this._currentSlot)
+    // this._generator?.GENERATE.ENTITY({ position: { x: 1, y: 6, z: 15 }, name: "Box", metadata: "Box" })
   }
 
   public get current(): PlayerItem | undefined {

@@ -1,6 +1,7 @@
 import { AdvancedDynamicTexture } from "@babylonjs/gui";
 import { Scene } from "@babylonjs/core";
 import { Hotbar } from "./hotbar";
+import type { Generation } from "../world/generation";
 
 export class GUI {
   private _mainGUI: AdvancedDynamicTexture;
@@ -17,8 +18,8 @@ export class GUI {
     this._hotbar = new Hotbar(this._mainGUI);
   }
 
-  public async createHotbar() {
-    await this._hotbar.init();
+  public async createHotbar(gen: Generation) {
+    await this._hotbar.init(gen);
   }
 
   public disposeGUI() {

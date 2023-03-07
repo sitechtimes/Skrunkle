@@ -20,7 +20,8 @@ export class Chat {
   }
 
   private listen() {
-    onkeydown = (event) => {
+    // this breaks the GUI lol also how necessary is it really
+    /* onkeydown = (event) => {
       switch (event.code) {
         case "Slash":
           this.toggleChat();
@@ -30,7 +31,7 @@ export class Chat {
           document.getElementById("renderCanvas")?.focus();
           break;
       }
-    };
+    }; */
   }
 
   public toggleChat() {

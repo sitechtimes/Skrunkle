@@ -51,8 +51,8 @@ export class Generation {
     },
     ENTITY: (mesh: any): Mesh => {
       // spawn dropped entity
-      
-      return
+      // box is just to test
+      return this.GENERATE.Box(mesh)
     }
   };
 
