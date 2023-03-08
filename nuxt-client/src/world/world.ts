@@ -346,7 +346,7 @@ export class World {
   private _initPlayer(player: Player): void {
     this._players.set(player.id, player);
   }
-  public onSocketData(data: Packet): void {
+  public async onSocketData(data: Packet): Promise<void> {
     switch (data?.type) {
       case "Update":
         let playerData = data.payload;
@@ -429,7 +429,7 @@ export class World {
           entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
           state_machine.update_entity(uid, entity)
         }else{
-          let mesh: Mesh = this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
+          let mesh: Mesh =  await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
 
           let imposter = PhysicsImpostor.BoxImpostor
           if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor

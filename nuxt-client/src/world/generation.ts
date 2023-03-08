@@ -5,6 +5,9 @@ import {
   Color3,
   Scene,
   Mesh,
+  SceneLoader,
+  TransformNode,
+  Vector3
 } from "@babylonjs/core";
 
 export class Generation {
@@ -34,7 +37,7 @@ export class Generation {
 
       return item;
     },
-    Box: (mesh: any): Mesh => {
+    Boax: (mesh: any): Mesh => {
       var material = new StandardMaterial("box color", this._scene);
       material.alpha = 1;
       material.diffuseColor = new Color3(1.0, 0.2, 0.7);
@@ -49,6 +52,26 @@ export class Generation {
 
       return box;
     },
+    Box: async(mesh: any): Promise<Mesh> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        "meshes/",
+        "tree1.glb",
+        this._scene
+      );
+
+      let parent: Mesh = new Mesh("tree", this._scene);
+      for (let child of bodies.meshes) {
+        // child.position = new Vector3(mesh.position)
+        child.parent = parent;
+      }
+      parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
+      parent.metadata = "tree";
+      // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
+      // parent.scaling = new Vector3(0.25, 0.25, 0.25)
+
+      return parent
+    }
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {

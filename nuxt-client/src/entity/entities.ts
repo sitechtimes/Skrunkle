@@ -6,6 +6,7 @@ export class Entities{
     private _name: string;
     private _id: string;
     private _object: any;
+    public collide: boolean = false;
 
     constructor(name: string, id: string, position: Vector3, object: any | null){
         this._name = name;
@@ -14,6 +15,20 @@ export class Entities{
         if (object) {
             this._object = object;
             this._object.position = this._position;
+
+            this._object.onCollideObservable()
+
+            // if (this._object.physicsImpostor) {
+            //     this._object.physicsImpostor.onCollideEvent = (e)=>{
+            //         this.collide = true;
+            //         console.log("Started")
+            //     }
+
+            //     this._object.physicsImpostor.onCollideEventEnd = (e)=>{
+            //         this.collide = false;
+            //         console.log("Ended")
+            //     }
+            // }
         }
     }
 
