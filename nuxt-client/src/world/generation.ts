@@ -5,6 +5,7 @@ import {
   Color3,
   Scene,
   Mesh,
+  SceneLoader,
 } from "@babylonjs/core";
 
 export class Generation {
@@ -49,8 +50,13 @@ export class Generation {
 
       return box;
     },
-    ENTITY: (mesh: any): Mesh => {
+    ENTITY: async (mesh: any): Promise<Mesh> => {
       // spawn dropped entity
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        "meshes/",
+        mesh.item.path
+      )
       // box is just to test
       return this.GENERATE.Box(mesh)
     }
