@@ -5,6 +5,7 @@ import { CubeMapToSphericalPolynomialTools, Vector3 } from 'babylonjs'
 import { Router } from './router'
 import { Packet, PacketType } from './packet'
 import { Logger } from './logger'
+import { state_machine } from './state_machine'
 
 export class SocketServer {
   static readonly PORT: number = 2000
@@ -21,6 +22,8 @@ export class SocketServer {
 
     this.init()
     this.listen()
+
+    state_machine.setSocket(this)
   }
 
   private init() {
@@ -38,30 +41,17 @@ export class SocketServer {
       // save client
       this.logger.log('Client connected')
       if(!this.players.has(client)) {
-        let player = new Player()
+        let player = new Player(this.world.scene)
         this.players.set(player.id, player)
-        this.send(client, 
-          new Packet(
-            PacketType.info, 
-            [{
-              player: player,
-              players: this.players.size 
-            }]
-          )
-        )
-        this.send(client,
-          new Packet(
-            PacketType.mesh,
-            this.world.entities
-          )
-        )
+        state_machine.add_player(player.id, player)
+        this.send(client, player.serialize(PacketType.info, { players: this.players.size }))
       }
 
       // basic starter functiosn
       client.on('message', (message:string) => {
         let msg: Packet = JSON.parse(message)
         if (this.players.has(msg.uid)) {
-
+          this.logger.log(msg.type)
           let player: Player = this.players.get(msg.uid)
           
           switch (msg.type) {
@@ -71,18 +61,21 @@ export class SocketServer {
               // this.send(client, new Packet(PacketType.update, [player]))
               if (player !== null) {
                 player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                 msg.payload[0].position = player.position
-                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
+                state_machine.update_player(msg.uid!, player)
               }
               break
-            case "Info":
-              this.setPlayer(msg.uid, msg.payload[0])
-              this.broadCast(new Packet(PacketType.info, msg.payload[0]))
-              break
+     
             case "Close":
-              this.players.delete(msg.uid)
               this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
               break
+            case "Interaction":
+              this.logger.log("Received interaction")
+              this.broadCast(new Packet(PacketType.interaction, msg.payload[0]))
+              break
+            case "Chat":
+              this.logger.log("Received chat message")
+              this.broadCast(new Packet(PacketType.chat, msg.payload[0]))
+              break;
             case "ping":
               this.logger.log("Received Ping from client. Pong!")
               this.send(client, new Packet(PacketType.info, ['Pong!']))
