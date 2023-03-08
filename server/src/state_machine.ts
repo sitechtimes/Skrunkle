@@ -4,11 +4,13 @@ import { Logger } from "./logger";
 import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
+import { Vector3 } from "babylonjs";
 
 class State_machine{
 
     public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
+    public old_entities: Map<string, Entities> = new Map(); 
 
     private logger: Logger = new Logger("STATE_MACHINE");
     private socket_ref: SocketServer;
@@ -39,9 +41,19 @@ class State_machine{
         this.ready()
     }
 
+    private pass_changes(a: Entities, b: Entities): void{
+        // let pos_change: Vector3 = a.position.subtract(b.position);
+        // let rot_change: Vector3 = a.angularVelocity.subtract(b.angularVelocity);
+
+        console.log(b.position)
+    }
+
     private broadcast_entity(): void{
         for (let uid of this.entities.keys()){
             let entity: Entities = this.entities.get(uid);
+            let entity_old: Entities = this.old_entities.get(uid)
+
+            this.pass_changes(entity, entity_old)
             this.socket_ref.broadCast(entity.serialize())
         }
     }
@@ -67,6 +79,8 @@ class State_machine{
 
     public add_entity(uid: string, entity: Entities){
         this.entities.set(uid, entity);
+        let copy: Entities = {...entity}
+        this.old_entities.set(uid, copy)
     }
 
     public delete_player(uid: string){
@@ -75,6 +89,7 @@ class State_machine{
 
     public delete_entity(uid: string){
         this.entities.delete(uid)
+        this.old_entities.delete(uid)
     }
 
     public has_player(uid: string): boolean{

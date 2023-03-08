@@ -16,7 +16,7 @@ export class Entities{
             this._object = object;
             this._object.position = this._position;
 
-            this._object.onCollideObservable()
+            // this._object.onCollideObservable()
 
             // if (this._object.physicsImpostor) {
             //     this._object.physicsImpostor.onCollideEvent = (e)=>{

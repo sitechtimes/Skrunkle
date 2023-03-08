@@ -25,6 +25,14 @@ export class Entities{
         return this._object.position;
     }
 
+    public get angularVelocity(): Vector3{
+        return this._object.physicsImpostor.getAngularVelocity();
+    }
+
+    public get linearVelocity(): Vector3{
+        return this._object.physicsImpostor.getLinearVelocity();
+    }
+
     public get rotation(): Vector3{
         return this._object.rotation;
     }
