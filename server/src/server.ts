@@ -46,6 +46,7 @@ export class SocketServer {
         state_machine.add_player(player.id, player)
 
         this.send(client, player.serialize(PacketType.info, { players: this.players.size }))
+        state_machine.broadcast_entity(true)
       }
 
       // basic starter functiosn

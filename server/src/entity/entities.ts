@@ -2,6 +2,32 @@ import { Quaternion, Vector3, Mesh, MeshBuilder, PhysicsImpostor, Scene } from "
 import { v4 as uuidv4 } from 'uuid';
 import { Packet, PacketType } from "../packet";
 
+export class Old_Entity{
+
+    public position: Vector3;
+    public angularVelocity: Vector3;
+    public linearVelocity: Vector3;
+    private _id: string;
+
+    constructor(entity: Entities){
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+        this._id = entity.id;
+    }
+
+    public update(entity: Entities): void{
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+    }
+
+    public get id(): string{
+        return this._id
+    }
+
+}
+
 export class Entities{
 
     private _name: string;

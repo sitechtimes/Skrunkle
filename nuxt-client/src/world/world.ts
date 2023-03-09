@@ -10,7 +10,8 @@ import {
   KeyboardEventTypes,
   AbstractMesh,
   CannonJSPlugin,
-  SceneLoader
+  SceneLoader,
+  PhysicsImpostor
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -25,7 +26,6 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
-import { PhysicsImpostor } from "babylonjs";
 
 export class World {
   private _engine: Engine;
@@ -81,6 +81,7 @@ export class World {
       this._scene
     );
     ground.position = new Vector3(0, 0, 0);
+    ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
     ground.checkCollisions = true;
     // @ts-expect-error
     var light = new HemisphericLight(
