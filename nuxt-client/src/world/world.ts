@@ -432,10 +432,12 @@ export class World {
         }else{
           let mesh: Mesh =  await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](payload)
 
+          let adjusted_pos: Vector3 = new Vector3(payload.position._x, payload.position._y * 2, payload.position._z)
+
           let imposter = PhysicsImpostor.BoxImpostor
           if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
-          let entity: Entities = createEntity(this._scene, uid, payload.name, payload.position, mesh, imposter, 90, 0.1)
-          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
+          let entity: Entities = createEntity(this._scene, uid, payload.name, adjusted_pos, mesh, imposter, 90, 0.1)
+          entity.update(payload.linearVelocity, payload.angularVelocity, adjusted_pos)
           state_machine.add_entity(uid, entity)
         }
         break

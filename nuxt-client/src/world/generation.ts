@@ -7,7 +7,9 @@ import {
   Mesh,
   SceneLoader,
   TransformNode,
-  Vector3
+  Vector3,
+  PhysicsImpostor,
+  PhysicsJoint
 } from "@babylonjs/core";
 
 export class Generation {
@@ -37,7 +39,7 @@ export class Generation {
 
       return item;
     },
-    Box: (mesh: any): Mesh => {
+    Boax: (mesh: any): Mesh => {
       var material = new StandardMaterial("box color", this._scene);
       material.alpha = 1;
       material.diffuseColor = new Color3(1.0, 0.2, 0.7);
@@ -52,7 +54,7 @@ export class Generation {
 
       return box;
     },
-    Tree: async(mesh: any): Promise<Mesh> => {
+    Box: async(mesh: any): Promise<Mesh> => {
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
         "meshes/",
@@ -60,10 +62,13 @@ export class Generation {
         this._scene
       );
 
-      let parent: Mesh = new Mesh("tree", this._scene);
-      for (let child of bodies.meshes) {
+      let parent: Mesh = bodies.meshes[0];
+      parent.physicsImpostor = new PhysicsImpostor(parent, PhysicsImpostor.BoxImpostor, {}, this._scene)
+      for (let i = 1; i < bodies.meshes.length; i ++) {
+        let child = bodies.meshes[i]
         // child.position = new Vector3(mesh.position)
-        child.parent = parent;
+        let joint = new PhysicsJoint(PhysicsJoint.LockJoint, child)
+        parent.physicsImpostor.addJoint(joint)
       }
       parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
       parent.metadata = "tree";
