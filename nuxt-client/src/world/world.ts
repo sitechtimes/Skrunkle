@@ -115,15 +115,11 @@ export class World {
           break;
       }
     });
-    this._GUI.createHotbar();
+    this._GUI.createHotbar(this._generator);
     this._hotbar = this._GUI.hotbar;
     console.log(this._hotbar);
 
     // this._generator.GENERATE.TestCyclinder();
-
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
-
     this._scene.executeWhenReady(() => {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
@@ -330,7 +326,7 @@ export class World {
       8
     );
     this._hotbar.add(
-      new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket),
+      new PlayerItem(Items.sword, this._player, this._hotbar, this._socket),
       7
     );
     /* TEMPORARILY ADDED ITEMS */
@@ -413,7 +409,12 @@ export class World {
         if (this._pickedup == true) {
           let ray = this._playerCamera!.getForwardRay();
           let item = this._scene.getMeshByUniqueId(this._itemchosen)
-          item!.position = ray.origin.clone().add(ray.direction.scale(10));
+          if (item?.name.startsWith("(ITEM)")) {
+            this._hotbar.add(new PlayerItem(item.metadata, this._player!, this._hotbar, this._socket), this._hotbar.currentSlot)
+            item.dispose()
+          } else {
+            item!.position = ray.origin.clone().add(ray.direction.scale(10));
+          }
         }
         break;
       case "Mesh":

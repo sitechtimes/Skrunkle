@@ -46,7 +46,7 @@ export class Hotbar {
 
       if (this._slots.has(i)) {
         let text = new TextBlock();
-        text.text = this._slots.get(i)!._name;
+        text.text = this._slots.get(i)!._metadata;
         text.color = "black";
         text.fontSize = 10;
 
@@ -80,14 +80,14 @@ export class Hotbar {
 
     if (temp.children.length === 1) {
       let text = new TextBlock();
-      text.text = item._name;
+      text.text = item._metadata;
       text.color = "black";
       text.fontSize = 10;
 
       temp.addControl(text);
     } else {
       let text = temp.children[1];
-      text.text = item._name;
+      text.text = item._metadata;
       text.color = "black";
       text.fontSize = 10;
     }
@@ -192,9 +192,11 @@ export class Hotbar {
   }
 
   public drop() {
+    if (this.current) {
+      this._generator!.GENERATE.ENTITY(this.current!)
+    }
     this._slots.delete(this._currentSlot)
     this.releaseSlot(this._currentSlot)
-    // this._generator?.GENERATE.ENTITY({ position: { x: 1, y: 6, z: 15 }, name: "Box", metadata: "Box" })
   }
 
   public get current(): PlayerItem | undefined {

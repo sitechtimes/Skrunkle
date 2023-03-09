@@ -5,6 +5,7 @@ import type { Hotbar } from "./hotbar";
 
 export class PlayerItem {
   public _name: string;
+  public _metadata: string;
   public _type: "Damage" | "Heal" | "Utility";
   public _range?: number;
   public _magnitude: number;
@@ -15,7 +16,8 @@ export class PlayerItem {
   #_socket: Socket;
 
   constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket) {
-    this._name = item.name;
+    this._name = `(ITEM)-${item.name}-${Math.random()*100000}`;
+    this._metadata = item.name
     this._type = item.type;
     this._range = item.range;
     this._magnitude = item.magnitude;

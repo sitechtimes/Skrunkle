@@ -6,7 +6,10 @@ import {
   Scene,
   Mesh,
   SceneLoader,
+  TransformNode,
+  Vector3,
 } from "@babylonjs/core";
+import { PlayerItem } from "../gui/items";
 
 export class Generation {
   private _world: World;
@@ -50,15 +53,19 @@ export class Generation {
 
       return box;
     },
-    ENTITY: async (mesh: any): Promise<Mesh> => {
+    ENTITY: async (mesh: PlayerItem): Promise<TransformNode> => {
       // spawn dropped entity
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
         "meshes/",
-        mesh.item.path
+        mesh._path
       )
-      // box is just to test
-      return this.GENERATE.Box(mesh)
+      let parent: Mesh = new Mesh(mesh._name, this._scene)
+      for (let child of bodies.meshes) {
+        child.position = new Vector3(0, 0, 0)
+      }
+      parent.metadata = mesh._name
+      return parent
     }
   };
 
