@@ -110,7 +110,8 @@ export class World {
         
     this._navigationPlugin.createNavMesh([ground], parameters);
     const crowd = this._navigationPlugin.createCrowd(10, 0.1, this._scene);
-    const agentIndex = crowd.addAgent(position, agentParams, transform);
+    const agentIndex = crowd.addAgent(new Vector3(0,0,0), agentParams, crowd);
+    crowd.agentGoto(agentIndex, this._navigationPlugin.getClosestPoint(endPoint));
 
     // @ts-expect-error
     var light = new HemisphericLight(
@@ -308,6 +309,7 @@ export class World {
                 this._itemchosen = hit!.pickedMesh!.uniqueId;
                 document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
               }
+              
             break;
         }
       });
@@ -451,6 +453,14 @@ export class World {
           let player_entity = state_machine.players.get(uid);
           player_entity?.position.
       }
+      if (state_machine.players) { // we need to disconnect camera from canvas
+        var agents = crowd.getAgents();
+        var i;
+        for (i=0;i<agents.length;i++) {
+            var randomPos = this._navigationPlugin.getRandomPointAround(startingPoint, 1.0);
+            crowd.agentGoto(agents[i], this._navigationPlugin.getClosestPoint(startingPoint));
+        }
+        var pathPoints = this._navigationPlugin.computePath(crowd.getAgentPosition(agents[0]), this._navigationPlugin.getClosestPoint(startingPoint));}
         break;
       case "Mesh":
         
