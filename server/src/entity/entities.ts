@@ -37,10 +37,8 @@ export class Entities{
     constructor(name: string, position: Vector3, object: Mesh){
         this._name = name;
         this._id = `M-${uuidv4()}`
-        if (object) {
-            this._object = object;
-            this._object.position = position;
-        }
+        this._object = object;
+        this._object.position = position;
     }
 
     public get metadata(): string{

@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "@babylonjs/core": "^5.50.1",
-    "@babylonjs/loaders": "^5.50.1",
-    "babylonjs": "^5.26.1",
+    "babylonjs": "^5.50.1",
+    "babylonjs-loaders": "^5.50.1",
     "cannon-es": "^0.20.0",
     "concurrently": "^7.4.0",
     "nodemon": "^2.0.20",
@@ -27,6 +27,7 @@
     "url": "https://github.com/Skrunkle-Game/BabylonDemo.git"
   },
   "devDependencies": {
+    "@babylonjs/loaders": "^5.50.1",
     "@types/cannon": "^0.1.8",
     "@types/uuid": "^8.3.4",
     "@types/ws": "^8.5.3",

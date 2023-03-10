@@ -434,9 +434,14 @@ export class World {
 
           let adjusted_pos: Vector3 = new Vector3(payload.position._x, payload.position._y * 2, payload.position._z)
 
+          let mass: number = 90
+
+          console.log(payload.metadata)
+
           let imposter = PhysicsImpostor.BoxImpostor
           if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
-          let entity: Entities = createEntity(this._scene, uid, payload.name, adjusted_pos, mesh, imposter, 90, 0.1)
+          else if (payload.metadata == "Tree") mass = 0
+          let entity: Entities = createEntity(this._scene, uid, payload.name, adjusted_pos, mesh, imposter, mass, 0.1)
           entity.update(payload.linearVelocity, payload.angularVelocity, adjusted_pos)
           state_machine.add_entity(uid, entity)
         }

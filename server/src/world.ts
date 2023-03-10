@@ -1,4 +1,4 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, VertexBuffer, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
@@ -6,8 +6,10 @@ import { state_machine } from "./state_machine"
 import { createEntity, Entities } from './entity/entities';
 
 // required imports
-import "@babylonjs/loaders/glTF";
+import * as BABYLON from 'babylonjs';
+import 'babylonjs-loaders';
 
+// required imports
 import xhr2 from 'xhr2'
 
 // @ts-ignore
@@ -85,21 +87,9 @@ export class World{
         this._ground.position = new Vector3(0, 0, 0)
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
-
-        let bodies: any = await SceneLoader.ImportMeshAsync(
-            "",
-            "http://localhost:3000/meshes/",
-            "tree1.glb",
-            this._scene
-          );
-
-        // let bodies: any = SceneLoader.ImportMesh("", "http://localhost:3000/meshes/", "tree1.glb", this._scene, ()=>{
-        //     console.log("YOOO")
-        // })
-
-        this.logger.log(bodies)
-        // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
-        // this._generator.RANDOMIZE(this._generator.GENERATE.Tree(), 100, 100)
+        // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
+        // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 100)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree(new Vector3(0, 0, 0)), 100, 100)
     }
 
     
