@@ -1,9 +1,17 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
 import { state_machine } from "./state_machine"
 import { createEntity, Entities } from './entity/entities';
+
+// required imports
+import "@babylonjs/loaders/glTF";
+
+import xhr2 from 'xhr2'
+
+// @ts-ignore
+global.XMLHttpRequest = xhr2.XMLHttpRequest
 
 interface worldSize {
     top: Vector3,
@@ -50,7 +58,7 @@ export class World{
         else return entityPosition;
     }
 
-    public init(): void{
+    public async init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
@@ -77,8 +85,21 @@ export class World{
         this._ground.position = new Vector3(0, 0, 0)
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
+
+        let bodies: any = await SceneLoader.ImportMeshAsync(
+            "",
+            "http://localhost:3000/meshes/",
+            "tree1.glb",
+            this._scene
+          );
+
+        // let bodies: any = SceneLoader.ImportMesh("", "http://localhost:3000/meshes/", "tree1.glb", this._scene, ()=>{
+        //     console.log("YOOO")
+        // })
+
+        this.logger.log(bodies)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
-        this._generator.RANDOMIZE(this._generator.GENERATE.Tree(), 100, 100)
+        // this._generator.RANDOMIZE(this._generator.GENERATE.Tree(), 100, 100)
     }
 
     

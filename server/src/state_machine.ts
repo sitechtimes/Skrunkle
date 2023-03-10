@@ -78,7 +78,7 @@ class State_machine{
                 cnt++;
             }
         }
-        console.log(`Broadcasted ${cnt}`)
+        // console.log(`Broadcasted ${cnt}`)
     }
 
     private broadcast_player(): void{

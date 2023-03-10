@@ -90,7 +90,6 @@ export class Generation {
     let items: Entities[] = []
 
     for (let i = 1; i < count; i++) {
-      console.log("INIT TREE")
       let newItem: Entities = this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree"]()
       newItem.position.x = (Math.random()*squareRange) - (squareRange/2)
       newItem.position.z = (Math.random()*squareRange) - (squareRange/2)
