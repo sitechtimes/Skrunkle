@@ -90,10 +90,55 @@ export class World {
       new Vector3(0, 1, 0),
       this._scene
     );
-    this._scene.ambientColor = new Color4(1, 1, 1, 1);
     var terrainMaterial = new StandardMaterial("materialGround", this._scene);
     terrainMaterial.diffuseColor = new Color4(0.2, 0.4, 0.75, 1.0);
+    ground.material = terrainMaterial;
 
+
+    var terrainCreated = false;
+    var terrain;
+
+    s.onload = function() {
+        var mapSubX = 500;
+        var mapSubZ = 300;
+        var terrainSub = 100;
+
+        // map creation
+        var mapData = new Float32Array(mapSubX * mapSubZ * 3);   
+        for (var l = 0; l < mapSubZ; l++) {           
+            for (var w = 0; w < mapSubX; w++) {                
+                mapData[3 *(l * mapSubX + w)] = (w - mapSubX * 0.5) * 2.0;
+                mapData[3 * (l * mapSubX + w) + 1] = w / (l +1) * Math.sin(l / 2) * Math.cos(w / 2) * 2.0;
+                mapData[3 * (l * mapSubX + w) + 2] = (l - mapSubZ * 0.5) * 2.0;
+           }            
+        }
+
+        // terrain creation
+        var params = {
+            mapData: mapData,
+            mapSubX: mapSubX,
+            mapSubZ: mapSubZ,
+            terrainSub: terrainSub
+        };
+        terrain = new DynamicTerrain("terrain", params, this._scene);
+        terrain.mesh.material = terrainMaterial;
+        terrain.subToleranceX = 8;
+        terrain.subToleranceZ = 8;
+        terrain.LODLimits = [4, 3, 2, 1, 1];
+        terrainCreated = true;
+    };
+
+    var camElevation = 2.0;
+    var camAltitude = 0.0;
+    this._scene.registerBeforeRender(function() {
+        if (terrainCreated) {
+            camAltitude = terrain.getHeightFromMap(camera.position.x, camera.position.z) + camElevation;
+            camera.position.y = camAltitude;
+        }
+    });
+
+    return this._scene;
+};
     //   this._scene.onPointerObservable.add((pointerInfo) => {
     //     switch (pointerInfo.type) {
     //       case PointerEventTypes.POINTERWHEEL:
