@@ -44,6 +44,7 @@ export class Entities{
     }
 
     public get metadata(): string{
+        
         return this._object.metadata
     }
 
@@ -105,9 +106,11 @@ export class Entities{
 
 }
 
-export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
-    let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
-    mesh.physicsImpostor = entityImposter
+export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number): Entities{
+    if (imposterType != null){
+        let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
+        mesh.physicsImpostor = entityImposter
+    }
     let entity: Entities = new Entities(name, position, mesh)
     return entity
 }

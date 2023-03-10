@@ -40,7 +40,7 @@ export class Generation {
 
       return item;
     },
-    Boax: (mesh: any): Mesh => {
+    Box: (mesh: any): Mesh => {
       var material = new StandardMaterial("box color", this._scene);
       material.alpha = 1;
       material.diffuseColor = new Color3(1.0, 0.2, 0.7);
@@ -55,7 +55,7 @@ export class Generation {
 
       return box;
     },
-    Box: async(mesh: any): Promise<Mesh> => {
+    Tree: async(mesh: any): Promise<Mesh> => {
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
         "meshes/",

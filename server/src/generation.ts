@@ -1,4 +1,4 @@
-import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3 } from "babylonjs"
+import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3, SceneLoader, VertexBuffer } from "babylonjs"
 import { World } from "./world"
 import { state_machine } from "./state_machine"
 import { Entities, createEntity } from "./entity/entities"
@@ -52,6 +52,36 @@ export class Generation {
       state_machine.add_entity(entity.id, entity)
 
       return entity
+    },
+    Tree: async(name?: string): Entities => {
+
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        "meshes/",
+        "tree1.glb",
+        this._scene
+      );
+      
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any)=>{
+        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+          console.log("problems with: " + m.name);
+        }else{
+          m.metadata = "Tree"
+          m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m)
+        }
+      })
+
+      console.log(meshes)
+    
+      let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+      parent.metadata = "Tree";
+
+      let entity = createEntity(this._scene, "tree", new Vector3(0, 1, 0), parent, null, 10000, 0)
+      state_machine.add_entity(entity.id, entity)
+
+      return entity
     }
   }
 
@@ -60,11 +90,11 @@ export class Generation {
     let items: Entities[] = []
 
     for (let i = 1; i < count; i++) {
-      let newItem: Entities = this.GENERATE[item.metadata as "Cylinder" | "Box"]()
+      console.log("INIT TREE")
+      let newItem: Entities = this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree"]()
       newItem.position.x = (Math.random()*squareRange) - (squareRange/2)
       newItem.position.z = (Math.random()*squareRange) - (squareRange/2)
       items.push(newItem)
-      console.log("Generated mesh " + i)
     }
 
     return items
