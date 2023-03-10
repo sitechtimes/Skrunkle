@@ -77,7 +77,7 @@ export class World{
         this._ground.position = new Vector3(0, 0, 0)
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
-        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
+        // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
         this._generator.RANDOMIZE(this._generator.GENERATE.Box(), 100, 100)
     }
 

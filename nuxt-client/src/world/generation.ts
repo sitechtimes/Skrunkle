@@ -9,7 +9,8 @@ import {
   TransformNode,
   Vector3,
   PhysicsImpostor,
-  PhysicsJoint
+  PhysicsJoint,
+  VertexBuffer
 } from "@babylonjs/core";
 
 export class Generation {
@@ -61,15 +62,18 @@ export class Generation {
         "tree1.glb",
         this._scene
       );
-
-      let parent: Mesh = bodies.meshes[0];
-      parent.physicsImpostor = new PhysicsImpostor(parent, PhysicsImpostor.BoxImpostor, {}, this._scene)
-      for (let i = 1; i < bodies.meshes.length; i ++) {
-        let child = bodies.meshes[i]
-        // child.position = new Vector3(mesh.position)
-        let joint = new PhysicsJoint(PhysicsJoint.LockJoint, child)
-        parent.physicsImpostor.addJoint(joint)
-      }
+      
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any)=>{
+        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+          console.log("problems with: " + m.name);
+        }else{
+          m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m)
+        }
+      })
+    
+      let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
       parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
       parent.metadata = "tree";
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
