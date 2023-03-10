@@ -410,8 +410,12 @@ export class World {
           let ray = this._playerCamera!.getForwardRay();
           let item = this._scene.getMeshByUniqueId(this._itemchosen)
           if (item?.name.startsWith("(ITEM)")) {
-            this._hotbar.add(new PlayerItem(item.metadata, this._player!, this._hotbar, this._socket), this._hotbar.currentSlot)
-            item.dispose()
+            item.parent?.dispose()
+            console.log(item.name.split("-")[1].toLowerCase())
+            this._hotbar.add(
+              new PlayerItem(Items.sword, this._player!      , this._hotbar, this._socket),
+              7
+            );
           } else {
             item!.position = ray.origin.clone().add(ray.direction.scale(10));
           }

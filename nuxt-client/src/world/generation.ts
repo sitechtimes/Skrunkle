@@ -60,11 +60,13 @@ export class Generation {
         "meshes/",
         mesh._path
       )
-      let parent: Mesh = new Mesh(mesh._name, this._scene)
       for (let child of bodies.meshes) {
-        child.position = new Vector3(0, 0, 0)
+        child.name = `${mesh._name}-${Math.random()*100}`
+        child.metadata = mesh._metadata
       }
-      parent.metadata = mesh._name
+      let parent: Mesh = Mesh.MergeMeshes([...bodies.meshes])!
+      parent.metadata = mesh._metadata
+      parent.name = mesh._name
       return parent
     }
   };
