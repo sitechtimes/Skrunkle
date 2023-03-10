@@ -48,6 +48,7 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
   private _navigationPlugin: any;
+  private _crowd: any;
 
   constructor(canvas: HTMLCanvasElement | null) {
     this._canvas = canvas;
@@ -111,8 +112,10 @@ export class World {
     this._navigationPlugin.createNavMesh([ground], parameters);
     const crowd = this._navigationPlugin.createCrowd(10, 0.1, this._scene);
     const agentIndex = crowd.addAgent(new Vector3(0,0,0), agentParams, crowd);
-    crowd.agentGoto(agentIndex, this._navigationPlugin.getClosestPoint(endPoint));
-
+    const enemy = MeshBuilder.CreateCylinder("enemy", {diameter:1, height:3})
+    enemy.parent = agentIndex
+    crowd.agentGoto(agentIndex, this._navigationPlugin.getClosestPoint(state_machine.players));
+    this._crowd = crowd;
     // @ts-expect-error
     var light = new HemisphericLight(
       "light",
@@ -451,19 +454,18 @@ export class World {
         }
         for (let uid of state_machine.players.keys()){
           let player_entity = state_machine.players.get(uid);
-          player_entity?.position.
-      }
-      if (state_machine.players) { // we need to disconnect camera from canvas
-        var agents = crowd.getAgents();
-        var i;
-        for (i=0;i<agents.length;i++) {
-            var randomPos = this._navigationPlugin.getRandomPointAround(startingPoint, 1.0);
-            crowd.agentGoto(agents[i], this._navigationPlugin.getClosestPoint(startingPoint));
+          player_entity?.position
         }
-        var pathPoints = this._navigationPlugin.computePath(crowd.getAgentPosition(agents[0]), this._navigationPlugin.getClosestPoint(startingPoint));}
-        break;
+        if (state_machine.players) { // we need to disconnect camera from canvas
+          var agents = this._crowd.getAgents();
+          var i;
+          for (i=0;i<agents.length;i++) {
+              var randomPos = this._navigationPlugin.getRandomPointAround(state_machine.players, 1.0);
+              this._crowd.agentGoto(agents[i], this._navigationPlugin.getClosestPoint(randomPos));
+          }
+        }
+          break;
       case "Mesh":
-        
         let uid = data.uid
         let payload = data.payload[0]
         
@@ -480,9 +482,7 @@ export class World {
           entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
           state_machine.add_entity(uid, entity)
         }
-        break
-        
-        
+        break;   
       case "Info":
         let playerInfo: any = data?.payload[0];
         if (this._player === undefined) {
