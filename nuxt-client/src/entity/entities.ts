@@ -16,6 +16,8 @@ export class Entities{
             this._object = object;
             this._object.position = this._position;
 
+            console.log(this._object.position)
+
             // this._object.onCollideObservable()
 
             // if (this._object.physicsImpostor) {
@@ -41,8 +43,8 @@ export class Entities{
     }
 
     public set position(new_position: Vector3){
-        this._position = new Vector3(new_position._x, new_position._y, new_position._z);
-        if (this._object) this._object.position = this._position
+        if (this._object) this._object.position = new Vector3(new_position._x, new_position._y, new_position._z);
+        this._position = this._object.position
     }
 
     public get name(): string{
@@ -74,7 +76,8 @@ export class Entities{
 }
 
 export function createEntity(scene: Scene, uid: string, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
-    let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
+    let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution}, scene);
     mesh.physicsImpostor = entityImposter
+    mesh.position = position
     return new Entities(name, uid, position, mesh)
 }

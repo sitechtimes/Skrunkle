@@ -89,7 +89,7 @@ export class World{
 
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 100)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree(new Vector3(0, 0, 0)), 100, 100)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree(new Vector3(0, 0, 0)), 1, 100)
     }
 
     

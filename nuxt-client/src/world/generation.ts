@@ -68,6 +68,7 @@ export class Generation {
         if (!m.getVerticesData(VertexBuffer.PositionKind)){
           console.log("problems with: " + m.name);
         }else{
+          m.position.y = 0
           m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
           meshes.push(m)
         }
@@ -75,7 +76,7 @@ export class Generation {
     
       let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
       parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
-      parent.metadata = "tree";
+      parent.metadata = "Tree";
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
       // parent.scaling = new Vector3(0.25, 0.25, 0.25)
 
