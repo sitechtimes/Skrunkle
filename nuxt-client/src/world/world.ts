@@ -71,7 +71,7 @@ export class World {
     this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
-  public init(): void {
+  public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
     this._playerCamera = new FreeCamera(
@@ -148,14 +148,22 @@ export class World {
 
     this._GUI.createHotbar();
     this._hotbar = this._GUI.hotbar;
-
-    this._scene.executeWhenReady(() => {
+    
+    // setTimeout(this._socket.init(), 10000)
+    this._scene.executeWhenReady(async() => {
+      
+      
+      await this._socket.init()
+      console.log("Scene is ready")
+      console.log(this._player)
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
       this._socket.send(
         new Packet(PacketType.info, [{ id: this._player!.id }], "")
       );
+
+      console.log("Sent info packet")
 
       this._engine.runRenderLoop(() => {
         this._scene.render();
@@ -446,6 +454,8 @@ export class World {
         }
         break;
       case "Mesh":
+
+        console.log("received meshes")
 
         let uid = data.uid
         let payload = data.payload[0]
