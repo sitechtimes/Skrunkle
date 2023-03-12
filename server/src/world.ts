@@ -83,13 +83,13 @@ export class World{
 
         state_machine.setWorld(this)
 
-        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
+        this._ground = MeshBuilder.CreateGround("ground", {width: 10000, height: 10000}, this._scene);
         this._ground.position = new Vector3(0, 0, 0)
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 100)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree(new Vector3(0, 0, 0)), 1, 100)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree(new Vector3(0, 0, 0)), 500, 1000)
     }
 
     

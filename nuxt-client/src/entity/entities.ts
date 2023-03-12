@@ -1,4 +1,4 @@
-import { Scene, Mesh, PhysicsImpostor, Vector3 } from "babylonjs"
+import { Scene, Mesh, PhysicsImpostor, Vector3 } from "@babylonjs/core"
 
 export class Entities{
 
@@ -15,8 +15,6 @@ export class Entities{
         if (object) {
             this._object = object;
             this._object.position = this._position;
-
-            console.log(this._object.position)
 
             // this._object.onCollideObservable()
 

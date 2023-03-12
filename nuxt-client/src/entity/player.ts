@@ -26,6 +26,8 @@ export class Player {
   private _nametag_y_offset: number = 0.5;
   private _inventory: Map<number, PlayerItem> = new Map();
 
+  private env: any;
+
   constructor(
     name: string,
     health: number,
@@ -37,8 +39,11 @@ export class Player {
     options: { renderBody?: boolean; mainPlayer?: boolean } = {
       renderBody: true,
       mainPlayer: false,
-    }
+    },
+    env: any
   ) {
+    this.env = env;
+
     this._name = name;
     this._health = health;
     this._exp = exp;
@@ -95,7 +100,7 @@ export class Player {
     if (options.renderBody) {
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "meshes/",
+        `${this.env['CMS']}/meshes/`,
         "player.babylon",
         this._scene
       );

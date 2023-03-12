@@ -16,11 +16,12 @@ import {
 export class Generation {
   private _world: World;
   private _scene: Scene;
+  private env: any;
 
-  constructor(world: World, scene: Scene) {
+  constructor(world: World, scene: Scene, env: any) {
     this._world = world;
     this._scene = scene;
-    console.log(this._world);
+    this.env = env
   }
 
   public GENERATE = {
@@ -56,9 +57,10 @@ export class Generation {
       return box;
     },
     Tree: async(mesh: any): Promise<Mesh> => {
+      
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "meshes/",
+        `${this.env['CMS']}/meshes/`,
         "tree1.glb",
         this._scene
       );
@@ -66,7 +68,7 @@ export class Generation {
       let meshes: Mesh[] = []
       bodies.meshes.forEach((m: any)=>{
         if (!m.getVerticesData(VertexBuffer.PositionKind)){
-          console.log("problems with: " + m.name);
+          // console.log("problems with: " + m.name);
         }else{
           m.position.y = 0
           m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)

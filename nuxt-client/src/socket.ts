@@ -25,6 +25,7 @@ export class Socket {
 
   public async init(): Promise<void> {
     this.server = await this.connect()
+    this.send(new Packet(PacketType.player_creation, []))
     this.listen()
     this.status = true
   }
@@ -37,7 +38,6 @@ export class Socket {
   }
 
   public send(packet: Packet) {
-    console.log("Sending packet?")
     if (this.status === true) {
       this.server.send(JSON.stringify(packet));
     } else {

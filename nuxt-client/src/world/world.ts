@@ -13,7 +13,11 @@ import {
   SceneLoader,
   PhysicsImpostor,
   Color3,
-  Texture
+  Texture,
+  PBRMaterial,
+  DebugLayer,
+  IInspectorOptions,
+  DebugLayerTab
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -30,6 +34,7 @@ import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 
 export class World {
+  private env: any;
   private _engine: Engine;
   private _scene: Scene;
   private _canvas: HTMLCanvasElement | null;
@@ -41,7 +46,7 @@ export class World {
   private _GUI: GUI;
   // @ts-expect-error
   private _hotbar: Hotbar;
-  private _debug: boolean = true;
+  private _debug: boolean = false;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
@@ -51,9 +56,12 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
 
-  private _ground_size:any = {width: 1000, height: 1000}
 
-  constructor(canvas: HTMLCanvasElement | null) {
+  private _ground_size:any = {width: 10000, height: 10000}
+
+  constructor(canvas: HTMLCanvasElement | null, env: any) {
+    this.env = env
+
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
     this._scene = new Scene(this._engine);
@@ -61,7 +69,7 @@ export class World {
     this._players = new Map<string, Player>();
     this._socket = new Socket(this);
     this._chat = new Chat(this._socket, this._player!);
-    this._generator = new Generation(this, this._scene);
+    this._generator = new Generation(this, this._scene, this.env);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
     this._pickup = false;
@@ -90,18 +98,27 @@ export class World {
     ground.checkCollisions = true;
 
     let ground_material = new StandardMaterial("ground", this._scene)
+    // ground_material.albedoColor = new Color3(1, 0 ,0)
+
+    // ground_material.ambientTexture = new Texture("http://localhost:3001/static/textures/polygrass/grass_color.jpg", this._scene)
+    // ground_material.ambientTexture.uScale = this._ground_size.width/15
+    // ground_material.ambientTexture.vScale = this._ground_size.height/15
+
     ground_material.diffuseTexture = new Texture("http://localhost:3001/static/textures/grass/grass_color.jpg", this._scene)
-    ground_material.diffuseTexture.uScale = this._ground_size.width/15
-    ground_material.diffuseTexture.vScale = this._ground_size.height/15
+    ground_material.diffuseTexture.uScale = this._ground_size.width/10
+    ground_material.diffuseTexture.vScale = this._ground_size.height/10
 
     ground_material.ambientTexture = new Texture("http://localhost:3001/static/textures/grass/grass_ambient.jpg", this._scene)
-    ground_material.ambientTexture.uScale = this._ground_size.width/15
-    ground_material.ambientTexture.vScale = this._ground_size.height/15
+    ground_material.ambientTexture.uScale = this._ground_size.width/10
+    ground_material.ambientTexture.vScale = this._ground_size.height/10
 
     ground_material.bumpTexture = new Texture("http://localhost:3001/static/textures/grass/grass_normal.jpg", this._scene)
-    ground_material.bumpTexture.uScale = this._ground_size.width/15
-    ground_material.bumpTexture.vScale = this._ground_size.height/15
-
+    ground_material.bumpTexture.uScale = this._ground_size.width/10
+    ground_material.bumpTexture.vScale = this._ground_size.height/10
+    
+    // ground_material.microSurfaceTexture = new Texture("http://localhost:3001/static/textures/polygrass/grass_roughness.jpg", this._scene)
+    // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
+    // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
 
     ground.material = ground_material
 
@@ -112,6 +129,13 @@ export class World {
       new Vector3(0, 1, 0),
       this._scene
     );
+
+    await import("@babylonjs/core/Debug/debugLayer")
+    await import("@babylonjs/inspector")
+    this._scene.debugLayer.show();
+
+    // this._scene.debugLayer.select(ground_material, "DEBUG");
+
 
 
     //   this._scene.onPointerObservable.add((pointerInfo) => {
@@ -159,11 +183,6 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
-      this._socket.send(
-        new Packet(PacketType.info, [{ id: this._player!.id }], "")
-      );
-
-      console.log("Sent info packet")
 
       this._engine.runRenderLoop(() => {
         this._scene.render();
@@ -310,7 +329,7 @@ export class World {
                 );
                 var hit = this._scene.pickWithRay(dray);
                 this._itemchosen = hit!.pickedMesh!.uniqueId;
-                document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
+                if (this._debug) document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
               }
               break;
           }
@@ -332,6 +351,7 @@ export class World {
       this._canvas,
       this._playerCamera!
     );
+    console.log(this._player)
     if (this._debug)
       document.getElementById("name")!.innerText = `Name: ${this._player.name}`;
     if (this._debug)
@@ -404,7 +424,8 @@ export class World {
             ),
             playerData.id,
             this._scene,
-            { renderBody: true }
+            { renderBody: true },
+            this.env
           );
           this._initPlayer(newPlayer);
           console.log(
@@ -428,9 +449,9 @@ export class World {
         }
         this._castLookingRay();
         if (this._pickup == true) {
-          document.getElementById("PickupItem")!.innerHTML = "pickup item";
+          if (this._debug) document.getElementById("PickupItem")!.innerHTML = "pickup item";
         } else {
-          document.getElementById("PickupItem")!.innerHTML = "";
+          if (this._debug) document.getElementById("PickupItem")!.innerHTML = "";
         }
         // if(this.chestOpen == true){
         //     var material = new StandardMaterial("box color", this._scene);
@@ -455,8 +476,6 @@ export class World {
         break;
       case "Mesh":
 
-        console.log("received meshes")
-
         let uid = data.uid
         let payload = data.payload[0]
 
@@ -466,9 +485,6 @@ export class World {
           state_machine.update_entity(uid, entity)
         } else {
           let mesh: Mesh = await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box" | "Tree"](payload)
-
-          console.log(mesh)
-          console.log(mesh.position)
 
           let adjusted_pos: Vector3 = new Vector3(
             this.second_decimal(payload.position._x),
@@ -491,13 +507,16 @@ export class World {
 
 
       case "Info":
+        // pls implement update to info like server info
+        // init player
+        break;
+      case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
         if (this._player === undefined) {
-          console.log(playerInfo)
+          console.log(playerInfo.name)
           this._initClient(playerInfo.name, data.uid);
         }
-        // init player
-        else break;
+        break;
       case "Close":
         let player: Player | undefined = this._players.get(data.payload[0].id);
         if (player) player.delete();
