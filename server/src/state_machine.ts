@@ -1,14 +1,19 @@
 import { World } from "./world"
-import { Entities } from "./entity/entities";
+import { Entities, Old_Entity } from "./entity/entities";
 import { Logger } from "./logger";
 import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
+import { Vector3 } from "babylonjs";
+
+const smallest_pos_change: number = 0.01;
+const smallest_angle_change: number = 0.01;
 
 class State_machine{
 
     public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
+    public old_entities: Map<string, Old_Entity> = new Map(); 
 
     private logger: Logger = new Logger("STATE_MACHINE");
     private socket_ref: SocketServer;
@@ -39,11 +44,41 @@ class State_machine{
         this.ready()
     }
 
-    private broadcast_entity(): void{
+    private pass_changes(a: Entities, b: Old_Entity): boolean{
+        let pos_change: Vector3 = a.position.subtract(b.position);
+        let rot_change: Vector3 = a.angularVelocity.subtract(b.angularVelocity);
+
+        let flag: boolean = true;
+
+        if (pos_change.x <= smallest_pos_change && 
+            pos_change.y <= smallest_pos_change && 
+            pos_change.z <= smallest_pos_change
+        )   flag = false;
+
+        if (rot_change.x <= smallest_angle_change && 
+            rot_change.y <= smallest_angle_change &&
+            rot_change.z <= smallest_angle_change
+        )   flag = false;
+
+        b.update(a)
+        this.old_entities.set(b.id, b)
+
+        return flag
+    }
+
+    public broadcast_entity(info: boolean = false): void{
+        let cnt = 0;
         for (let uid of this.entities.keys()){
             let entity: Entities = this.entities.get(uid);
-            this.socket_ref.broadCast(entity.serialize())
+            let entity_old: Old_Entity = this.old_entities.get(uid)
+
+            let passed: boolean = this.pass_changes(entity, entity_old)
+            if (passed || info) {
+                this.socket_ref.broadCast(entity.serialize())
+                cnt++;
+            }
         }
+        // console.log(`Broadcasted ${cnt}`)
     }
 
     private broadcast_player(): void{
@@ -67,6 +102,7 @@ class State_machine{
 
     public add_entity(uid: string, entity: Entities){
         this.entities.set(uid, entity);
+        this.old_entities.set(uid, new Old_Entity(entity))
     }
 
     public delete_player(uid: string){
@@ -75,6 +111,7 @@ class State_machine{
 
     public delete_entity(uid: string){
         this.entities.delete(uid)
+        this.old_entities.delete(uid)
     }
 
     public has_player(uid: string): boolean{

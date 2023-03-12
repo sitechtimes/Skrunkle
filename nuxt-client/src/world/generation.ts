@@ -5,16 +5,23 @@ import {
   Color3,
   Scene,
   Mesh,
+  SceneLoader,
+  TransformNode,
+  Vector3,
+  PhysicsImpostor,
+  PhysicsJoint,
+  VertexBuffer
 } from "@babylonjs/core";
 
 export class Generation {
   private _world: World;
   private _scene: Scene;
+  private env: any;
 
-  constructor(world: World, scene: Scene) {
+  constructor(world: World, scene: Scene, env: any) {
     this._world = world;
     this._scene = scene;
-    console.log(this._world);
+    this.env = env
   }
 
   public GENERATE = {
@@ -49,6 +56,34 @@ export class Generation {
 
       return box;
     },
+    Tree: async(mesh: any): Promise<Mesh> => {
+      
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        `${this.env['CMS']}/meshes/`,
+        "tree1.glb",
+        this._scene
+      );
+      
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any)=>{
+        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+          // console.log("problems with: " + m.name);
+        }else{
+          m.position.y = 0
+          m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m)
+        }
+      })
+    
+      let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+      parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
+      parent.metadata = "Tree";
+      // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
+      // parent.scaling = new Vector3(0.25, 0.25, 0.25)
+
+      return parent
+    }
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
