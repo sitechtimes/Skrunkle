@@ -6,6 +6,8 @@ import {
   HemisphericLight,
   PointLight,
   DirectionalLight,
+  BackgroundMaterial,
+  CubeTexture,
   Mesh,
   FreeCamera,
   StandardMaterial,
@@ -92,7 +94,7 @@ export class World {
       new Vector3(0, 6, 0),
       this._scene
     );
-    /*     var ground = MeshBuilder.CreateGround(
+    var ground = MeshBuilder.CreateGround(
       "ground",
       { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
@@ -138,19 +140,17 @@ export class World {
     // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
     // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
 
-    ground.material = ground_material; */
-
     /*  // @ts-expect-error */
     var light = new HemisphericLight(
       "light",
       new Vector3(0, 1, 0),
       this._scene
     );
-    light.intensity = 1;
+    light.intensity = 0.3;
     var light2 = new PointLight("Omni2", new Vector3(10, 0, 0), this._scene);
 
     var material = new StandardMaterial("kosh", this._scene);
-    var sphere = Mesh.CreateSphere("Sphere", 10, 3, this._scene);
+    var sphere = Mesh.CreateSphere("Sphere", 10, 1, this._scene);
 
     // Creating light sphere
 
@@ -174,8 +174,8 @@ export class World {
     var alpha = 1;
     this._scene.beforeRender = function () {
       light2.position = new Vector3(
-        10 * -Math.sin(alpha),
-        10 * Math.cos(alpha),
+        900 * -Math.sin(alpha),
+        900 * Math.cos(alpha),
         0
       );
 
