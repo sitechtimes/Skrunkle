@@ -8,6 +8,7 @@
     />
     <h1 class="title">Skrunkle</h1>
     <h2 class="loading-percent">10%</h2>
+    <img class="chicken-img" src="../assets/chicken2.png" alt="chicken" />
     <div class="load">
       <div class="inside-bar"></div>
     </div>
@@ -35,7 +36,7 @@
   top: 0;
   left: 0;
 }
-.hello {
+/* .hello {
   width: 100vw;
   height: 100vh;
   background-color: #ffb238;
@@ -43,8 +44,8 @@
   position: absolute;
   top: 0;
   left: 0;
-}
-.chicken {
+} */
+/* .chicken {
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -52,11 +53,17 @@
   height: auto;
   margin-bottom: 2rem;
   margin-top: 2rem;
+} */
+.chicken-img {
+  width: 60px;
+  margin-left: 20%;
 }
+
 .loading-percent {
   font-family: "Bungee Shade", cursive;
   font-size: 40px;
-  margin-left: 17%;
+  margin-left: 26%;
+  margin-top: 70px;
 }
 
 .inside-bar {
@@ -69,7 +76,7 @@
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 80px;
+  margin-bottom: 90px;
   width: 60rem;
   height: 3rem;
   background: (#ff7b00);
