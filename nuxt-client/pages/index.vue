@@ -1,11 +1,26 @@
 <template>
   <div class="customLoadingScreenDiv">
-    <img alt="skrunkle logo" class="chicken" src="../assets/skrunkler.gif" />
-    <div class="load"></div>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" cross origin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
+      rel="stylesheet"
+    />
+    <h1 class="title">Skrunkle</h1>
+    <h2 class="loading-percent">10%</h2>
+    <div class="load">
+      <div class="inside-bar"></div>
+    </div>
   </div>
 </template>
 
 <style>
+.title {
+  font-family: "Bungee Shade", cursive;
+  font-size: 150px;
+  text-align: center;
+}
+
 * {
   overflow: hidden;
   padding: 0;
@@ -14,7 +29,7 @@
 .customLoadingScreenDiv {
   width: 100vw;
   height: 100vh;
-  background-color: #ffb238;
+  background-image: linear-gradient(to bottom, #ff7e00, #fae6d2);
   z-index: 1000;
   position: absolute;
   top: 0;
@@ -38,15 +53,29 @@
   margin-bottom: 2rem;
   margin-top: 2rem;
 }
+.loading-percent {
+  font-family: "Bungee Shade", cursive;
+  font-size: 40px;
+  margin-left: 17%;
+}
+
+.inside-bar {
+  width: 10%;
+  height: 100%;
+  background-color: orange;
+}
+
 .load {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  width: 65rem;
+  margin-top: 80px;
+  width: 60rem;
   height: 3rem;
-  background: linear-gradient(#fabc3c, #f55536);
-  border: solid black 5px;
-  box-shadow: 8px 10px black;
+  background: (#ff7b00);
+  border: solid black 4px;
+  border-radius: 25px;
+  box-shadow: 4px 5px black;
 }
 
 #debug {
