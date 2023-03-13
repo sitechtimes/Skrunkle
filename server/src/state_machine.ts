@@ -4,10 +4,10 @@ import { Logger } from "./logger";
 import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
-import { Vector3 } from "babylonjs";
+import { Vector3 } from "@babylonjs/core";
 
-const smallest_pos_change: number = 0.01;
-const smallest_angle_change: number = 0.01;
+const smallest_pos_change: number = 0.001;
+const smallest_angle_change: number = 0.001;
 
 class State_machine{
 
@@ -78,7 +78,6 @@ class State_machine{
                 cnt++;
             }
         }
-        // console.log(`Broadcasted ${cnt}`)
     }
 
     private broadcast_player(): void{

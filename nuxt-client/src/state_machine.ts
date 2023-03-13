@@ -1,14 +1,18 @@
 import { World } from "./world/world"
-import { Entities } from "./entity/entities";
+import { Entities, Old_Entity } from "./entity/entities";
 import { Socket } from "./socket";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
+import { Vector3 } from "@babylonjs/core";
+
+const smallest_pos_change: number = 0.001;
+const smallest_angle_change: number = 0.001;
 
 class State_machine{
 
     public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
-
+    public old_entities: Map<string, Old_Entity> = new Map(); 
     // private socket_ref: Socket;
     // private world_ref: World;
 
@@ -20,6 +24,41 @@ class State_machine{
     //         console.log("State Machine is ready!")
     //     }
     // }
+
+    private pass_changes(a: Entities, b: Old_Entity): boolean{
+        let pos_change: Vector3 = a.position.subtract(b.position);
+        let rot_change: Vector3 = a.angularVelocity.subtract(b.angularVelocity);
+
+        let flag: boolean = true;
+
+        if (pos_change.x <= smallest_pos_change && 
+            pos_change.y <= smallest_pos_change && 
+            pos_change.z <= smallest_pos_change
+        )   flag = false;
+
+        if (rot_change.x <= smallest_angle_change && 
+            rot_change.y <= smallest_angle_change &&
+            rot_change.z <= smallest_angle_change
+        )   flag = false;
+
+        b.update(a)
+        this.old_entities.set(b.id, b)
+
+        return flag
+    }
+
+    public check_entity(info: boolean = false): void{
+        for (let uid of this.entities.keys()){
+            let entity: Entities = this.entities.get(uid);
+            let entity_old: Old_Entity = this.old_entities.get(uid)
+
+            let passed: boolean = this.pass_changes(entity, entity_old)
+            
+            if (passed) {
+                // request for position of mesh to server
+            }
+        }
+    }
 
     // public setSocket(socket_ref: Socket): void{
     //     this.socket_ref = socket_ref;
@@ -45,10 +84,12 @@ class State_machine{
 
     public add_entity(uid: string, entity: Entities){
         this.entities.set(uid, entity);
+        this.old_entities.set(uid, new Old_Entity(entity));
     }
 
     public delete_player(uid: string){
         this.players.delete(uid)
+        this.old_entities.delete(uid);
     }
 
     public delete_entity(uid: string){

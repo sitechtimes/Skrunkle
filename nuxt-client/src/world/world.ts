@@ -77,6 +77,7 @@ export class World {
     this._itemchosen = 0;
 
     this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    // this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
   public async init(): void {
@@ -104,15 +105,15 @@ export class World {
     // ground_material.ambientTexture.uScale = this._ground_size.width/15
     // ground_material.ambientTexture.vScale = this._ground_size.height/15
 
-    ground_material.diffuseTexture = new Texture("http://localhost:3001/static/textures/grass/grass_color.jpg", this._scene)
+    ground_material.diffuseTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_color.jpg`, this._scene)
     ground_material.diffuseTexture.uScale = this._ground_size.width/10
     ground_material.diffuseTexture.vScale = this._ground_size.height/10
 
-    ground_material.ambientTexture = new Texture("http://localhost:3001/static/textures/grass/grass_ambient.jpg", this._scene)
+    ground_material.ambientTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_ambient.jpg`, this._scene)
     ground_material.ambientTexture.uScale = this._ground_size.width/10
     ground_material.ambientTexture.vScale = this._ground_size.height/10
 
-    ground_material.bumpTexture = new Texture("http://localhost:3001/static/textures/grass/grass_normal.jpg", this._scene)
+    ground_material.bumpTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_normal.jpg`, this._scene)
     ground_material.bumpTexture.uScale = this._ground_size.width/10
     ground_material.bumpTexture.vScale = this._ground_size.height/10
     
@@ -132,7 +133,15 @@ export class World {
 
     await import("@babylonjs/core/Debug/debugLayer")
     await import("@babylonjs/inspector")
-    this._scene.debugLayer.show();
+    const debuglayer = new DebugLayer(this._scene)
+    debuglayer.show({
+      overlay: true,
+      handleResize: true,
+      overlayCanvas: true,
+      embedMode: true,
+      parentElement: document.body,
+      initialTab: "Physics", // <-- This enables the Physics tab
+    });
 
     // this._scene.debugLayer.select(ground_material, "DEBUG");
 
@@ -175,16 +184,17 @@ export class World {
     
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async() => {
-      
-      
+
       await this._socket.init()
       console.log("Scene is ready")
-      console.log(this._player)
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
 
       this._engine.runRenderLoop(() => {
+
+        state_machine.check_entity()
+
         this._scene.render();
         if (this._player) {
           this._socket?.send(
@@ -403,44 +413,46 @@ export class World {
   public async onSocketData(data: Packet): Promise<void> {
     switch (data?.type) {
       case "Update":
-        let playerData = data.payload;
+        let playerData = data.payload[0];
+        let playerid = data.uid
+
         if (
-          !this._players.has(playerData.id) &&
-          playerData.id != this._player!.id
+          !this._players.has(playerid) &&
+          playerid != this._player!.id
         ) {
           let newPlayer: Player = new Player(
             playerData.name,
             100,
             0,
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
-            playerData.id,
+            playerid,
             this._scene,
             { renderBody: true },
             this.env
           );
           this._initPlayer(newPlayer);
           console.log(
-            `Player doesn't exist, creating a new player with id ${playerData.id}`
+            `Player doesn't exist, creating a new player with id ${playerData.playerid}`
           );
-        } else if (playerData.id != this._player!.id) {
-          let player: Player | undefined = this._players.get(playerData.id);
-          player!.position = playerData[0].position;
+        } else if (playerid != this._player!.id) {
+          let player: Player | undefined = this._players.get(playerid);
+          player!.position = playerData.position;
           // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
-        } else if (playerData.id == this._player!.id) {
+        } else if (playerid == this._player!.id) {
           this._player!.position = new Vector3(
             playerData.position._x,
             playerData.position._y,
@@ -484,7 +496,7 @@ export class World {
           entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
           state_machine.update_entity(uid, entity)
         } else {
-          let mesh: Mesh = await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box" | "Tree"](payload)
+          let mesh: Mesh = await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](payload)
 
           let adjusted_pos: Vector3 = new Vector3(
             this.second_decimal(payload.position._x),
@@ -496,8 +508,9 @@ export class World {
 
           let imposter = PhysicsImpostor.BoxImpostor
           if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
-          else if (payload.metadata == "Tree") {
+          else if (payload.metadata.indexOf("Tree") != -1) {
             mass = 0
+            imposter = PhysicsImpostor.MeshImpostor
           }
           let entity: Entities = createEntity(this._scene, uid, payload.name, adjusted_pos, mesh, imposter, mass, 0)
           entity.update(payload.linearVelocity, payload.angularVelocity, adjusted_pos)

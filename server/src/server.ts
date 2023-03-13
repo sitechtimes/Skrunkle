@@ -12,10 +12,12 @@ export class SocketServer {
   private server: Server
   private world: World
   private logger: Logger
-  private players: Map<any, any>
+  private players: Map<any, any> // uid, players
+  private client_to_uid: Map<any, any> //client to id
 
   constructor() {
     this.players = new Map()
+    this.client_to_uid = new Map()
     this.world = new World()
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
@@ -38,7 +40,7 @@ export class SocketServer {
     this.logger.progress('Start listening on port: ' + SocketServer.PORT)
 
     this.server.on('connection', (client: any) => {
-      // save client
+
       this.logger.log('Client established connection')
 
       // basic starter functiosn
@@ -81,6 +83,8 @@ export class SocketServer {
               state_machine.add_player(player.id, player)
               this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size }))
               state_machine.broadcast_entity(true)
+
+              this.client_to_uid.set(client, player.id)
             }
             break
           default:
@@ -91,6 +95,8 @@ export class SocketServer {
 
       client.on('close', () => {
         this.logger.log('Client connection closed')
+        state_machine.delete_player(this.client_to_uid.get(client))
+        this.client_to_uid.delete(client)
         // this.world.removePlayer(id)
         // close with router
       })
