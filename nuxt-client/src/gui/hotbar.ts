@@ -12,7 +12,7 @@ export class Hotbar {
   private _guiSlots: Map<number, any>;
   private _healthBar: TextBlock | null = null;
   private _playerInventory: Map<number, PlayerItem>;
-  private _generator: Generation | undefined
+  private _generator: Generation | undefined;
 
   constructor(mainGUI: AdvancedDynamicTexture) {
     this._mainGUI = mainGUI;
@@ -22,7 +22,7 @@ export class Hotbar {
   }
 
   public async init(gen: Generation) {
-    this._generator = gen
+    this._generator = gen;
     await this.load();
     this.listen();
   }
@@ -109,7 +109,7 @@ export class Hotbar {
       text.fontSize = 10;
     }
 
-    this._guiSlots.set(slot, temp)
+    this._guiSlots.set(slot, temp);
   }
 
   private listen() {
@@ -182,7 +182,7 @@ export class Hotbar {
     this.current?.use(id);
   }
 
-  public add(item: PlayerItem, slot: number): boolean {
+  public add(item: PlayerItem, slot: number = this._currentSlot): boolean {
     this._slots.set(slot, item);
     this._playerInventory.set(slot, item);
     this.loadSlot(item, slot);
@@ -193,10 +193,10 @@ export class Hotbar {
 
   public drop() {
     if (this.current) {
-      this._generator!.GENERATE.ENTITY(this.current!)
+      this._generator!.GENERATE.ENTITY(this.current!);
     }
-    this._slots.delete(this._currentSlot)
-    this.releaseSlot(this._currentSlot)
+    this._slots.delete(this._currentSlot);
+    this.releaseSlot(this._currentSlot);
   }
 
   public get current(): PlayerItem | undefined {

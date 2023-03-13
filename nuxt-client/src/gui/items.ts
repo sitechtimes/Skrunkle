@@ -16,8 +16,8 @@ export class PlayerItem {
   #_socket: Socket;
 
   constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket) {
-    this._name = `(ITEM)-${item.name}-${Math.random()*100000}`;
-    this._metadata = item.name
+    this._name = `(ITEM)-${item.name}-${Math.random() * 100000}`;
+    this._metadata = item.name;
     this._type = item.type;
     this._range = item.range;
     this._magnitude = item.magnitude;
@@ -97,7 +97,7 @@ export const Items = {
     name: "Spoon",
     type: "Damage",
     magnitude: 3,
-    path: "spoon.babylon"
+    path: "spoon.babylon",
   },
   shovel: <Item>{
     name: "Shovel",
@@ -111,7 +111,7 @@ export const Items = {
     type: "Damage",
     magnitude: 15,
     path: "sword.glb",
-    range: 14
+    range: 14,
   },
   dagger: <Item>{
     name: "Dagger",
@@ -146,7 +146,12 @@ export const Items = {
     path: "slingshot.glb",
     range: 25,
   },
-  rope: <Item>{ name: "Rope", type: "Utility", magnitude: 50, path: "path-link" },
+  rope: <Item>{
+    name: "Rope",
+    type: "Utility",
+    magnitude: 50,
+    path: "path-link",
+  },
 };
 
 interface Item {

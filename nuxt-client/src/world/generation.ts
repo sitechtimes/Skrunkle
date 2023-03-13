@@ -10,6 +10,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import { PlayerItem } from "../gui/items";
+import { MainPlayer } from "../entity/mainPlayer";
 
 export class Generation {
   private _world: World;
@@ -59,16 +60,16 @@ export class Generation {
         "",
         "meshes/",
         mesh._path
-      )
+      );
       for (let child of bodies.meshes) {
-        child.name = `${mesh._name}-${Math.random()*100}`
-        child.metadata = mesh._metadata
+        child.name = `${mesh._name}-${Math.random() * 100}`;
+        child.metadata = mesh._metadata;
       }
-      let parent: Mesh = Mesh.MergeMeshes([...bodies.meshes])!
-      parent.metadata = mesh._metadata
-      parent.name = mesh._name
-      return parent
-    }
+      let parent: Mesh = Mesh.MergeMeshes([...bodies.meshes])!;
+      parent.metadata = mesh._metadata;
+      parent.name = mesh._name;
+      return parent;
+    },
   };
 
   public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
