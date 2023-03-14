@@ -335,6 +335,7 @@ export class World {
     );
     /* TEMPORARILY ADDED ITEMS */
     this._chat = new Chat(this._socket, this._player);
+    state_machine.client = this._player
 
     console.log("Created Main Player id: " + this._player.id);
     // console.log(this._player.inventory);
@@ -415,6 +416,7 @@ export class World {
           let item = this._scene.getMeshByUniqueId(this._itemchosen);
           if (item?.name.startsWith("(ITEM)")) {
             item.parent?.dispose();
+            state_machine.delete_entity(item.name)
             let itemName = item.name.split("-")[1].toLowerCase()
             console.log(itemName);
             this._hotbar.add(

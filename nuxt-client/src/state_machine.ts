@@ -3,10 +3,12 @@ import { Entities } from "./entity/entities";
 import { Socket } from "./socket";
 import { Packet, PacketType } from "./packet";
 import { Player } from "./entity/player";
+import { MainPlayer } from "./entity/mainPlayer";
 
 class State_machine {
   public players: Map<string, Player> = new Map();
   public entities: Map<string, Entities> = new Map();
+  private _client: MainPlayer
 
   // private socket_ref: Socket;
   // private world_ref: World;
@@ -52,6 +54,14 @@ class State_machine {
 
   public delete_entity(uid: string) {
     this.entities.delete(uid);
+  }
+
+  public set client(player: MainPlayer) {
+    this._client = player
+  }
+
+  public get client() {
+    return this._client
   }
 }
 

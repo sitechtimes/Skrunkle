@@ -10,7 +10,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import { PlayerItem } from "../gui/items";
-import { MainPlayer } from "../entity/mainPlayer";
+import { state_machine } from "../state_machine";
 
 export class Generation {
   private _world: World;
@@ -65,10 +65,9 @@ export class Generation {
         child.name = `${mesh._name}-${Math.random() * 100}`;
         child.metadata = mesh._metadata;
       }
-      let parent: Mesh = Mesh.MergeMeshes([...bodies.meshes])!;
-      parent.metadata = mesh._metadata;
-      parent.name = mesh._name;
-      return parent;
+      bodies.transformNodes[0].position = new Vector3(state_machine.client.position.x + 1, state_machine.client.position.y + 1, state_machine.client.position.z + 5)
+      state_machine.add_entity(mesh._name, bodies.transformNodes[0])
+      return bodies.transformNodes[0]
     },
   };
 
