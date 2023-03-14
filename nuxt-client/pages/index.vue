@@ -7,10 +7,10 @@
       rel="stylesheet"
     />
     <h1 class="title">Skrunkle</h1>
-    <h2 class="loading-percent">10%</h2>
     <img class="chicken-img" src="../assets/chicken2.png" alt="chicken" />
     <div class="load">
       <div class="inside-bar"></div>
+      <h2 class="loading-percent">10%</h2>
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@
 }
 
 * {
-  overflow: hidden;
+  /* overflow: hidden; */
   padding: 0;
   margin: 0;
 }
@@ -35,6 +35,44 @@
   position: absolute;
   top: 0;
   left: 0;
+}
+.chicken-img {
+  width: 100px;
+  margin-left: 26%;
+  margin-top: ;
+}
+
+.loading-percent {
+  font-family: "Bungee Shade", cursive;
+  font-size: 40px;
+}
+
+.inside-bar {
+  width: 10%;
+  height: 100%;
+  background-color: orange;
+}
+
+.load {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+  width: 60rem;
+  height: 3rem;
+  background: (#ff7b00);
+  border: solid black 4px;
+  border-radius: 25px;
+  box-shadow: 4px 5px black;
+}
+
+#debug {
+  position: absolute;
+  color: green;
+  font-size: larger;
+  top: 0;
+  left: 0;
+  z-index: 999;
 }
 /* .hello {
   width: 100vw;
@@ -54,43 +92,4 @@
   margin-bottom: 2rem;
   margin-top: 2rem;
 } */
-.chicken-img {
-  width: 60px;
-  margin-left: 20%;
-}
-
-.loading-percent {
-  font-family: "Bungee Shade", cursive;
-  font-size: 40px;
-  margin-left: 26%;
-  margin-top: 70px;
-}
-
-.inside-bar {
-  width: 10%;
-  height: 100%;
-  background-color: orange;
-}
-
-.load {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 90px;
-  width: 60rem;
-  height: 3rem;
-  background: (#ff7b00);
-  border: solid black 4px;
-  border-radius: 25px;
-  box-shadow: 4px 5px black;
-}
-
-#debug {
-  position: absolute;
-  color: green;
-  font-size: larger;
-  top: 0;
-  left: 0;
-  z-index: 999;
-}
 </style>
