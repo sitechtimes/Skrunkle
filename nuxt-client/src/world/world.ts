@@ -141,13 +141,16 @@ export class World {
     ground.material = ground_material;
 
     /*  // @ts-expect-error */
-    var light = new HemisphericLight(
-      "light",
-      new Vector3(0, 1, 0),
-      this._scene
-    );
-    light.intensity = 0.3;
-    var light2 = new PointLight("Omni2", new Vector3(10, 0, 0), this._scene);
+    // var light = new HemisphericLight(
+    //   "light",
+    //   new Vector3(0, 1, 0),
+    //   this._scene
+    // );
+    // light.intensity = 0.3;
+    var light2 = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
+    /*     light2.intensity = 1; */
+    var light3 = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
+    /*  light3.intensity = 0.2; */
 
     var material = new StandardMaterial("kosh", this._scene);
     var sphere = Mesh.CreateSphere("Sphere", 10, 3, this._scene);
@@ -155,11 +158,17 @@ export class World {
     // Creating light sphere
 
     var lightSphere2 = <any>Mesh.CreateSphere("Sphere2", 12, 10, this._scene);
+    var lightSphere3 = <any>Mesh.CreateSphere("Sphere2", 12, 20, this._scene);
 
     lightSphere2.material = new StandardMaterial("yellow", this._scene);
     lightSphere2.material.diffuseColor = new Color3(0, 0, 0);
     lightSphere2.material.specularColor = new Color3(0, 0, 0);
     lightSphere2.material.emissiveColor = new Color3(1, 1, 0);
+
+    lightSphere3.material = new StandardMaterial("yellow", this._scene);
+    lightSphere3.material.diffuseColor = new Color3(0, 0, 0);
+    lightSphere3.material.specularColor = new Color3(0, 0, 0);
+    lightSphere3.material.emissiveColor = new Color3(255, 255, 255);
 
     // Sphere material
     material.diffuseColor = new Color3(0, 1, 0);
@@ -169,7 +178,8 @@ export class World {
 
     light2.diffuse = new Color3(1, 1, 0);
     light2.specular = new Color3(1, 1, 0);
-
+    light3.diffuse = new Color3(255, 255, 255);
+    light3.specular = new Color3(255, 255, 255);
     // Animations
     var alpha = 1;
     this._scene.beforeRender = function () {
@@ -178,10 +188,15 @@ export class World {
         900 * Math.cos(alpha),
         0
       );
-
+      light3.position = new Vector3(
+        1000 * -Math.sin(alpha + Math.PI),
+        1000 * Math.cos(alpha + Math.PI),
+        0
+      );
       lightSphere2.position = light2.position;
+      lightSphere3.position = light3.position;
 
-      alpha += 0.008;
+      alpha += 0.01;
     };
 
     this._scene.clearColor = new Color3(1, 0.4, 0.75);
