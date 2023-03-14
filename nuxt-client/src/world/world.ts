@@ -17,7 +17,9 @@ import {
   PBRMaterial,
   DebugLayer,
   IInspectorOptions,
-  DebugLayerTab
+  DebugLayerTab,
+  PointLight,
+  Mesh
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -125,11 +127,63 @@ export class World {
 
 
     // @ts-expect-error
-    var light = new HemisphericLight(
-      "light",
-      new Vector3(0, 1, 0),
-      this._scene
-    );
+    
+    // Adds the sun and moon
+
+    var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
+    sun_light.intensity = 0.25
+    var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
+    moon_light.intensity = 0.1
+
+    var smooth_material = new StandardMaterial("sun/moon material", this._scene);
+
+    // Creating light sphere
+
+    var sun = <any>Mesh.CreateSphere("Sphere2", 12, 10, this._scene);
+    var moon = <any>Mesh.CreateSphere("Sphere2", 12, 20, this._scene);
+
+    sun.material = new StandardMaterial("sun material", this._scene);
+    sun.material.diffuseColor = new Color3(0, 0, 0);
+    sun.material.specularColor = new Color3(0, 0, 0);
+    sun.material.emissiveColor = new Color3(1, 1, 0);
+
+    moon.material = new StandardMaterial("moon material", this._scene);
+    moon.material.diffuseColor = new Color3(0, 0, 0);
+    moon.material.specularColor = new Color3(0, 0, 0);
+    moon.material.emissiveColor = new Color3(255, 255, 255);
+
+    // Sphere material
+    smooth_material.diffuseColor = new Color3(0, 1, 0);
+
+    // Lights colors
+
+    sun_light.diffuse = new Color3(1, 1, 0);
+    sun_light.specular = new Color3(1, 1, 0);
+    moon_light.diffuse = new Color3(255, 255, 255);
+    moon_light.specular = new Color3(255, 255, 255);
+    // Animations
+    var alpha = 1;
+    this._scene.beforeRender = function () {
+      sun_light.position = new Vector3(
+        900 * -Math.sin(alpha),
+        900 * Math.cos(alpha),
+        0
+      );
+      moon_light.position = new Vector3(
+        1000 * -Math.sin(alpha + Math.PI),
+        1000 * Math.cos(alpha + Math.PI),
+        0
+      );
+      sun.position = sun_light.position;
+      moon.position = moon_light.position;
+
+      alpha += 0.01;
+    };
+
+
+    this._scene.clearColor = new Color3(1, 0.4, 0.75);
+
+    
 
     await import("@babylonjs/core/Debug/debugLayer")
     await import("@babylonjs/inspector")
@@ -195,6 +249,9 @@ export class World {
       this._engine.runRenderLoop(() => {
 
         state_machine.check_entity()
+        
+        console.log(this._scene.getMaterialById("Tree")?.uniqueId)
+        console.log(this._scene.getMaterialById("Tree"))
 
         this._scene.render();
         if (this._player) {
