@@ -87,6 +87,11 @@ export class SocketServer {
               this.client_to_uid.set(client, player.id)
             }
             break
+          case "RequestMesh":
+            let mesh_id = msg.uid
+            this.logger.warn("Need mesh confirm")
+            this.send(client, state_machine.entities.get(mesh_id)?.serialize())
+            break
           default:
             this.logger.error(`Unknown socket message from client (${msg.type})`)
             break

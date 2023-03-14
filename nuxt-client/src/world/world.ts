@@ -186,6 +186,7 @@ export class World {
     this._scene.executeWhenReady(async() => {
 
       await this._socket.init()
+      state_machine.setSocket(this._socket)
       console.log("Scene is ready")
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body

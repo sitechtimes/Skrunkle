@@ -72,7 +72,7 @@ class State_machine{
             let entity: Entities = this.entities.get(uid);
             let entity_old: Old_Entity = this.old_entities.get(uid)
 
-            let passed: boolean = this.pass_changes(entity, entity_old)
+            let passed: boolean = this.pass_changes(entity, entity_old) // if changes very little dont broadcast
             if (passed || info) {
                 this.socket_ref.broadCast(entity.serialize())
                 cnt++;
