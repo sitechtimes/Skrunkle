@@ -148,9 +148,9 @@ export class World {
     // );
     // light.intensity = 0.3;
     var light2 = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
-    /*     light2.intensity = 1; */
+    light2.intensity = 10;
     var light3 = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
-    /*  light3.intensity = 0.2; */
+    light3.intensity = 0.0015;
 
     var material = new StandardMaterial("kosh", this._scene);
     var sphere = Mesh.CreateSphere("Sphere", 10, 3, this._scene);
@@ -196,7 +196,7 @@ export class World {
       lightSphere2.position = light2.position;
       lightSphere3.position = light3.position;
 
-      alpha += 0.01;
+      alpha += 0.005;
     };
 
     this._scene.clearColor = new Color3(1, 0.4, 0.75);
