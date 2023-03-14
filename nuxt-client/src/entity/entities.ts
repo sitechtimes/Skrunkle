@@ -1,5 +1,31 @@
 import { Scene, Mesh, PhysicsImpostor, Vector3 } from "@babylonjs/core"
 
+export class Old_Entity{
+
+    public position: Vector3;
+    public angularVelocity: Vector3;
+    public linearVelocity: Vector3;
+    private _id: string;
+
+    constructor(entity: Entities){
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+        this._id = entity.id;
+    }
+
+    public update(entity: Entities): void{
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+    }
+
+    public get id(): string{
+        return this._id
+    }
+
+}
+
 export class Entities{
 
     private _position: Vector3;
@@ -30,6 +56,14 @@ export class Entities{
             //     }
             // }
         }
+    }
+
+    public get angularVelocity(): Vector3{
+        return this._object.physicsImpostor.getAngularVelocity();
+    }
+
+    public get linearVelocity(): Vector3{
+        return this._object.physicsImpostor.getLinearVelocity();
     }
 
     public get position(): Vector3{

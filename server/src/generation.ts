@@ -1,4 +1,4 @@
-import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3, SceneLoader, VertexBuffer } from "babylonjs"
+import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3, SceneLoader, VertexBuffer, Matrix } from "babylonjs"
 import { World } from "./world"
 import { state_machine } from "./state_machine"
 import { Entities, createEntity } from "./entity/entities"
@@ -59,7 +59,7 @@ export class Generation {
 
       return entity
     },
-    Tree: async(position: Vector3, name?: string): Promise<Entities> => {
+    Tree1: async(position: Vector3, name?: string): Promise<Entities> => {
 
       position.y = 0
 
@@ -75,7 +75,7 @@ export class Generation {
         if (!m.getVerticesData(VertexBuffer.PositionKind)){
           // console.log("problems with: " + m.name);
         }else{
-          m.metadata = "Tree"
+          m.metadata = "Tree1"
           // m.position = position
           // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 10000, restitution: 0 }, this._scene)
           meshes.push(m)
@@ -83,12 +83,49 @@ export class Generation {
       })
 
       let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
-      parent.metadata = "Tree";
+      parent.metadata = "Tree1";
 
       parent.position = position
 
       let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.BoxImpostor, 0, 0)
       state_machine.add_entity(entity.id, entity)
+
+      return entity
+    },
+    Tree2: async(position: Vector3, name?: string): Promise<Entities> => {
+
+      position.y = 0
+
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        "http://localhost:3001/static/meshes/",
+        "tree2.glb",
+        this._scene
+      );
+      
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any)=>{
+        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+          // console.log("problems with: " + m.name);
+        }else{
+          m.metadata = "Tree2"
+          // m.position = position
+          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 10000, restitution: 0 }, this._scene)
+          meshes.push(m)
+        }
+      })
+
+      let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+      parent.metadata = "Tree2";
+
+      // let bbox = parent.getBoundingInfo().boundingBox;
+      // parent.setPivotMatrix(Matrix.Translation(0, - bbox.extendSize.y, 0), false)
+
+      parent.position = position
+
+      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.BoxImpostor, 0, 0)
+      state_machine.add_entity(entity.id, entity)
+
 
       return entity
     }
@@ -99,8 +136,8 @@ export class Generation {
     let items: Entities[] = []
 
     for (let i = 1; i < count; i++) {
-      let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 1, (Math.random()*squareRange) - (squareRange/2))
-      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree"](pos)
+      let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 10, (Math.random()*squareRange) - (squareRange/2))
+      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](pos)
       items.push(newItem)
     }
 
