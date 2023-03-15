@@ -99,6 +99,7 @@ export class World {
     ground.position = new Vector3(0, 0, 0);
     ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
     ground.checkCollisions = true;
+    ground.receiveShadows = true;
 
     let ground_material = new StandardMaterial("ground", this._scene)
     // ground_material.albedoColor = new Color3(1, 0 ,0)
@@ -131,9 +132,9 @@ export class World {
     // Adds the sun and moon
 
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
-    sun_light.intensity = 0.25
+    sun_light.intensity = 1
     var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
-    moon_light.intensity = 0.1
+    moon_light.intensity = 0.01
 
     var smooth_material = new StandardMaterial("sun/moon material", this._scene);
 
@@ -159,8 +160,8 @@ export class World {
 
     sun_light.diffuse = new Color3(1, 1, 0);
     sun_light.specular = new Color3(1, 1, 0);
-    moon_light.diffuse = new Color3(255, 255, 255);
-    moon_light.specular = new Color3(255, 255, 255);
+    moon_light.diffuse = new Color3(31, 30, 30);
+    moon_light.specular = new Color3(31, 30, 30);
     // Animations
     var alpha = 1;
     this._scene.beforeRender = function () {
@@ -183,6 +184,8 @@ export class World {
 
     this._scene.clearColor = new Color3(1, 0.4, 0.75);
 
+    state_machine.setShadowGenerator(sun_light, sun_light, moon_light)
+    // state_machine.applyShadow(ground)
     
 
     await import("@babylonjs/core/Debug/debugLayer")
@@ -250,9 +253,6 @@ export class World {
 
         state_machine.check_entity()
         
-        console.log(this._scene.getMaterialById("Tree")?.uniqueId)
-        console.log(this._scene.getMaterialById("Tree"))
-
         this._scene.render();
         if (this._player) {
           this._socket?.send(

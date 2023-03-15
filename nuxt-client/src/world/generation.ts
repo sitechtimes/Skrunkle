@@ -80,8 +80,13 @@ export class Generation {
       let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
       parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
       parent.metadata = "Tree1";
+      parent.receiveShadows = true;
 
-      parent.material.subMaterials[0].usePhysicalLightFalloff = false
+
+      for (let i = 0 ; i < parent.material.subMaterials.length; i ++){
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false
+      }
+
       
       // this._scene.createDefaultEnvironment() 
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)

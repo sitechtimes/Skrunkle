@@ -3,7 +3,7 @@ import { Entities, Old_Entity } from "./entity/entities";
 import { Socket } from "./socket";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
-import { Vector3 } from "@babylonjs/core";
+import { Vector3, ShadowGenerator, Light, IShadowLight, PointLight, Mesh } from "@babylonjs/core";
 
 const smallest_pos_change: number = 0.01;
 const smallest_angle_change: number = 0.01;
@@ -12,7 +12,10 @@ class State_machine{
 
     public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
-    public old_entities: Map<string, Old_Entity> = new Map(); 
+    public old_entities: Map<string, Old_Entity> = new Map();
+    public sun_light: PointLight;
+    public moon_light: PointLight;
+    public shadowGenerator: ShadowGenerator;
     private socket_ref: Socket;
     // private world_ref: World;
 
@@ -68,6 +71,17 @@ class State_machine{
         this.ready()
     }
 
+    public setShadowGenerator(light: IShadowLight, sun_light: PointLight, moon_light: PointLight): void{
+        this.shadowGenerator = new ShadowGenerator(1024, light);
+        this.sun_light = sun_light;
+        this.moon_light = moon_light
+        this.shadowGenerator.useBlurExponentialShadowMap = true;
+    }
+
+    public applyShadow(mesh: Mesh): void{
+        this.shadowGenerator.addShadowCaster(mesh, [this.sun_light, this.moon_light])
+    }
+
     // public setWorld(world_ref: World): void{
     //     this.world_ref = world_ref;
     //     this.ready()
@@ -88,6 +102,8 @@ class State_machine{
     public add_entity(uid: string, entity: Entities){
         this.entities.set(uid, entity);
         this.old_entities.set(uid, new Old_Entity(entity));
+        // if (this.shadowGenerator) this.shadowGenerator.getShadowMap()?.renderList?.push(entity.object)
+        if (this.shadowGenerator) this.shadowGenerator.addShadowCaster(entity.object, [this.moon_light, this.sun_light])
     }
 
     public delete_player(uid: string){
