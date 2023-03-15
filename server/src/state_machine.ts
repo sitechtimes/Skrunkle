@@ -4,10 +4,10 @@ import { Logger } from "./logger";
 import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
-import { Vector3 } from "babylonjs";
+import { Vector3 } from "@babylonjs/core";
 
-const smallest_pos_change: number = 0.01;
-const smallest_angle_change: number = 0.01;
+const smallest_pos_change: number = 0.001;
+const smallest_angle_change: number = 0.001;
 
 class State_machine{
 
@@ -72,13 +72,12 @@ class State_machine{
             let entity: Entities = this.entities.get(uid);
             let entity_old: Old_Entity = this.old_entities.get(uid)
 
-            let passed: boolean = this.pass_changes(entity, entity_old)
+            let passed: boolean = this.pass_changes(entity, entity_old) // if changes very little dont broadcast
             if (passed || info) {
                 this.socket_ref.broadCast(entity.serialize())
                 cnt++;
             }
         }
-        // console.log(`Broadcasted ${cnt}`)
     }
 
     private broadcast_player(): void{

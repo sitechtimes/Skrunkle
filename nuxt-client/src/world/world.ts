@@ -21,6 +21,8 @@ import {
   DebugLayer,
   IInspectorOptions,
   DebugLayerTab,
+  PointLight,
+  Mesh,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -82,6 +84,7 @@ export class World {
       new Vector3(0, -9.81, 0),
       new CannonJSPlugin(true, 10, cannon)
     );
+    // this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
   public async init(): void {
@@ -105,6 +108,7 @@ export class World {
       this._scene
     );
     ground.checkCollisions = true;
+    ground.receiveShadows = true;
 
     let ground_material = new StandardMaterial("ground", this._scene);
     // ground_material.albedoColor = new Color3(1, 0 ,0)
@@ -114,21 +118,21 @@ export class World {
     // ground_material.ambientTexture.vScale = this._ground_size.height/15
 
     ground_material.diffuseTexture = new Texture(
-      "http://localhost:3001/static/textures/grass/grass_color.jpg",
+      `${this.env["CMS"]}/textures/grass/grass_color.jpg`,
       this._scene
     );
     ground_material.diffuseTexture.uScale = this._ground_size.width / 10;
     ground_material.diffuseTexture.vScale = this._ground_size.height / 10;
 
     ground_material.ambientTexture = new Texture(
-      "http://localhost:3001/static/textures/grass/grass_ambient.jpg",
+      `${this.env["CMS"]}/textures/grass/grass_ambient.jpg`,
       this._scene
     );
     ground_material.ambientTexture.uScale = this._ground_size.width / 10;
     ground_material.ambientTexture.vScale = this._ground_size.height / 10;
 
     ground_material.bumpTexture = new Texture(
-      "http://localhost:3001/static/textures/grass/grass_normal.jpg",
+      `${this.env["CMS"]}/textures/grass/grass_normal.jpg`,
       this._scene
     );
     ground_material.bumpTexture.uScale = this._ground_size.width / 10;
@@ -152,58 +156,79 @@ export class World {
     var light3 = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
     light3.intensity = 0.0015;
 
-    var material = new StandardMaterial("kosh", this._scene);
-    var sphere = Mesh.CreateSphere("Sphere", 10, 3, this._scene);
+    // @ts-expect-error
+
+    // Adds the sun and moon
+
+    var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
+    sun_light.intensity = 1;
+    var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
+    moon_light.intensity = 0.01;
+
+    var smooth_material = new StandardMaterial(
+      "sun/moon material",
+      this._scene
+    );
 
     // Creating light sphere
 
-    var lightSphere2 = <any>Mesh.CreateSphere("Sphere2", 12, 10, this._scene);
-    var lightSphere3 = <any>Mesh.CreateSphere("Sphere2", 12, 20, this._scene);
+    var sun = <any>Mesh.CreateSphere("Sphere2", 12, 10, this._scene);
+    var moon = <any>Mesh.CreateSphere("Sphere2", 12, 20, this._scene);
 
-    lightSphere2.material = new StandardMaterial("yellow", this._scene);
-    lightSphere2.material.diffuseColor = new Color3(0, 0, 0);
-    lightSphere2.material.specularColor = new Color3(0, 0, 0);
-    lightSphere2.material.emissiveColor = new Color3(1, 1, 0);
+    sun.material = new StandardMaterial("sun material", this._scene);
+    sun.material.diffuseColor = new Color3(0, 0, 0);
+    sun.material.specularColor = new Color3(0, 0, 0);
+    sun.material.emissiveColor = new Color3(1, 1, 0);
 
-    lightSphere3.material = new StandardMaterial("yellow", this._scene);
-    lightSphere3.material.diffuseColor = new Color3(0, 0, 0);
-    lightSphere3.material.specularColor = new Color3(0, 0, 0);
-    lightSphere3.material.emissiveColor = new Color3(255, 255, 255);
+    moon.material = new StandardMaterial("moon material", this._scene);
+    moon.material.diffuseColor = new Color3(0, 0, 0);
+    moon.material.specularColor = new Color3(0, 0, 0);
+    moon.material.emissiveColor = new Color3(255, 255, 255);
 
     // Sphere material
-    material.diffuseColor = new Color3(0, 1, 0);
-    sphere.material = material;
+    smooth_material.diffuseColor = new Color3(0, 1, 0);
 
     // Lights colors
 
-    light2.diffuse = new Color3(1, 1, 0);
-    light2.specular = new Color3(1, 1, 0);
-    light3.diffuse = new Color3(255, 255, 255);
-    light3.specular = new Color3(255, 255, 255);
+    sun_light.diffuse = new Color3(1, 1, 0);
+    sun_light.specular = new Color3(1, 1, 0);
+    moon_light.diffuse = new Color3(31, 30, 30);
+    moon_light.specular = new Color3(31, 30, 30);
     // Animations
     var alpha = 1;
     this._scene.beforeRender = function () {
-      light2.position = new Vector3(
+      sun_light.position = new Vector3(
         900 * -Math.sin(alpha),
         900 * Math.cos(alpha),
         0
       );
-      light3.position = new Vector3(
+      moon_light.position = new Vector3(
         1000 * -Math.sin(alpha + Math.PI),
         1000 * Math.cos(alpha + Math.PI),
         0
       );
-      lightSphere2.position = light2.position;
-      lightSphere3.position = light3.position;
+      sun.position = sun_light.position;
+      moon.position = moon_light.position;
 
-      alpha += 0.005;
+      alpha += 0.01;
     };
 
     this._scene.clearColor = new Color3(1, 0.4, 0.75);
 
+    state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
+    // state_machine.applyShadow(ground)
+
     await import("@babylonjs/core/Debug/debugLayer");
     await import("@babylonjs/inspector");
-    this._scene.debugLayer.show();
+    const debuglayer = new DebugLayer(this._scene);
+    debuglayer.show({
+      overlay: true,
+      handleResize: true,
+      overlayCanvas: true,
+      embedMode: true,
+      parentElement: document.body,
+      initialTab: "Physics", // <-- This enables the Physics tab
+    });
 
     // this._scene.debugLayer.select(ground_material, "DEBUG");
 
@@ -245,13 +270,15 @@ export class World {
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {
       await this._socket.init();
+      state_machine.setSocket(this._socket);
       console.log("Scene is ready");
-      console.log(this._player);
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
 
       this._engine.runRenderLoop(() => {
+        state_machine.check_entity();
+
         this._scene.render();
         if (this._player) {
           this._socket?.send(
@@ -470,44 +497,43 @@ export class World {
   public async onSocketData(data: Packet): Promise<void> {
     switch (data?.type) {
       case "Update":
-        let playerData = data.payload;
-        if (
-          !this._players.has(playerData.id) &&
-          playerData.id != this._player!.id
-        ) {
+        let playerData = data.payload[0];
+        let playerid = data.uid;
+
+        if (!this._players.has(playerid) && playerid != this._player!.id) {
           let newPlayer: Player = new Player(
             playerData.name,
             100,
             0,
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
-            playerData.id,
+            playerid,
             this._scene,
             { renderBody: true },
             this.env
           );
           this._initPlayer(newPlayer);
           console.log(
-            `Player doesn't exist, creating a new player with id ${playerData.id}`
+            `Player doesn't exist, creating a new player with id ${playerData.playerid}`
           );
-        } else if (playerData.id != this._player!.id) {
-          let player: Player | undefined = this._players.get(playerData.id);
-          player!.position = playerData[0].position;
+        } else if (playerid != this._player!.id) {
+          let player: Player | undefined = this._players.get(playerid);
+          player!.position = playerData.position;
           // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
-        } else if (playerData.id == this._player!.id) {
+        } else if (playerid == this._player!.id) {
           this._player!.position = new Vector3(
             playerData.position._x,
             playerData.position._y,
@@ -557,7 +583,7 @@ export class World {
           state_machine.update_entity(uid, entity);
         } else {
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
           ](payload);
 
           let adjusted_pos: Vector3 = new Vector3(
@@ -571,8 +597,9 @@ export class World {
           let imposter = PhysicsImpostor.BoxImpostor;
           if (payload.metdata == "Cylinder")
             imposter = PhysicsImpostor.CylinderImpostor;
-          else if (payload.metadata == "Tree") {
+          else if (payload.metadata.indexOf("Tree") != -1) {
             mass = 0;
+            imposter = PhysicsImpostor.MeshImpostor;
           }
           let entity: Entities = createEntity(
             this._scene,

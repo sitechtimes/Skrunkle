@@ -14,7 +14,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "downlevelIteration": true
   },
   "types": ["babylonjs", "babylonjs-loaders", "@types/node", "@nuxt/types", ""],
   "include": ["src", "src/main.tsn.ts", "dynamicTerrain.js"],
