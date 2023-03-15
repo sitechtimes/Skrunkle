@@ -5,7 +5,9 @@ export enum PacketType{
     mesh = "Mesh",
     close = "Close",
     interaction = "Interaction",
-    chat = "Chat"
+    chat = "Chat",
+    player_creation = "PlayerCreation",
+    request_mesh = "RequestMesh"
 }
 
 export class Packet{
@@ -17,7 +19,7 @@ export class Packet{
     constructor(packetType: PacketType, data: Array<any>, uid?: string){
         this.type = packetType;
         this.payload = data;
-        this.uid = uid
+        if (uid) this.uid = uid
     }
 
 }

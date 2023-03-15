@@ -2,6 +2,32 @@ import { Quaternion, Vector3, Mesh, MeshBuilder, PhysicsImpostor, Scene } from "
 import { v4 as uuidv4 } from 'uuid';
 import { Packet, PacketType } from "../packet";
 
+export class Old_Entity{
+
+    public position: Vector3;
+    public angularVelocity: Vector3;
+    public linearVelocity: Vector3;
+    private _id: string;
+
+    constructor(entity: Entities){
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+        this._id = entity.id;
+    }
+
+    public update(entity: Entities): void{
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+    }
+
+    public get id(): string{
+        return this._id
+    }
+
+}
+
 export class Entities{
 
     private _name: string;
@@ -11,18 +37,25 @@ export class Entities{
     constructor(name: string, position: Vector3, object: Mesh){
         this._name = name;
         this._id = `M-${uuidv4()}`
-        if (object) {
-            this._object = object;
-            this._object.position = position;
-        }
+        this._object = object;
+        this._object.position = position;
     }
 
     public get metadata(): string{
+        
         return this._object.metadata
     }
 
     public get position(): Vector3{
         return this._object.position;
+    }
+
+    public get angularVelocity(): Vector3{
+        return this._object.physicsImpostor.getAngularVelocity();
+    }
+
+    public get linearVelocity(): Vector3{
+        return this._object.physicsImpostor.getLinearVelocity();
     }
 
     public get rotation(): Vector3{
@@ -71,9 +104,11 @@ export class Entities{
 
 }
 
-export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
-    let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
-    mesh.physicsImpostor = entityImposter
+export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number): Entities{
+    if (imposterType != null){
+        let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
+        mesh.physicsImpostor = entityImposter
+    }
     let entity: Entities = new Entities(name, position, mesh)
     return entity
 }

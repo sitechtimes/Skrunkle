@@ -1,4 +1,30 @@
-import { Scene, Mesh, PhysicsImpostor, Vector3 } from "babylonjs";
+import { Scene, Mesh, PhysicsImpostor, Vector3 } from "@babylonjs/core"
+
+export class Old_Entity{
+
+    public position: Vector3;
+    public angularVelocity: Vector3;
+    public linearVelocity: Vector3;
+    private _id: string;
+
+    constructor(entity: Entities){
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+        this._id = entity.id;
+    }
+
+    public update(entity: Entities): void{
+        this.position = entity.position;
+        this.angularVelocity = entity.angularVelocity;
+        this.linearVelocity = entity.linearVelocity
+    }
+
+    public get id(): string{
+        return this._id
+    }
+
+}
 
 export class Entities {
   private _position: Vector3;
@@ -6,32 +32,56 @@ export class Entities {
   private _id: string;
   private _object: any;
 
-  constructor(name: string, id: string, position: Vector3, object: any | null) {
-    this._name = name;
-    this._position = position;
-    this._id = id;
-    if (object) {
-      this._object = object;
-      this._object.position = this._position;
-    }
-  }
+    private _position: Vector3;
+    private _name: string;
+    private _id: string;
+    private _object: any;
+    public collide: boolean = false;
 
-  public get position(): Vector3 {
-    return this._object.position;
-  }
+    constructor(name: string, id: string, position: Vector3, object: any | null){
+        this._name = name;
+        this._position = position;
+        this._id = id;
+        if (object) {
+            this._object = object;
+            this._object.position = this._position;
+
+            // this._object.onCollideObservable()
+
+            // if (this._object.physicsImpostor) {
+            //     this._object.physicsImpostor.onCollideEvent = (e)=>{
+            //         this.collide = true;
+            //         console.log("Started")
+            //     }
+
+            //     this._object.physicsImpostor.onCollideEventEnd = (e)=>{
+            //         this.collide = false;
+            //         console.log("Ended")
+            //     }
+            // }
+        }
+    }
+
+    public get angularVelocity(): Vector3{
+        return this._object.physicsImpostor.getAngularVelocity();
+    }
+
+    public get linearVelocity(): Vector3{
+        return this._object.physicsImpostor.getLinearVelocity();
+    }
+
+    public get position(): Vector3{
+        return this._object.position;
+    }
 
   public get metadata(): string {
     return this._object.metadata;
   }
 
-  public set position(new_position: Vector3) {
-    this._position = new Vector3(
-      new_position._x,
-      new_position._y,
-      new_position._z
-    );
-    if (this._object) this._object.position = this._position;
-  }
+    public set position(new_position: Vector3){
+        if (this._object) this._object.position = new Vector3(new_position._x, new_position._y, new_position._z);
+        this._position = this._object.position
+    }
 
   public get name(): string {
     return this._name;
@@ -68,22 +118,9 @@ export class Entities {
   }
 }
 
-export function createEntity(
-  scene: Scene,
-  uid: string,
-  name: string,
-  position: Vector3,
-  mesh: Mesh,
-  imposterType: number,
-  mass: number,
-  restitution: number
-): Entities {
-  let entityImposter: PhysicsImpostor = new PhysicsImpostor(
-    mesh,
-    imposterType,
-    { mass: mass, restitution: restitution },
-    scene
-  );
-  mesh.physicsImpostor = entityImposter;
-  return new Entities(name, uid, position, mesh);
+export function createEntity(scene: Scene, uid: string, name: string, position: Vector3, mesh: Mesh, imposterType: number, mass: number, restitution: number): Entities{
+    let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution}, scene);
+    mesh.physicsImpostor = entityImposter
+    mesh.position = position
+    return new Entities(name, uid, position, mesh)
 }

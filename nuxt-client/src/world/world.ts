@@ -10,6 +10,16 @@ import {
   KeyboardEventTypes,
   AbstractMesh,
   CannonJSPlugin,
+  SceneLoader,
+  PhysicsImpostor,
+  Color3,
+  Texture,
+  PBRMaterial,
+  DebugLayer,
+  IInspectorOptions,
+  DebugLayerTab,
+  PointLight,
+  Mesh
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -24,9 +34,9 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
-import { PhysicsImpostor } from "babylonjs";
 
 export class World {
+  private env: any;
   private _engine: Engine;
   private _scene: Scene;
   private _canvas: HTMLCanvasElement | null;
@@ -38,7 +48,7 @@ export class World {
   private _GUI: GUI;
   // @ts-expect-error
   private _hotbar: Hotbar;
-  private _debug: boolean = true;
+  private _debug: boolean = false;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
@@ -48,7 +58,12 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
 
-  constructor(canvas: HTMLCanvasElement | null) {
+
+  private _ground_size:any = {width: 10000, height: 10000}
+
+  constructor(canvas: HTMLCanvasElement | null, env: any) {
+    this.env = env
+
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
     this._scene = new Scene(this._engine);
@@ -56,20 +71,18 @@ export class World {
     this._players = new Map<string, Player>();
     this._socket = new Socket(this);
     this._chat = new Chat(this._socket, this._player!);
-    this._generator = new Generation(this, this._scene);
+    this._generator = new Generation(this, this._scene, this.env);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
     this._pickup = false;
     this._pickedup = false;
     this._itemchosen = 0;
 
-    this._scene.enablePhysics(
-      new Vector3(0, -9.81, 0),
-      new CannonJSPlugin(true, 10, cannon)
-    );
+    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    // this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
   }
 
-  public init(): void {
+  public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
     this._playerCamera = new FreeCamera(
@@ -77,19 +90,118 @@ export class World {
       new Vector3(0, 6, 0),
       this._scene
     );
+
     var ground = MeshBuilder.CreateGround(
       "ground",
-      { width: 1000, height: 1000 },
+      { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
     );
     ground.position = new Vector3(0, 0, 0);
+    ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
     ground.checkCollisions = true;
+    ground.receiveShadows = true;
+
+    let ground_material = new StandardMaterial("ground", this._scene)
+    // ground_material.albedoColor = new Color3(1, 0 ,0)
+
+    // ground_material.ambientTexture = new Texture("http://localhost:3001/static/textures/polygrass/grass_color.jpg", this._scene)
+    // ground_material.ambientTexture.uScale = this._ground_size.width/15
+    // ground_material.ambientTexture.vScale = this._ground_size.height/15
+
+    ground_material.diffuseTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_color.jpg`, this._scene)
+    ground_material.diffuseTexture.uScale = this._ground_size.width/10
+    ground_material.diffuseTexture.vScale = this._ground_size.height/10
+
+    ground_material.ambientTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_ambient.jpg`, this._scene)
+    ground_material.ambientTexture.uScale = this._ground_size.width/10
+    ground_material.ambientTexture.vScale = this._ground_size.height/10
+
+    ground_material.bumpTexture = new Texture(`${this.env['CMS']}/textures/grass/grass_normal.jpg`, this._scene)
+    ground_material.bumpTexture.uScale = this._ground_size.width/10
+    ground_material.bumpTexture.vScale = this._ground_size.height/10
+    
+    // ground_material.microSurfaceTexture = new Texture("http://localhost:3001/static/textures/polygrass/grass_roughness.jpg", this._scene)
+    // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
+    // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
+
+    ground.material = ground_material
+
+
     // @ts-expect-error
-    var light = new HemisphericLight(
-      "light",
-      new Vector3(0, 1, 0),
-      this._scene
-    );
+    
+    // Adds the sun and moon
+
+    var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
+    sun_light.intensity = 1
+    var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
+    moon_light.intensity = 0.01
+
+    var smooth_material = new StandardMaterial("sun/moon material", this._scene);
+
+    // Creating light sphere
+
+    var sun = <any>Mesh.CreateSphere("Sphere2", 12, 10, this._scene);
+    var moon = <any>Mesh.CreateSphere("Sphere2", 12, 20, this._scene);
+
+    sun.material = new StandardMaterial("sun material", this._scene);
+    sun.material.diffuseColor = new Color3(0, 0, 0);
+    sun.material.specularColor = new Color3(0, 0, 0);
+    sun.material.emissiveColor = new Color3(1, 1, 0);
+
+    moon.material = new StandardMaterial("moon material", this._scene);
+    moon.material.diffuseColor = new Color3(0, 0, 0);
+    moon.material.specularColor = new Color3(0, 0, 0);
+    moon.material.emissiveColor = new Color3(255, 255, 255);
+
+    // Sphere material
+    smooth_material.diffuseColor = new Color3(0, 1, 0);
+
+    // Lights colors
+
+    sun_light.diffuse = new Color3(1, 1, 0);
+    sun_light.specular = new Color3(1, 1, 0);
+    moon_light.diffuse = new Color3(31, 30, 30);
+    moon_light.specular = new Color3(31, 30, 30);
+    // Animations
+    var alpha = 1;
+    this._scene.beforeRender = function () {
+      sun_light.position = new Vector3(
+        900 * -Math.sin(alpha),
+        900 * Math.cos(alpha),
+        0
+      );
+      moon_light.position = new Vector3(
+        1000 * -Math.sin(alpha + Math.PI),
+        1000 * Math.cos(alpha + Math.PI),
+        0
+      );
+      sun.position = sun_light.position;
+      moon.position = moon_light.position;
+
+      alpha += 0.01;
+    };
+
+
+    this._scene.clearColor = new Color3(1, 0.4, 0.75);
+
+    state_machine.setShadowGenerator(sun_light, sun_light, moon_light)
+    // state_machine.applyShadow(ground)
+    
+
+    await import("@babylonjs/core/Debug/debugLayer")
+    await import("@babylonjs/inspector")
+    const debuglayer = new DebugLayer(this._scene)
+    debuglayer.show({
+      overlay: true,
+      handleResize: true,
+      overlayCanvas: true,
+      embedMode: true,
+      parentElement: document.body,
+      initialTab: "Physics", // <-- This enables the Physics tab
+    });
+
+    // this._scene.debugLayer.select(ground_material, "DEBUG");
+
 
     //   this._scene.onPointerObservable.add((pointerInfo) => {
     //     switch (pointerInfo.type) {
@@ -121,16 +233,21 @@ export class World {
     this._hotbar = this._GUI.hotbar;
     console.log(this._hotbar);
 
-    // this._generator.GENERATE.TestCyclinder();
-    this._scene.executeWhenReady(() => {
+    
+    // setTimeout(this._socket.init(), 10000)
+    this._scene.executeWhenReady(async() => {
+
+      await this._socket.init()
+      state_machine.setSocket(this._socket)
+      console.log("Scene is ready")
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
-      this._socket.send(
-        new Packet(PacketType.info, [{ id: this._player!.id }], "")
-      );
 
       this._engine.runRenderLoop(() => {
+
+        state_machine.check_entity()
+        
         this._scene.render();
         if (this._player) {
           this._socket?.send(
@@ -159,6 +276,7 @@ export class World {
               "z"
             )!.innerText = `Z: ${this._player.position.z}`;
           }
+
         }
       });
     });
@@ -174,7 +292,7 @@ export class World {
 
       if (
         this._evaluateDistance(hit!.pickedMesh!) <=
-          this._hotbar.current?._range! ||
+        this._hotbar.current?._range! ||
         this._hotbar.current!._type == "Heal"
       ) {
         this._hotbar.use(hit?.pickedMesh?.name);
@@ -182,6 +300,7 @@ export class World {
     };
 
     this.listen();
+
   }
 
   private listen() {
@@ -233,8 +352,8 @@ export class World {
 
     let vectorMagnitude = Math.sqrt(
       totalVector[0] * totalVector[0] +
-        totalVector[1] * totalVector[1] +
-        totalVector[2] * totalVector[2]
+      totalVector[1] * totalVector[1] +
+      totalVector[2] * totalVector[2]
     );
 
     return vectorMagnitude;
@@ -272,8 +391,7 @@ export class World {
                 );
                 var hit = this._scene.pickWithRay(dray);
                 this._itemchosen = hit!.pickedMesh!.uniqueId;
-                document.getElementById("PickedupItem")!.innerHTML =
-                  "Picked Up";
+                if (this._debug) document.getElementById("PickedupItem")!.innerHTML = "Picked Up";
               }
               break;
           }
@@ -295,6 +413,7 @@ export class World {
       this._canvas,
       this._playerCamera!
     );
+    console.log(this._player)
     if (this._debug)
       document.getElementById("name")!.innerText = `Name: ${this._player.name}`;
     if (this._debug)
@@ -344,46 +463,49 @@ export class World {
   private _initPlayer(player: Player): void {
     this._players.set(player.id, player);
   }
-  public onSocketData(data: Packet): void {
+  public async onSocketData(data: Packet): Promise<void> {
     switch (data?.type) {
       case "Update":
-        let playerData = data.payload;
+        let playerData = data.payload[0];
+        let playerid = data.uid
+
         if (
-          !this._players.has(playerData.id) &&
-          playerData.id != this._player!.id
+          !this._players.has(playerid) &&
+          playerid != this._player!.id
         ) {
           let newPlayer: Player = new Player(
             playerData.name,
             100,
             0,
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
             new Vector3(
-              playerData[0].position.x,
-              playerData[0].position.y,
-              playerData[0].position.z
+              playerData.position.x,
+              playerData.position.y,
+              playerData.position.z
             ),
-            playerData.id,
+            playerid,
             this._scene,
-            { renderBody: true }
+            { renderBody: true },
+            this.env
           );
           this._initPlayer(newPlayer);
           console.log(
-            `Player doesn't exist, creating a new player with id ${playerData.id}`
+            `Player doesn't exist, creating a new player with id ${playerData.playerid}`
           );
-        } else if (playerData.id != this._player!.id) {
-          let player: Player | undefined = this._players.get(playerData.id);
-          player!.position = playerData[0].position;
+        } else if (playerid != this._player!.id) {
+          let player: Player | undefined = this._players.get(playerid);
+          player!.position = playerData.position;
           // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
-        } else if (playerData.id == this._player!.id) {
+        } else if (playerid == this._player!.id) {
           this._player!.position = new Vector3(
             playerData.position._x,
             playerData.position._y,
@@ -392,9 +514,9 @@ export class World {
         }
         this._castLookingRay();
         if (this._pickup == true) {
-          document.getElementById("PickupItem")!.innerHTML = "pickup item";
+          if (this._debug) document.getElementById("PickupItem")!.innerHTML = "pickup item";
         } else {
-          document.getElementById("PickupItem")!.innerHTML = "";
+          if (this._debug) document.getElementById("PickupItem")!.innerHTML = "";
         }
         // if(this.chestOpen == true){
         //     var material = new StandardMaterial("box color", this._scene);
@@ -434,53 +556,49 @@ export class World {
         }
         break;
       case "Mesh":
-        let uid = data.uid;
-        let payload = data.payload[0];
+
+        let uid = data.uid
+        let payload = data.payload[0]
 
         if (state_machine.entities.has(uid)) {
-          let entity: Entities = state_machine.entities.get(uid);
-          entity.update(
-            payload.linearVelocity,
-            payload.angularVelocity,
-            payload.position
-          );
-          state_machine.update_entity(uid, entity);
+          let entity: Entities = state_machine.entities.get(uid)
+          entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
+          state_machine.update_entity(uid, entity)
         } else {
-          let mesh: Mesh =
-            this._generator.GENERATE[payload.metadata as "Cylinder" | "Box"](
-              payload
-            );
+          let mesh: Mesh = await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](payload)
 
-          let imposter = PhysicsImpostor.BoxImpostor;
-          if (payload.metdata == "Cylinder")
-            imposter = PhysicsImpostor.CylinderImpostor;
-          let entity: Entities = createEntity(
-            this._scene,
-            uid,
-            payload.name,
-            payload.position,
-            mesh,
-            imposter,
-            90,
-            0.1
-          );
-          entity.update(
-            payload.linearVelocity,
-            payload.angularVelocity,
-            payload.position
-          );
-          state_machine.add_entity(uid, entity);
+          let adjusted_pos: Vector3 = new Vector3(
+            this.second_decimal(payload.position._x),
+            this.second_decimal(payload.position._y * 2),
+            this.second_decimal(payload.position._z)
+          )
+
+          let mass: number = 90
+
+          let imposter = PhysicsImpostor.BoxImpostor
+          if (payload.metdata == "Cylinder") imposter = PhysicsImpostor.CylinderImpostor
+          else if (payload.metadata.indexOf("Tree") != -1) {
+            mass = 0
+            imposter = PhysicsImpostor.MeshImpostor
+          }
+          let entity: Entities = createEntity(this._scene, uid, payload.name, adjusted_pos, mesh, imposter, mass, 0)
+          entity.update(payload.linearVelocity, payload.angularVelocity, adjusted_pos)
+          state_machine.add_entity(uid, entity)
         }
-        break;
+        break
+
 
       case "Info":
+        // pls implement update to info like server info
+        // init player
+        break;
+      case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
         if (this._player === undefined) {
-          console.log(playerInfo);
+          console.log(playerInfo.name)
           this._initClient(playerInfo.name, data.uid);
         }
-        // init player
-        else break;
+        break;
       case "Close":
         let player: Player | undefined = this._players.get(data.payload[0].id);
         if (player) player.delete();
@@ -519,5 +637,10 @@ export class World {
 
   public get chat(): Chat | undefined {
     return this._chat;
+  }
+
+  public second_decimal(n: number): number{
+    return Math.round(n * 100) / 100
+
   }
 }

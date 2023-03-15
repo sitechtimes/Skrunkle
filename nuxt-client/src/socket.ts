@@ -8,16 +8,26 @@ export class Socket {
   private worldReference: World;
 
   constructor(world: World) {
-    this.server = new WebSocket(Socket.url, "tcp");
     this.worldReference = world;
-    this.init();
-    this.listen();
+  }
+  
+  private connect(): Promise<WebSocket>{
+    return new Promise((res, rej)=>{
+      let server = new WebSocket(Socket.url, "tcp");
+      server.onopen = ()=>{
+        res(server)
+      }
+      server.onerror = (err)=>{
+        rej(err)
+      }
+    })
   }
 
-  private init() {
-    this.server.onopen = () => {
-      this.status = true;
-    };
+  public async init(): Promise<void> {
+    this.server = await this.connect()
+    this.send(new Packet(PacketType.player_creation, []))
+    this.listen()
+    this.status = true
   }
 
   private listen() {

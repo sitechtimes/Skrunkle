@@ -10,7 +10,9 @@ import {
   DynamicTexture,
   Plane,
   StandardMaterial,
+  VertexBuffer
 } from "@babylonjs/core";
+import { PhysicsImpostor } from "babylonjs";
 import { PlayerItem } from "../gui/items";
 
 export class Player {
@@ -26,6 +28,9 @@ export class Player {
   private _nametag_y_offset: number = 0.5;
   private _inventory: Map<number, PlayerItem> = new Map();
 
+  private env: any;
+  private player_body_scale = 5;
+
   constructor(
     name: string,
     health: number,
@@ -37,8 +42,11 @@ export class Player {
     options: { renderBody?: boolean; mainPlayer?: boolean } = {
       renderBody: true,
       mainPlayer: false,
-    }
+    },
+    env: any
   ) {
+    this.env = env;
+
     this._name = name;
     this._health = health;
     this._exp = exp;
@@ -95,26 +103,32 @@ export class Player {
     if (options.renderBody) {
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "meshes/",
-        "player.babylon",
-        this._scene
+        `${this.env['CMS']}/meshes/`,
+        "player.babylon"
       );
-      this._setBody(bodies);
+
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any)=>{
+        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+          // console.log("problems with: " + m.name);
+        }else{
+          meshes.push(m)
+        }
+      })
+    
+      let player_body: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+
+      player_body.scaling.x = this.player_body_scale 
+      player_body.scaling.y = this.player_body_scale 
+      player_body.scaling.z = this.player_body_scale 
+      
+      player_body.metadata = "player_body";
+      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 180, restitution: 0 }, this._scene)
+      console.log(player_body.physicsImpostor)
+      this._body = player_body
     }
   }
 
-  private _setBody(scene: any) {
-    let parent: TransformNode = new Mesh(this._id, this._scene);
-    for (let child of scene.meshes) {
-      child.position = new Vector3(0, 0, 0);
-      child.parent = parent;
-    }
-    parent.position = new Vector3(0, 0, 0);
-    parent.metadata = "Player";
-    // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
-    // parent.scaling = new Vector3(0.25, 0.25, 0.25)
-    this._body = parent;
-  }
 
   public get position(): Vector3 {
     return this._position;
