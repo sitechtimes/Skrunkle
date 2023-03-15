@@ -4,9 +4,8 @@ import {
   Vector3,
   MeshBuilder,
   HemisphericLight,
-  PointLight,
   DirectionalLight,
-  Mesh,
+  CubeTexture,
   FreeCamera,
   StandardMaterial,
   Matrix,
@@ -194,6 +193,23 @@ export class World {
     sun_light.specular = new Color3(1, 1, 0);
     moon_light.diffuse = new Color3(31, 30, 30);
     moon_light.specular = new Color3(31, 30, 30);
+
+    var skybox = MeshBuilder.CreateBox(
+      "skyBox",
+      { size: this._ground_size },
+      this._scene
+    );
+    var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new CubeTexture(
+      "textures/TropicalSunnyDay",
+      this._scene
+    );
+    skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skybox.material = skyboxMaterial;
+
     // Animations
     var alpha = 1;
     this._scene.beforeRender = function () {
@@ -207,13 +223,12 @@ export class World {
         1000 * Math.cos(alpha + Math.PI),
         0
       );
+      skybox.rotation.y += 0.001;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
       alpha += 0.01;
     };
-
-    this._scene.clearColor = new Color3(1, 0.4, 0.75);
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     // state_machine.applyShadow(ground)
