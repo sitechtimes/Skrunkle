@@ -123,8 +123,13 @@ export class Player {
       player_body.scaling.z = this.player_body_scale 
       
       player_body.metadata = "player_body";
-      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 180, restitution: 0 }, this._scene)
-      console.log(player_body.physicsImpostor)
+      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 1, restitution: 0 }, this._scene)
+
+      // Set the collision group and mask options
+      player_body.physicsImpostor.physicsBody.collisionFilterGroup = PhysicsImpostor.NoCollisionDetection;
+      player_body.physicsImpostor.physicsBody.collisionFilterMask = PhysicsImpostor.AllPhysicsGroup;
+
+      player_body.position = new Vector3(0, 100, 0)
       this._body = player_body
     }
   }
@@ -137,7 +142,7 @@ export class Player {
   public set position(new_position: Vector3) {
     this._position = new_position;
     if (this._body) {
-      this._body.position = this._position;
+      // this._body.position = this._position;
     }
     if (this._nametag) {
       this._nametag.position = new Vector3(

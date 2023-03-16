@@ -1,3 +1,4 @@
+import OIMO from 'oimophysics';
 import {
   Scene,
   Engine,
@@ -19,7 +20,8 @@ import {
   IInspectorOptions,
   DebugLayerTab,
   PointLight,
-  Mesh
+  Mesh,
+  OimoJSPlugin,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as cannon from "cannon-es";
@@ -34,6 +36,9 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
+// import { OimoJSPlugin } from '@babylonjs/core/Physics/Plugins/OimoJSPlugin';
+
+
 
 export class World {
   private env: any;
@@ -78,8 +83,8 @@ export class World {
     this._pickedup = false;
     this._itemchosen = 0;
 
-    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-    // this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin());
   }
 
   public async init(): void {
@@ -164,7 +169,7 @@ export class World {
     moon_light.specular = new Color3(31, 30, 30);
     // Animations
     var alpha = 1;
-    this._scene.beforeRender = function () {
+    this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
         900 * -Math.sin(alpha),
         900 * Math.cos(alpha),
@@ -178,7 +183,7 @@ export class World {
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += 0.01;
+      alpha += 0.1  * this._scene.deltaTime / 1000;
     };
 
 
