@@ -198,7 +198,7 @@ export class World {
     var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new CubeTexture(
-      `${this.env["CMS"]}/sky/TropicalSunnyDay`,
+      `${this.env["CMS"]}/space/space`,
       this._scene
     );
     skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
