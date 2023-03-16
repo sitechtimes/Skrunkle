@@ -194,15 +194,11 @@ export class World {
     moon_light.diffuse = new Color3(31, 30, 30);
     moon_light.specular = new Color3(31, 30, 30);
 
-    var skybox = MeshBuilder.CreateBox(
-      "skyBox",
-      { size: this._ground_size },
-      this._scene
-    );
+    var skybox = MeshBuilder.CreateBox("skyBox", { size: 10000 }, this._scene);
     var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new CubeTexture(
-      "textures/TropicalSunnyDay",
+      `${this.env["CMS"]}/sky/TropicalSunnyDay`,
       this._scene
     );
     skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
@@ -223,7 +219,7 @@ export class World {
         1000 * Math.cos(alpha + Math.PI),
         0
       );
-      skybox.rotation.y += 0.001;
+      skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
