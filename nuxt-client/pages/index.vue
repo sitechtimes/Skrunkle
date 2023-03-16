@@ -7,12 +7,10 @@
       rel="stylesheet"
     />
     <h1 class="title">Skrunkle</h1>
-    <div class="loading-properties">
-      <img class="chicken-img" src="../assets/chicken2.png" alt="chicken" />
-      <h2 class="percentage">10%</h2>
-      <div class="load">
-        <div class="inside-bar"></div>
-      </div>
+    <img class="chicken-img" src="../assets/chicken2.png" alt="chicken" />
+    <h2 class="percentage">10%</h2>
+    <div class="load">
+      <div class="inside-bar"></div>
     </div>
   </div>
 </template>
@@ -25,7 +23,6 @@
 }
 
 * {
-  overflow: hidden;
   padding: 0;
   margin: 0;
 }
@@ -39,14 +36,14 @@
   left: 0;
 }
 
-.loading-properties {
+/* .loading-properties {
   display: flex;
-  flex-direction: row;
-}
+} */
 
 .chicken-img {
   width: 80px;
-  /* margin-bottom: 25px; */
+  margin-top: 25px;
+  display: flex;
 }
 
 .percentage {
@@ -61,10 +58,10 @@
 }
 
 .load {
+  overflow: hidden;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 10px;
   width: 60rem;
   height: 3rem;
   background: (#ff7b00);
