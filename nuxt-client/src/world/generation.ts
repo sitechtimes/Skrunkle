@@ -61,20 +61,39 @@ export class Generation {
 
       return box;
     },
-    ENTITY: async (mesh: PlayerItem): Promise<TransformNode> => {
+    ENTITY: async (mesh: PlayerItem): Promise<Mesh> => {
       // spawn dropped entity
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "meshes/",
+        `${this.env['CMS']}/meshes/`,
         mesh._path
       );
-      for (let child of bodies.meshes) {
+
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+
+        } else {
+          m.position.y = 0
+          meshes.push(m)
+        }
+      })
+
+      let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+
+      parent.position.x = state_machine.client.position.x
+      parent.position.y = state_machine.client.position.y
+      parent.position.z = state_machine.client.position.z
+      /* for (let child of bodies.meshes) {
         child.name = `${mesh._name}-${Math.random() * 100}`;
         child.metadata = mesh._metadata;
       }
       bodies.transformNodes[0].position = new Vector3(state_machine.client.position.x + 1, state_machine.client.position.y + 1, state_machine.client.position.z + 5)
       state_machine.add_entity(mesh._name, bodies.transformNodes[0])
-      return bodies.transformNodes[0]
+      return bodies.transformNodes[0] */
+      parent.name = `${mesh._name}-${Math.random() * 100}`
+      parent.metadata = mesh._metadata
+      return parent
     },
     Tree1: async(mesh: any): Promise<Mesh> => {
       

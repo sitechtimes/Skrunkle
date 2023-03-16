@@ -105,10 +105,10 @@ class State_machine {
       if (this.shadowGenerator) this.shadowGenerator.addShadowCaster(entity.object, [this.moon_light, this.sun_light])
   }
 
-    public delete_player(uid: string){
-        this.players.delete(uid)
-        this.old_entities.delete(uid);
-    }
+  public delete_player(uid: string){
+    this.players.delete(uid)
+    this.old_entities.delete(uid);
+  }
 
   public set client(player: MainPlayer) {
     this._client = player
