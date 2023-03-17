@@ -1,4 +1,3 @@
-import OIMO from 'oimophysics';
 import {
   Scene,
   Engine,
@@ -22,10 +21,13 @@ import {
   PointLight,
   Mesh,
   OimoJSPlugin,
+  AmmoJSPlugin
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import * as cannon from "cannon-es";
 import { MainPlayer } from "../entity/mainPlayer";
+// import * as cannon from "cannon-es";
+import * as OIMO from "oimo"
+// import * as Ammo from "@enable3d/ammo-physics"
 import { Socket } from "../socket";
 import { Packet, PacketType } from "../packet";
 import { Player } from "../entity/player";
@@ -37,8 +39,6 @@ import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 // import { OimoJSPlugin } from '@babylonjs/core/Physics/Plugins/OimoJSPlugin';
-
-
 
 export class World {
   private env: any;
@@ -84,7 +84,16 @@ export class World {
     this._itemchosen = 0;
 
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin());
+    this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin(true, 10, OIMO));
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
+  }
+
+  private _initCamera(): void {
+    this._playerCamera.position.y = 6;
+    this._playerCamera.ellipsoid = new Vector3(1, 3, 1)
+    this._playerCamera.applyGravity = true
+    this._scene.collisionsEnabled = true
+    this._playerCamera.checkCollisions = true
   }
 
   public async init(): void {
@@ -183,7 +192,7 @@ export class World {
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += 0.1  * this._scene.deltaTime / 1000;
+      alpha += 0.005  * this._scene.deltaTime / 1000;
     };
 
 
@@ -255,6 +264,8 @@ export class World {
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
 
       this._engine.runRenderLoop(() => {
+
+        this._initCamera()
 
         state_machine.check_entity()
         
@@ -388,7 +399,7 @@ export class World {
       console.log("hit");
       this._pickup = true;
 
-      if ((hit!.pickedMesh!.id != "ground")) {
+      if ((hit!.pickedMesh!.name != "ground")) {
         this._scene.onKeyboardObservable.add((kbInfo) => {
           switch (kbInfo.type) {
             case KeyboardEventTypes.KEYDOWN:
@@ -559,6 +570,7 @@ export class World {
           entity.update(payload.linearVelocity, payload.angularVelocity, payload.position)
           state_machine.update_entity(uid, entity)
         } else {
+          console.log(payload)
           let mesh: Mesh = await this._generator.GENERATE[payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](payload)
 
           let adjusted_pos: Vector3 = new Vector3(

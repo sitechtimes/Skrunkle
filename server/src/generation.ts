@@ -76,6 +76,10 @@ export class Generation {
           // console.log("problems with: " + m.name);
         }else{
           m.metadata = "Tree1"
+          m.name = "Tree1Part"
+          // m.position.y = 0
+          m.scaling = new Vector3(2.5, 2.5, 2.5)
+          m.checkCollisions = true
           // m.position = position
           // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 10000, restitution: 0 }, this._scene)
           meshes.push(m)
@@ -84,6 +88,7 @@ export class Generation {
 
       let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
       parent.metadata = "Tree1";
+      parent.name = "Tree1"
 
       parent.position = position
 

@@ -17,6 +17,7 @@
     "prettier": "^2.8.2"
   },
   "dependencies": {
+    "@enable3d/ammo-physics": "^0.25.3",
     "babylonjs": "^5.42.0",
     "babylonjs-loaders": "^5.42.0",
     "cannon-es": "^0.20.0",

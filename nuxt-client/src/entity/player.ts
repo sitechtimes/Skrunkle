@@ -142,7 +142,7 @@ export class Player {
   public set position(new_position: Vector3) {
     this._position = new_position;
     if (this._body) {
-      // this._body.position = this._position;
+      this._body.position = this._position;
     }
     if (this._nametag) {
       this._nametag.position = new Vector3(
