@@ -225,9 +225,6 @@ export class World {
                 document.getElementById("PickedupItem")!.innerHTML = "";
               }
               break;
-            case "f":
-              this._castLookingRay()
-              break;
           }
           break;
       }
@@ -303,7 +300,6 @@ export class World {
     };
 
     this.listen();
-
   }
 
   private listen() {

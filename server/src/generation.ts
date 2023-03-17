@@ -11,6 +11,7 @@ import 'babylonjs-loaders';
 
 // required imports
 import xhr2 from 'xhr2'
+import { Item } from "./items"
 
 // @ts-ignore
 global.XMLHttpRequest = xhr2.XMLHttpRequest
@@ -126,6 +127,33 @@ export class Generation {
       let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.BoxImpostor, 0, 0)
       state_machine.add_entity(entity.id, entity)
 
+
+      return entity
+    },
+    ENTITY: async (item: Item, position: Vector3): Promise<Entities> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        "http://localhost:3001/static/meshes/",
+        item.path
+      );
+
+      let meshes: Mesh[] = []
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+
+        } else {
+          m.position.y = 0
+          meshes.push(m)
+        }
+      })
+
+      let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+      parent.name = `${item.name}-${Math.random() * 100}`
+      parent.metadata = item.name
+      
+      let entity: Entities = createEntity(this._scene, parent.name, position, parent, null, 0, 0)
+      
+      state_machine.add_entity(entity.id, entity)
 
       return entity
     }
