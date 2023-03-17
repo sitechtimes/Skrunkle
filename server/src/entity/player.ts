@@ -1,6 +1,7 @@
-import { Vector3 } from "babylonjs"
+import { MeshBuilder, Scene, Vector3, Mesh, PhysicsImpostor } from "babylonjs"
 import { v4 as uuidv4 } from 'uuid';
 import { generateUsername } from "unique-username-generator";
+import { Packet, PacketType } from "../packet";
 
 export class Player{
 
@@ -9,19 +10,28 @@ export class Player{
     private _exp: number;
     private _position: Vector3;
     private _id: string;
+    private _body: Mesh;
 
     constructor(
+        scene: Scene,
         name?: string|undefined, 
         health?: number|undefined, 
         exp?: number|undefined, 
         position?: Vector3|undefined, 
-        id?: string|undefined
     ){
         this._name = name || generateUsername();
         this._health = health || 100;
         this._exp = exp || 0;
         this._position = position || new Vector3(0, 0, 0);
         this._id = uuidv4();
+        this._body = MeshBuilder.CreateBox(this._id, {height: 2, size: 0.5}, scene)
+        let physicsImpostor = new PhysicsImpostor(this._body, PhysicsImpostor.BoxImpostor, { mass: 100, restitution: 0.5 }, scene)
+        this._body.physicsImpostor = physicsImpostor
+        this._body.checkCollisions = true;
+    }
+
+    public get body(): Mesh{
+        return this._body
     }
 
     public get position(): Vector3{
@@ -61,6 +71,22 @@ export class Player{
 
     public get id(): string{
         return this._id;
+    }
+
+    public serialize(type: PacketType = PacketType.movement, additional_info: any = {}): Packet{
+        let info: any = {
+            name: this._name,
+            health: this._health,
+            exp: this._exp, 
+            position: this._position, 
+        }
+
+        for (let key of Object.keys(additional_info)){
+            info[key] = additional_info[key]
+        }
+
+        let updatePacket: Packet = new Packet(type, [info], this._id)
+        return updatePacket
     }
 
 }
