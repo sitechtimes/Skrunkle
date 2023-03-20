@@ -36,10 +36,6 @@
   left: 0;
 }
 
-/* .loading-properties {
-  display: flex;
-} */
-
 .chicken-img {
   width: 80px;
   margin-top: 25px;
