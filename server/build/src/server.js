@@ -7,6 +7,7 @@ var player_1 = require("./entity/player");
 var babylonjs_1 = require("babylonjs");
 var packet_1 = require("./packet");
 var logger_1 = require("./logger");
+var state_machine_1 = require("./state_machine");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
         this.world = new world_1.World();
@@ -14,6 +15,7 @@ var SocketServer = /** @class */ (function () {
         this.server = new ws_1.Server({ port: SocketServer.PORT });
         this.init();
         this.listen();
+        state_machine_1.state_machine.setSocket(this);
     }
     SocketServer.prototype.init = function () {
         this.world.init();
@@ -25,7 +27,6 @@ var SocketServer = /** @class */ (function () {
         var _this = this;
         this.logger.progress('Start listening on port: ' + SocketServer.PORT);
         this.server.on('connection', function (client) {
-            // save client
             _this.logger.log('Client connected');
             if (!_this.world.players.has(client)) {
                 var player = new player_1.Player();
@@ -37,7 +38,6 @@ var SocketServer = /** @class */ (function () {
                     }]));
                 _this.send(client, new packet_1.Packet(packet_1.PacketType.mesh, _this.world.entities));
             }
-            // basic starter functiosn
             client.on('message', function (message) {
                 var msg = JSON.parse(message);
                 if (_this.world.players.has(msg.uid)) {
@@ -80,6 +80,8 @@ var SocketServer = /** @class */ (function () {
             });
             client.on('close', function () {
                 _this.logger.log('Client connection closed');
+                state_machine_1.state_machine.delete_player(_this.client_to_uid.get(client));
+                _this.client_to_uid.delete(client);
                 // this.world.removePlayer(id)
                 // close with router
             });
