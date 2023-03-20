@@ -23,10 +23,15 @@ import {
   DebugLayerTab,
   PointLight,
   Mesh,
+  OimoJSPlugin,
+  AmmoJSPlugin,
+  Quaternion,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
-import * as cannon from "cannon-es";
 import { MainPlayer } from "../entity/mainPlayer";
+// import * as cannon from "cannon-es";
+import * as OIMO from "oimo";
+// import * as Ammo from "@enable3d/ammo-physics"
 import { Socket } from "../socket";
 import { Packet, PacketType } from "../packet";
 import { Player } from "../entity/player";
@@ -79,11 +84,22 @@ export class World {
     this._pickedup = false;
     this._itemchosen = 0;
 
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
     this._scene.enablePhysics(
       new Vector3(0, -9.81, 0),
-      new CannonJSPlugin(true, 10, cannon)
+      new OimoJSPlugin(true, 10, OIMO)
     );
-    // this._scene.enablePhysics(new Vector3(0, 0, 0), new CannonJSPlugin(true, 10, cannon));
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
+  }
+
+  private _initCamera(): void {
+    this._playerCamera.position.y = 6;
+    this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
+    this._playerCamera.checkCollisions = true;
+    this._scene.collisionsEnabled = true;
+    this._playerCamera.applyGravity = true;
+    this._playerCamera.speed = 25;
+    this._playerCamera.angularSensibility = 1500;
   }
 
   public async init(): void {
@@ -224,10 +240,15 @@ export class World {
     var skybox = MeshBuilder.CreateBox("skyBox", { size: 10000 }, this._scene);
     var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
     skyboxMaterial.backFaceCulling = false;
-    skyboxMaterial.reflectionTexture = new CubeTexture(
+    let day_material: CubeTexture = new CubeTexture(
       `${this.env["CMS"]}/sky/TropicalSunnyDay`,
       this._scene
     );
+    let night_material: CubeTexture = new CubeTexture(
+      `${this.env["CMS"]}/space/space`,
+      this._scene
+    );
+    skyboxMaterial.reflectionTexture = day_material;
     skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -235,7 +256,7 @@ export class World {
 
     // Animations
     var alpha = 1;
-    this._scene.beforeRender = function () {
+    this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
         900 * -Math.sin(alpha),
         900 * Math.cos(alpha),
@@ -250,7 +271,13 @@ export class World {
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += 0.01;
+      alpha += (1 * this._scene.deltaTime) / 1000;
+
+      alpha = alpha % (2 * Math.PI);
+
+      if (alpha >= 0 && alpha <= Math.PI)
+        skyboxMaterial.reflectionTexture = day_material;
+      else skyboxMaterial.reflectionTexture = night_material;
     };
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
@@ -317,6 +344,10 @@ export class World {
       this._engine.runRenderLoop(() => {
         state_machine.check_entity();
 
+        this._initCamera();
+
+        state_machine.check_entity();
+
         this._scene.render();
         if (this._player) {
           this._socket?.send(
@@ -327,7 +358,11 @@ export class World {
                   id: this._player.id,
                   name: this._player.name,
                   position: this._player.position,
-                  rotation: this._player.rotation,
+                  rotation: Quaternion.FromEulerAngles(
+                    this._player.rotation.x,
+                    this._player.rotation.y,
+                    this._player.rotation.z
+                  ),
                   current: this._hotbar.current,
                 },
               ],
@@ -445,7 +480,7 @@ export class World {
       console.log("hit");
       this._pickup = true;
 
-      if (hit!.pickedMesh!.id != "ground") {
+      if (hit!.pickedMesh!.name != "ground") {
         this._scene.onKeyboardObservable.add((kbInfo) => {
           switch (kbInfo.type) {
             case KeyboardEventTypes.KEYDOWN:
@@ -560,11 +595,12 @@ export class World {
           );
           this._initPlayer(newPlayer);
           console.log(
-            `Player doesn't exist, creating a new player with id ${playerData.playerid}`
+            `Player doesn't exist, creating a new player with id ${playerid}`
           );
         } else if (playerid != this._player!.id) {
           let player: Player | undefined = this._players.get(playerid);
           player!.position = playerData.position;
+          player!.rotation = playerData.rotation;
           // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
@@ -572,11 +608,13 @@ export class World {
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
         } else if (playerid == this._player!.id) {
-          this._player!.position = new Vector3(
-            playerData.position._x,
-            playerData.position._y,
-            playerData.position._z
-          );
+          // this means that it is the main player, adding this will lag the player as it basically updates itself
+          // PLEASE THINK OF A WAY FOR SERVER TO SET PLAYER POS WTIHOUT CONSTANT UPDATE
+          // this._player!.position = new Vector3(
+          //   playerData.position._x,
+          //   playerData.position._y,
+          //   playerData.position._z
+          // );
         }
         this._castLookingRay();
         if (this._pickup == true) {
@@ -620,6 +658,7 @@ export class World {
           );
           state_machine.update_entity(uid, entity);
         } else {
+          console.log(payload);
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
           ](payload);

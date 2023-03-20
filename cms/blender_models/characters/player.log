@@ -12,6 +12,10 @@ Exporter version: 3.3.1, Blender version: 3.4.1
 		Texture directory   :  C:\Users\Antho\OneDrive\Desktop\Cardinal\Skrunkle\cms\blender_models\characters\
 	Python World class constructor completed
 	WARNING: No active camera has been assigned, or is not in a currently enabled collection
+	processing begun of node:  Sketchfab_model
+	processing begun of node:  8320d283e544447791cf24bcac6b1fcc.fbx
+	processing begun of node:  RootNode
+	processing begun of node:  Cube.005
 	processing begun of mesh:  Cube.005_Material.012_0
 		processing begun of material:  Material.012
 		processing begun of material:  Material.002
@@ -34,4 +38,4 @@ Exporter version: 3.3.1, Blender version: 3.4.1
 	writing mesh:  Cube.005_Material.012_0
 ========= Writing of JSON file completed =========
 ========= end of processing =========
-elapsed time:  0 min, 0.4245 secs
+elapsed time:  0 min, 0.3765 secs
