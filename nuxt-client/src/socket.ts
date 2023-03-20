@@ -2,18 +2,21 @@ import type { World } from "./world/world";
 import { Packet, PacketType } from "./packet";
 
 export class Socket {
-  static readonly url: string = "ws://localhost:2000";
+  private url: string = "ws://localhost:2000";
   private server: any;
   private status: boolean = false;
   private worldReference: World;
+  private env: any;
 
-  constructor(world: World) {
+  constructor(world: World, env: any) {
     this.worldReference = world;
+    this.env = env
+    this.url = `ws://${this.env}:2000`
   }
   
   private connect(): Promise<WebSocket>{
     return new Promise((res, rej)=>{
-      let server = new WebSocket(Socket.url, "tcp");
+      let server = new WebSocket(this.url, "tcp");
       server.onopen = ()=>{
         res(server)
       }

@@ -38,6 +38,7 @@ export class World{
 
         this._generator = new Generation(this, this._scene)
 
+        // console.log(this._ground.position)
     }
 
     public get scene(): Scene{
