@@ -38,13 +38,17 @@
 
 .chicken-img {
   width: 80px;
-  margin-top: 25px;
-  display: flex;
+  margin-left: 25%;
+  position: static;
+
+  /* margin-top: 25px; */
+  /* display: flex; */
 }
 
 .percentage {
   font-family: "Bungee Shade", cursive;
   font-size: 40px;
+  margin-left: 18%;
 }
 
 .inside-bar {
@@ -64,6 +68,7 @@
   border: solid black 4px;
   border-radius: 25px;
   box-shadow: 4px 5px black;
+  position: static;
 }
 
 #debug {
