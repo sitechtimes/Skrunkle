@@ -530,12 +530,14 @@ export class World {
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
             
-        } else if (playerid == this._player!.id) { // this means that it is the main player
-          this._player!.position = new Vector3(
-            playerData.position._x,
-            playerData.position._y,
-            playerData.position._z
-          );
+        } else if (playerid == this._player!.id) { 
+        // this means that it is the main player, adding this will lag the player as it basically updates itself
+        // PLEASE THINK OF A WAY FOR SERVER TO SET PLAYER POS WTIHOUT CONSTANT UPDATE
+          // this._player!.position = new Vector3(
+          //   playerData.position._x,
+          //   playerData.position._y,
+          //   playerData.position._z
+          // );
         }
         this._castLookingRay();
         if (this._pickup == true) {
