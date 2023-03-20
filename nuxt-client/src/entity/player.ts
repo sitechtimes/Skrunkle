@@ -10,7 +10,8 @@ import {
   DynamicTexture,
   Plane,
   StandardMaterial,
-  VertexBuffer
+  VertexBuffer,
+  Quaternion
 } from "@babylonjs/core";
 import { PhysicsImpostor } from "babylonjs";
 import { PlayerItem } from "../gui/items";
@@ -22,14 +23,14 @@ export class Player {
   private _position: Vector3;
   private _rotation: Vector3;
   private _id: string;
-  public _body: Mesh | TransformNode = new TransformNode("player-mesh");
+  public _body: Mesh ;
   private _scene: Scene;
   private _nametag: Mesh;
   private _nametag_y_offset: number = 0.5;
   private _inventory: Map<number, PlayerItem> = new Map();
 
   private env: any;
-  private player_body_scale = 5;
+  private player_body_scale = 1.75;
 
   constructor(
     name: string,
@@ -106,7 +107,7 @@ export class Player {
         `${this.env['CMS']}/meshes/`,
         "player.babylon"
       );
-
+      
       let meshes: Mesh[] = []
       bodies.meshes.forEach((m: any)=>{
         if (!m.getVerticesData(VertexBuffer.PositionKind)){
@@ -123,9 +124,16 @@ export class Player {
       player_body.scaling.z = this.player_body_scale 
       
       player_body.metadata = "player_body";
-      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 180, restitution: 0 }, this._scene)
-      console.log(player_body.physicsImpostor)
+      player_body.name = this._name
+      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 1, restitution: 0 }, this._scene)
+
+      player_body.position = new Vector3(0, 100, 0)
+      for (let i = 0 ; i < player_body.material.subMaterials.length; i ++){
+        player_body.material.subMaterials[i].usePhysicalLightFalloff = false
+      }
+
       this._body = player_body
+      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0)
     }
   }
 
@@ -137,7 +145,13 @@ export class Player {
   public set position(new_position: Vector3) {
     this._position = new_position;
     if (this._body) {
-      this._body.position = this._position;
+      // this._body.position = this._position;
+      // this._body.position = new Vector3(this._position.x, 0, this.position_z);
+      this._body.position.x = new_position._x
+      // this._body.position.y = 0
+      this._body.position.z = new_position._z
+
+      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0)
     }
     if (this._nametag) {
       this._nametag.position = new Vector3(
@@ -148,14 +162,16 @@ export class Player {
     }
   }
 
-  public get rotation(): Vector3 {
-    return this._rotation;
+  public get rotation(): Quaternion {
+    return this._body.rotationQuaternion;
   }
 
-  public set rotation(new_rotation: Vector3) {
-    this._rotation = new_rotation;
+  public set rotation(new_rotation: Quaternion) {
     if (this._body) {
-      this._body.rotation.y = new_rotation._y + Math.PI;
+      this._body.rotationQuaternion.x = new_rotation._x
+      this._body.rotationQuaternion.y = new_rotation._y
+      this._body.rotationQuaternion.z = new_rotation._z
+      this._body.rotationQuaternion.w = new_rotation._w
     }
   }
 
@@ -218,5 +234,9 @@ export class Player {
 
   public get inventory(): Map<number, PlayerItem> {
     return this._inventory;
+  }
+
+  public get body(): Mesh {
+    return this._body
   }
 }

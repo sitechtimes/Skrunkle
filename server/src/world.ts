@@ -1,12 +1,12 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, VertexBuffer, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, VertexBuffer, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader, OimoJSPlugin } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
 import { state_machine } from "./state_machine"
 import { createEntity, Entities } from './entity/entities';
+import * as OIMO from "oimo"
 
 // required imports
-import * as BABYLON from 'babylonjs';
 import 'babylonjs-loaders';
 
 // required imports
@@ -64,7 +64,7 @@ export class World{
     public async init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
-        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin(true, 10, OIMO));
 
         this._scene.executeWhenReady(()=>{
 
@@ -90,8 +90,8 @@ export class World{
 
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
-        // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 100)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(0, 0, 0)), 10, 100)
+        this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(0, 0, 0)), 100, 1000)
     }
 
     
