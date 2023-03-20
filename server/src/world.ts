@@ -1,9 +1,19 @@
-import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh } from 'babylonjs';
+import { Scene, Engine, NullEngine, CannonJSPlugin, Vector3, VertexBuffer, ArcRotateCamera, MeshBuilder, Mesh, PhysicsImpostor, GroundMesh, SceneLoader, OimoJSPlugin } from 'babylonjs';
 import { Logger } from './logger';
 import * as cannon from "cannon-es";
 import { Generation } from './generation';
 import { state_machine } from "./state_machine"
 import { createEntity, Entities } from './entity/entities';
+import * as OIMO from "oimo"
+
+// required imports
+import 'babylonjs-loaders';
+
+// required imports
+import xhr2 from 'xhr2'
+
+// @ts-ignore
+global.XMLHttpRequest = xhr2.XMLHttpRequest
 
 interface worldSize {
     top: Vector3,
@@ -17,15 +27,20 @@ export class World{
     private _ticks_elapsed: number = 0;
     private _ground: GroundMesh;
     private logger: Logger = new Logger('World');
-    private worldSize: worldSize = { top: new Vector3(50, 50, 50), bottom: new Vector3(-50, 0, -50)};
+    private worldSize: worldSize = { top: new Vector3(5000, 10000, 5000), bottom: new Vector3(-5000, 0, -5000)};
     public _generator: Generation
 
     constructor(){
         this._engine = new NullEngine();
         this._scene = new Scene(this._engine);
+        this._scene.useRightHandedSystem = true;
 
         this._generator = new Generation(this, this._scene)
 
+    }
+
+    public get scene(): Scene{
+        return this._scene;
     }
 
     private get _get_tick(): number{
@@ -46,10 +61,10 @@ export class World{
         else return entityPosition;
     }
 
-    public init(): void{
+    public async init(): void{
         // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
-        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+        this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin(true, 10, OIMO));
 
         this._scene.executeWhenReady(()=>{
 
@@ -69,12 +84,14 @@ export class World{
 
         state_machine.setWorld(this)
 
-        this._ground = MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, this._scene);
+        this._ground = MeshBuilder.CreateGround("ground", {width: 10000, height: 10000}, this._scene);
         this._ground.position = new Vector3(0, 0, 0)
         this._ground.physicsImpostor = new PhysicsImpostor(this._ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
 
-        this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(), 100, 100)
-        this._generator.RANDOMIZE(this._generator.GENERATE.Box(), 100, 100)
+        // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
+        this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(0, 0, 0)), 100, 1000)
     }
 
     

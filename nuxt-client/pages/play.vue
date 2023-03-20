@@ -5,7 +5,7 @@
       <div class="load"></div>
     </div>
 
-    <div id="debug">
+    <!-- <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
       <p id="pcount"></p>
@@ -14,9 +14,9 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
-    </div>
+    </div> -->
 
-    <div id="chatIcon">
+    <!-- <div id="chatIcon">
       <img src="~/assets/chat.png" alt="" class="chatIcon" />
     </div>
 
@@ -30,7 +30,7 @@
         <input type="text" id="chat-box" v-model="chatMessage" required />
         <button id="chat-send">Send</button>
       </form>
-    </div>
+    </div> -->
 
     <canvas
       id="renderCanvas"
@@ -43,6 +43,7 @@
 
 <script lang="ts">
 import { World } from "../src/world/world";
+
 export default {
   data() {
     return {
@@ -52,13 +53,14 @@ export default {
   },
   mounted() {
     const canvas = this.$refs.renderCanvas;
-    const world = new World(<HTMLCanvasElement>canvas);
+    const world = new World(<HTMLCanvasElement>canvas, this.$config.public);
     world.init();
     this.world = world;
   },
   methods: {
     sendChat() {
       let chat = this.world.chat;
+      console.log("register send")
       chat.sendMessage(this.chatMessage);
       this.chatMessage = undefined;
     },
