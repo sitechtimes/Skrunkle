@@ -5,6 +5,10 @@ import { Entities, createEntity } from "./entity/entities"
 import { Vec3 } from "cannon-es"
 import { Logger } from "./logger"
 
+import * as dotenv from 'dotenv'
+dotenv.config()
+
+
 // required imports
 import * as BABYLON from 'babylonjs';
 import 'babylonjs-loaders';
@@ -65,7 +69,7 @@ export class Generation {
 
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "http://localhost:3001/static/meshes/",
+        `${process.env["CMS"]}/meshes/`,
         "tree1.glb",
         this._scene
       );
@@ -92,7 +96,7 @@ export class Generation {
 
       parent.position = position
 
-      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.BoxImpostor, 0, 0)
+      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
       state_machine.add_entity(entity.id, entity)
 
       return entity
@@ -103,7 +107,7 @@ export class Generation {
 
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        "http://localhost:3001/static/meshes/",
+        `${process.env["CMS"]}/meshes/`,
         "tree2.glb",
         this._scene
       );
@@ -128,7 +132,7 @@ export class Generation {
 
       parent.position = position
 
-      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.BoxImpostor, 0, 0)
+      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
       state_machine.add_entity(entity.id, entity)
 
 

@@ -21,7 +21,8 @@ import {
   PointLight,
   Mesh,
   OimoJSPlugin,
-  AmmoJSPlugin
+  AmmoJSPlugin,
+  Quaternion
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -38,7 +39,6 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
-// import { OimoJSPlugin } from '@babylonjs/core/Physics/Plugins/OimoJSPlugin';
 
 export class World {
   private env: any;
@@ -91,9 +91,11 @@ export class World {
   private _initCamera(): void {
     this._playerCamera.position.y = 6;
     this._playerCamera.ellipsoid = new Vector3(1, 3, 1)
-    this._playerCamera.applyGravity = true
-    this._scene.collisionsEnabled = true
     this._playerCamera.checkCollisions = true
+    this._scene.collisionsEnabled = true
+    this._playerCamera.applyGravity = true
+    this._playerCamera.speed = 25
+    this._playerCamera.angularSensibility = 1500
   }
 
   public async init(): void {
@@ -279,7 +281,7 @@ export class World {
                   id: this._player.id,
                   name: this._player.name,
                   position: this._player.position,
-                  rotation: this._player.rotation,
+                  rotation: Quaternion.FromEulerAngles(this._player.rotation.x, this._player.rotation.y, this._player.rotation.z),
                   current: this._hotbar.current,
                 },
               ],
@@ -515,18 +517,20 @@ export class World {
           );
           this._initPlayer(newPlayer);
           console.log(
-            `Player doesn't exist, creating a new player with id ${playerData.playerid}`
+            `Player doesn't exist, creating a new player with id ${playerid}`
           );
         } else if (playerid != this._player!.id) {
           let player: Player | undefined = this._players.get(playerid);
           player!.position = playerData.position;
+          player!.rotation = playerData.rotation
           // player!.rotation = playerData[0].rotation;
           this._players.set(player!.id, player!);
           if (this._debug)
             document.getElementById(
               "pcount"
             )!.innerText = `Players online: ${this._players.size}`;
-        } else if (playerid == this._player!.id) {
+            
+        } else if (playerid == this._player!.id) { // this means that it is the main player
           this._player!.position = new Vector3(
             playerData.position._x,
             playerData.position._y,
