@@ -148,13 +148,12 @@ export class World {
     // embedMode:true,
     // });
     const volume = 10;
-    const music = new BABYLON.Sound(
+    const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
       this._scene,
       null,
       {
-        isPlaying: true,
         loop: true,
         autoplay: true,
         volume: volume,
@@ -165,13 +164,9 @@ export class World {
     const sound = new BABYLON.Sound(
       "name",
       `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`,
-      this._scene,
-      null,
-      {
-        loop: true,
-        autoplay: true,
-      }
+      this._scene
     );
+    sound.play();
     console.log(
       `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`
     );
