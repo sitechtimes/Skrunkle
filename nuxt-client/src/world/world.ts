@@ -5,6 +5,7 @@ import {
   MeshBuilder,
   HemisphericLight,
   DirectionalLight,
+  Sound,
   CubeTexture,
   FreeCamera,
   StandardMaterial,
@@ -59,7 +60,6 @@ export class World {
   private _generator: Generation;
   private _chat: Chat | undefined;
   private _itemchosen: number;
-
   private _ground_size: any = { width: 10000, height: 10000 };
 
   constructor(canvas: HTMLCanvasElement | null, env: any) {
@@ -143,6 +143,38 @@ export class World {
 
     ground.material = ground_material;
 
+    //audio
+    // this._scene.debugLayer.show({
+    // embedMode:true,
+    // });
+    const volume = 10;
+    const music = new BABYLON.Sound(
+      "Walking Music",
+      `${this.env["CMS"]}/audio/walking.wav`,
+      this._scene,
+      null,
+      {
+        isPlaying: true,
+        loop: true,
+        autoplay: true,
+        volume: volume,
+      }
+    );
+    music.setVolume(volume);
+
+    const sound = new BABYLON.Sound(
+      "name",
+      `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`,
+      this._scene,
+      null,
+      {
+        loop: true,
+        autoplay: true,
+      }
+    );
+    console.log(
+      `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`
+    );
     /*  // @ts-expect-error */
     // var light = new HemisphericLight(
     //   "light",
@@ -198,7 +230,7 @@ export class World {
     var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new CubeTexture(
-      `${this.env["CMS"]}/space/space`,
+      `${this.env["CMS"]}/sky/TropicalSunnyDay`,
       this._scene
     );
     skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
