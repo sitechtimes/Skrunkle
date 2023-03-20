@@ -329,7 +329,6 @@ export class World {
 
     
     // setTimeout(this._socket.init(), 10000)
-    this._scene.executeWhenReady(async() => {
 
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {

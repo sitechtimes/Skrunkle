@@ -9,11 +9,18 @@ var PacketType;
     PacketType["mesh"] = "Mesh";
     PacketType["close"] = "Close";
     PacketType["interaction"] = "Interaction";
+    PacketType["chat"] = "Chat";
+    PacketType["player_creation"] = "PlayerCreation";
+    PacketType["request_mesh"] = "RequestMesh";
+    PacketType["drop_item"] = "DropItem";
+    PacketType["pickup_item"] = "PickupItem";
 })(PacketType = exports.PacketType || (exports.PacketType = {}));
 var Packet = /** @class */ (function () {
-    function Packet(packetType, data) {
+    function Packet(packetType, data, uid) {
         this.type = packetType;
         this.payload = data;
+        if (uid)
+            this.uid = uid;
     }
     return Packet;
 }());
