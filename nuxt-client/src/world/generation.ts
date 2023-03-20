@@ -109,21 +109,24 @@ export class Generation {
         if (!m.getVerticesData(VertexBuffer.PositionKind)){
           // console.log("problems with: " + m.name);
         }else{
-          m.position.y = 0
+          m.scaling = new Vector3(2.5, 2.5, 2.5)
+          m.checkCollisions = true
           // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
           meshes.push(m)
         }
       })
     
       let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
-      parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
+      for (let i = 0 ; i < parent.material.subMaterials.length; i ++){
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false
+      }
+
+
+      parent.position = new Vector3(mesh.position._x, 0, mesh.position._z);
       parent.metadata = "Tree1";
       parent.receiveShadows = true;
 
 
-      for (let i = 0 ; i < parent.material.subMaterials.length; i ++){
-        parent.material.subMaterials[i].usePhysicalLightFalloff = false
-      }
 
       
       // this._scene.createDefaultEnvironment() 

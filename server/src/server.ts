@@ -56,6 +56,7 @@ export class SocketServer {
             // this.send(client, new Packet(PacketType.update, [player]))
             if (player !== null) {
               player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
+              player.rotation = msg.payload[0].rotation
               state_machine.update_player(msg.uid, player)
             }
             break
