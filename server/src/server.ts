@@ -84,7 +84,6 @@ export class SocketServer {
               state_machine.add_player(player.id, player)
               this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size }))
               state_machine.broadcast_entity(true)
-
               this.client_to_uid.set(client, player.id)
             }
             break
@@ -120,10 +119,10 @@ export class SocketServer {
   }
 
   public broadCast(packet: Packet) {
-    this.server.clients.forEach((user) => {
-      if (this.players.get(user) !== null) {
-        this.send(user, packet)
+    this.server.clients.forEach((client)=>{
+      if (this.client_to_uid.get(client) !== null) {
+        this.send(client, packet)
       }
-    });
+    })
   }
 }

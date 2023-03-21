@@ -17,6 +17,9 @@
     "prettier": "^2.8.2"
   },
   "dependencies": {
+    "@babylonjs/gui-editor": "^5.51.0",
+    "@babylonjs/materials": "^5.51.0",
+    "@babylonjs/serializers": "^5.51.0",
     "@enable3d/ammo-physics": "^0.25.3",
     "babylonjs": "^5.42.0",
     "babylonjs-loaders": "^5.42.0",
