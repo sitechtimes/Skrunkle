@@ -22,7 +22,9 @@ import {
   Mesh,
   OimoJSPlugin,
   AmmoJSPlugin,
-  Quaternion
+  Quaternion,
+  CubeTexture,
+  Sound
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -62,6 +64,7 @@ export class World {
   private _generator: Generation;
   private _chat: Chat | undefined;
   private _itemchosen: number;
+  private _isday: boolean = true;
 
 
   private _ground_size:any = {width: 10000, height: 10000}
@@ -142,9 +145,20 @@ export class World {
 
     ground.material = ground_material
 
+    const volume = 7;
+    const music = new Sound(
+      "Walking Music",
+      `${this.env["CMS"]}/audio/walking.wav`,
+      this._scene,
+      null,
+      {
+        loop: true,
+        autoplay: true,
+        volume: volume,
+      }
+    );
+    music.setVolume(volume);
 
-    // @ts-expect-error
-    
     // Adds the sun and moon
 
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
@@ -178,23 +192,53 @@ export class World {
     sun_light.specular = new Color3(1, 1, 0);
     moon_light.diffuse = new Color3(31, 30, 30);
     moon_light.specular = new Color3(31, 30, 30);
+
+    var skybox = MeshBuilder.CreateBox("skyBox", { size: 10000 }, this._scene);
+    var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
+    skyboxMaterial.backFaceCulling = false;
+    let day_material: CubeTexture = new CubeTexture(
+      `${this.env["CMS"]}/sky/TropicalSunnyDay`,
+      this._scene
+    );
+    let night_material: CubeTexture = new CubeTexture(
+      `${this.env["CMS"]}/space/space`,
+      this._scene
+    );
+    skyboxMaterial.reflectionTexture = day_material;
+    skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    skybox.material = skyboxMaterial;
+
     // Animations
     var alpha = 1;
     this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
-        900 * -Math.sin(alpha),
+        900 * Math.sin(alpha),
         900 * Math.cos(alpha),
         0
       );
       moon_light.position = new Vector3(
-        1000 * -Math.sin(alpha + Math.PI),
-        1000 * Math.cos(alpha + Math.PI),
+        900 * -Math.sin(alpha),
+        900 * -Math.cos(alpha),
         0
       );
+      skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += 0.005  * this._scene.deltaTime / 1000;
+      alpha += (0.5 * this._scene.deltaTime) / 1000;
+
+      alpha = alpha % (2 * Math.PI); // keeps alpha always between 0 - 2PI
+
+      if (Math.cos(alpha) > 0 && !this._isday){
+        this._isday = true
+        skyboxMaterial.reflectionTexture = day_material;
+      }else if (Math.cos(alpha) < 0 && this._isday){
+        this._isday = false
+        skyboxMaterial.reflectionTexture = night_material;
+      }
+
     };
 
 
@@ -203,7 +247,6 @@ export class World {
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light)
     // state_machine.applyShadow(ground)
     
-
     await import("@babylonjs/core/Debug/debugLayer")
     await import("@babylonjs/inspector")
     const debuglayer = new DebugLayer(this._scene)
