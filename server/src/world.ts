@@ -29,6 +29,8 @@ export class World{
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(5000, 10000, 5000), bottom: new Vector3(-5000, 0, -5000)};
     public _generator: Generation
+    public isday: boolean = true;
+    public alpha_time: number = 0;
 
     constructor(){
         this._engine = new NullEngine();
@@ -67,9 +69,25 @@ export class World{
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin(true, 10, OIMO));
 
+        
         this._scene.executeWhenReady(()=>{
 
             this.logger.progress("Scene is ready, running server side simulation");
+
+            this._scene.beforeRender = () => {
+
+                let deltaTime: number = this._scene.getEngine().getDeltaTime();
+    
+                this.alpha_time += (0.5 * deltaTime) / 1000;
+
+                this.alpha_time = this.alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2P
+    
+                if (Math.cos(this.alpha_time) > 0 && !this.isday){
+                    this.isday = true
+                }else if (Math.cos(this.alpha_time) < 0 && this.isday){
+                    this.isday = false
+                }
+            }
 
             this._engine.runRenderLoop(()=>{
                 this._scene.render();

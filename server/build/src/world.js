@@ -80,6 +80,8 @@ var World = /** @class */ (function () {
         this._ticks_elapsed = 0;
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(5000, 10000, 5000), bottom: new babylonjs_1.Vector3(-5000, 0, -5000) };
+        this.isday = true;
+        this.alpha_time = 0;
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._scene.useRightHandedSystem = true;
@@ -123,6 +125,17 @@ var World = /** @class */ (function () {
                         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.OimoJSPlugin(true, 10, OIMO));
                         this._scene.executeWhenReady(function () {
                             _this.logger.progress("Scene is ready, running server side simulation");
+                            _this._scene.beforeRender = function () {
+                                var deltaTime = _this._scene.getEngine().getDeltaTime();
+                                _this.alpha_time += (0.5 * deltaTime) / 1000;
+                                _this.alpha_time = _this.alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2P
+                                if (Math.cos(_this.alpha_time) > 0 && !_this.isday) {
+                                    _this.isday = true;
+                                }
+                                else if (Math.cos(_this.alpha_time) < 0 && _this.isday) {
+                                    _this.isday = false;
+                                }
+                            };
                             _this._engine.runRenderLoop(function () {
                                 _this._scene.render();
                                 _this._ticks_elapsed++;

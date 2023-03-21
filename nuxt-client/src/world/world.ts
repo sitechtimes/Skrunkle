@@ -68,7 +68,11 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
+  private _alpha_time: number = 0
 
+  private _skyboxMaterial: StandardMaterial;
+  private _day_material: CubeTexture;
+  private _night_material: CubeTexture;
 
   private _ground_size:any = {width: 10000, height: 10000}
 
@@ -216,49 +220,48 @@ export class World {
     moon_light.specular = new Color3(31, 30, 30);
 
     var skybox = MeshBuilder.CreateBox("skyBox", { size: 10000 }, this._scene);
-    var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
-    skyboxMaterial.backFaceCulling = false;
-    let day_material: CubeTexture = new CubeTexture(
+    this._skyboxMaterial = new StandardMaterial("skyBox", this._scene);
+    this._skyboxMaterial.backFaceCulling = false;
+    this._day_material = new CubeTexture(
       `${this.env["CMS"]}/sky/TropicalSunnyDay`,
       this._scene
     );
-    let night_material: CubeTexture = new CubeTexture(
+    this._night_material = new CubeTexture(
       `${this.env["CMS"]}/space/space`,
       this._scene
     );
-    skyboxMaterial.reflectionTexture = day_material;
-    skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    skybox.material = skyboxMaterial;
+    this._skyboxMaterial.reflectionTexture = this._day_material;
+    this._skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    this._skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
+    this._skyboxMaterial.specularColor = new Color3(0, 0, 0);
+    skybox.material = this._skyboxMaterial;
 
     // Animations
-    var alpha = 1;
     this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
-        900 * Math.sin(alpha),
-        900 * Math.cos(alpha),
+        900 * Math.sin(this._alpha_time),
+        900 * Math.cos(this._alpha_time),
         0
       );
       moon_light.position = new Vector3(
-        900 * -Math.sin(alpha),
-        900 * -Math.cos(alpha),
+        900 * -Math.sin(this._alpha_time),
+        900 * -Math.cos(this._alpha_time),
         0
       );
       skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += (0.5 * this._scene.deltaTime) / 1000;
+      this._alpha_time += (0.5 * this._scene.deltaTime) / 1000;
 
-      alpha = alpha % (2 * Math.PI); // keeps alpha always between 0 - 2PI
+      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
-      if (Math.cos(alpha) > 0 && !this._isday){
+      if (Math.cos(this._alpha_time) > 0 && !this._isday){
         this._isday = true
-        skyboxMaterial.reflectionTexture = day_material;
-      }else if (Math.cos(alpha) < 0 && this._isday){
+        this._skyboxMaterial.reflectionTexture = this._day_material;
+      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
         this._isday = false
-        skyboxMaterial.reflectionTexture = night_material;
+        this._skyboxMaterial.reflectionTexture = this._night_material;
       }
 
     };
@@ -687,9 +690,15 @@ export class World {
         break;
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
+        console.log(playerInfo)
         if (this._player === undefined) {
           console.log(playerInfo.name);
           this._initClient(playerInfo.name, data.uid);
+          this._isday = playerInfo.isday;
+          this._alpha_time = playerInfo.alpha_time
+
+          if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
+          else this._skyboxMaterial.reflectionTexture = this._night_material
         }
         break;
       case "Close":
