@@ -8,9 +8,11 @@
     />
     <h1 class="title">Skrunkle</h1>
     <img class="chicken-img" src="../assets/chicken2.png" alt="chicken" />
-    <h2 class="percentage">10%</h2>
-    <div class="load">
-      <div class="inside-bar"></div>
+    <div class="flex">
+      <h2 class="percentage">10%</h2>
+      <div class="load">
+        <div class="inside-bar"></div>
+      </div>
     </div>
   </div>
 </template>
@@ -26,6 +28,16 @@
   padding: 0;
   margin: 0;
 }
+
+.flex {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  column-gap: 2%;
+}
+
 .customLoadingScreenDiv {
   width: 100vw;
   height: 100vh;
@@ -39,7 +51,8 @@
 .chicken-img {
   width: 80px;
   margin-left: 25%;
-  position: static;
+  margin-top: 5%;
+  /* position: static; */
 
   /* margin-top: 25px; */
   /* display: flex; */
@@ -48,7 +61,6 @@
 .percentage {
   font-family: "Bungee Shade", cursive;
   font-size: 40px;
-  margin-left: 18%;
 }
 
 .inside-bar {
@@ -60,15 +72,12 @@
 .load {
   overflow: hidden;
   display: block;
-  margin-left: auto;
-  margin-right: auto;
   width: 60rem;
   height: 3rem;
   background: (#ff7b00);
   border: solid black 4px;
   border-radius: 25px;
   box-shadow: 4px 5px black;
-  position: static;
 }
 
 #debug {
