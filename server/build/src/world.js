@@ -138,10 +138,13 @@ var World = /** @class */ (function () {
                         this._ground.physicsImpostor = new babylonjs_1.PhysicsImpostor(this._ground, babylonjs_1.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene);
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
-                        this._generator.RANDOMIZE(this._generator.GENERATE.Box(new babylonjs_1.Vector3(0, 0, 0)), 100, 1000);
+                        // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
                         _b = (_a = this._generator).RANDOMIZE;
                         return [4 /*yield*/, this._generator.GENERATE.Tree1(new babylonjs_1.Vector3(0, 0, 0))];
                     case 1:
+                        // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
+                        // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
+                        // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
                         _b.apply(_a, [_c.sent(), 100, 1000]);
                         return [2 /*return*/];
                 }

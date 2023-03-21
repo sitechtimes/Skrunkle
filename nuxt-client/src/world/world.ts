@@ -263,13 +263,6 @@ export class World {
 
     };
 
-      alpha = alpha % (2 * Math.PI);
-
-      if (alpha >= 0 && alpha <= Math.PI)
-        skyboxMaterial.reflectionTexture = day_material;
-      else skyboxMaterial.reflectionTexture = night_material;
-    };
-
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     // state_machine.applyShadow(ground)
     
