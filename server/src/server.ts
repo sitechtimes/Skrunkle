@@ -84,7 +84,6 @@ export class SocketServer {
               state_machine.add_player(player.id, player)
               this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time }))
               state_machine.broadcast_entity(true)
-              console.log(this.world.isday)
               this.client_to_uid.set(client, player.id)
             }
             break
