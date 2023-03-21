@@ -12,17 +12,12 @@ export class SocketServer {
   private server: Server
   private world: World
   private logger: Logger
-<<<<<<< HEAD
-
-  constructor() {
-=======
   private players: Map<any, any> // uid, players
   private client_to_uid: Map<any, any> //client to id
 
   constructor() {
     this.players = new Map()
     this.client_to_uid = new Map()
->>>>>>> e793637e4c93686944af8103f7bca5f6b465c38e
     this.world = new World()
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
@@ -37,90 +32,20 @@ export class SocketServer {
     this.world.init()
   }
 
-<<<<<<< HEAD
-  public setPlayer(uid:string, player:Player) {
-    this.world.players.set(uid, player)
-=======
   public setPlayer(uid: string | undefined, player: Player) {
     this.players.set(uid, player)
->>>>>>> e793637e4c93686944af8103f7bca5f6b465c38e
   }
 
   private listen() {
     this.logger.progress('Start listening on port: ' + SocketServer.PORT)
 
     this.server.on('connection', (client: any) => {
-<<<<<<< HEAD
-      // save client
-      this.logger.log('Client connected')
-      if(!this.world.players.has(client)) {
-        let player = new Player()
-        this.world.players.set(player.id, player)
-        this.world.add_players(player.id)
-        this.send(client, 
-          new Packet(
-            PacketType.info, 
-            [{
-              player: player,
-              players: this.world.players.size 
-            }]
-          )
-        )
-        this.send(client,
-          new Packet(
-            PacketType.mesh,
-            this.world.entities
-          )
-        )
-      }
-=======
 
       this.logger.log('Client established connection')
->>>>>>> e793637e4c93686944af8103f7bca5f6b465c38e
 
       // basic starter functiosn
       client.on('message', (message: string) => {
         let msg: Packet = JSON.parse(message)
-<<<<<<< HEAD
-        if (this.world.players.has(msg.uid)) {
-
-          let player: Player = this.world.players.get(msg.uid)
-          
-          switch (msg.type) {
-            case "Movement":
-              // this.logger.log(`Received Movement from client ${msg.payload[0].id}`)
-              // player.position = new Vector3(msg.payload.position.x, msg.payload.position.y, msg.payload.position.z)
-              // this.send(client, new Packet(PacketType.update, [player]))
-              if (player !== null) {
-                player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
-                msg.payload[0].position = player.position
-                this.world.players.set(msg.uid, player)
-                this.broadCast(new Packet(PacketType.update, msg.payload[0]))
-              }
-              break
-            case "Impulse":
-              this.world.move_player(msg.uid, msg.payload[0].impulse)
-              break
-            case "Info":
-              this.setPlayer(msg.uid, msg.payload[0])
-              this.broadCast(new Packet(PacketType.info, msg.payload[0]))
-              break
-            case "Close":
-              this.world.players.delete(msg.uid)
-              this.world.players.delete(msg.uid)
-              this.broadCast(new Packet(PacketType.close, [{id: msg.uid, delete: true}]))
-              break
-            case "Interaction":
-              this.logger.log("Received interaction")
-              break
-            case "ping":
-              this.logger.log("Received Ping from client. Pong!")
-              this.send(client, new Packet(PacketType.info, ['Pong!']))
-            default:
-              this.logger.error(`Unknown socket message from client (${msg.type})`)
-              break
-          }
-=======
 
         let player: Player = this.players.get(msg.uid)
 
@@ -159,7 +84,6 @@ export class SocketServer {
               state_machine.add_player(player.id, player)
               this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size }))
               state_machine.broadcast_entity(true)
-
               this.client_to_uid.set(client, player.id)
             }
             break
@@ -177,7 +101,6 @@ export class SocketServer {
           default:
             this.logger.error(`Unknown socket message from client (${msg.type})`)
             break
->>>>>>> e793637e4c93686944af8103f7bca5f6b465c38e
         }
       })
 
@@ -202,10 +125,10 @@ export class SocketServer {
   }
 
   public broadCast(packet: Packet) {
-    this.server.clients.forEach((user) => {
-      if (this.world.players.get(user) !== null) {
-        this.send(user, packet)
+    this.server.clients.forEach((client)=>{
+      if (this.client_to_uid.get(client) !== null) {
+        this.send(client, packet)
       }
-    });
+    })
   }
 }

@@ -11,7 +11,7 @@ export class Socket {
   constructor(world: World, env: any) {
     this.worldReference = world;
     this.env = env
-    this.url = `ws://${this.env}:2000`
+    this.url = `ws://${this.env.SOCKET_IP}:2000`
   }
   
   private connect(): Promise<WebSocket>{

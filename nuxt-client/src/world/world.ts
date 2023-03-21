@@ -26,6 +26,8 @@ import {
   OimoJSPlugin,
   AmmoJSPlugin,
   Quaternion,
+  CubeTexture,
+  Sound
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -65,7 +67,11 @@ export class World {
   private _generator: Generation;
   private _chat: Chat | undefined;
   private _itemchosen: number;
-  private _ground_size: any = { width: 10000, height: 10000 };
+  private _isday: boolean = true;
+
+
+  private _ground_size:any = {width: 10000, height: 10000}
+
 
   constructor(canvas: HTMLCanvasElement | null, env: any) {
     this.env = env;
@@ -159,11 +165,7 @@ export class World {
 
     ground.material = ground_material;
 
-    //audio
-    // this._scene.debugLayer.show({
-    // embedMode:true,
-    // });
-    const volume = 10;
+    const volume = 7;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
@@ -176,32 +178,8 @@ export class World {
       }
     );
     music.setVolume(volume);
-
-    const sound = new BABYLON.Sound(
-      "name",
-      `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`,
-      this._scene
-    );
-    sound.play();
-    console.log(
-      `http://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3`
-    );
-    /*  // @ts-expect-error */
-    // var light = new HemisphericLight(
-    //   "light",
-    //   new Vector3(0, 1, 0),
-    //   this._scene
-    // );
-    // light.intensity = 0.3;
-    var light2 = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
-    light2.intensity = 10;
-    var light3 = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
-    light3.intensity = 0.0015;
-
-    // @ts-expect-error
-
+    
     // Adds the sun and moon
-
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     sun_light.intensity = 1;
     var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
@@ -258,34 +236,40 @@ export class World {
     var alpha = 1;
     this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
-        900 * -Math.sin(alpha),
+        900 * Math.sin(alpha),
         900 * Math.cos(alpha),
         0
       );
       moon_light.position = new Vector3(
-        1000 * -Math.sin(alpha + Math.PI),
-        1000 * Math.cos(alpha + Math.PI),
+        900 * -Math.sin(alpha),
+        900 * -Math.cos(alpha),
         0
       );
       skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += (1 * this._scene.deltaTime) / 1000;
+      alpha += (0.5 * this._scene.deltaTime) / 1000;
 
-      alpha = alpha % (2 * Math.PI);
+      alpha = alpha % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
-      if (alpha >= 0 && alpha <= Math.PI)
+      if (Math.cos(alpha) > 0 && !this._isday){
+        this._isday = true
         skyboxMaterial.reflectionTexture = day_material;
-      else skyboxMaterial.reflectionTexture = night_material;
+      }else if (Math.cos(alpha) < 0 && this._isday){
+        this._isday = false
+        skyboxMaterial.reflectionTexture = night_material;
+      }
+
     };
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     // state_machine.applyShadow(ground)
+    
+    await import("@babylonjs/core/Debug/debugLayer")
+    await import("@babylonjs/inspector")
+    const debuglayer = new DebugLayer(this._scene)
 
-    await import("@babylonjs/core/Debug/debugLayer");
-    await import("@babylonjs/inspector");
-    const debuglayer = new DebugLayer(this._scene);
     debuglayer.show({
       overlay: true,
       handleResize: true,
