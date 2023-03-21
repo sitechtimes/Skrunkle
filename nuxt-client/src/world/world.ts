@@ -625,9 +625,10 @@ export class World {
         if (this._pickedup == true) {
           let ray = this._playerCamera!.getForwardRay();
           let item = this._scene.getMeshByUniqueId(this._itemchosen);
+          console.log(item)
           if (item?.name.startsWith("(ITEM)")) {
-            item.parent?.dispose();
-            state_machine.delete_entity(item.name)
+            item.dispose();
+            // state_machine.delete_entity(item.name)
             let itemName = item.name.split("-")[1].toLowerCase()
             console.log(itemName);
             this._hotbar.add(
