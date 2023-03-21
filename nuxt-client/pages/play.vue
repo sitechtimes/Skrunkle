@@ -60,6 +60,7 @@ export default {
   methods: {
     sendChat() {
       let chat = this.world.chat;
+      console.log("register send")
       chat.sendMessage(this.chatMessage);
       this.chatMessage = undefined;
     },
