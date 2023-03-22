@@ -32,7 +32,6 @@ var SocketServer = /** @class */ (function () {
             _this.logger.log('Client established connection');
             // basic starter functiosn
             client.on('message', function (message) {
-                var _a;
                 var msg = JSON.parse(message);
                 var player = _this.players.get(msg.uid);
                 switch (msg.type) {
@@ -75,7 +74,7 @@ var SocketServer = /** @class */ (function () {
                     case "RequestMesh":
                         var mesh_id = msg.uid;
                         _this.logger.warn("Need mesh confirm");
-                        _this.send(client, (_a = state_machine_1.state_machine.entities.get(mesh_id)) === null || _a === void 0 ? void 0 : _a.serialize());
+                        _this.send(client, state_machine_1.state_machine.entities.get(mesh_id).serialize());
                         break;
                     case "DropItem":
                         _this.world.dropItem(msg.payload[0].item, msg.payload[0].position);

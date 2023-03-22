@@ -90,7 +90,7 @@ export class SocketServer {
           case "RequestMesh":
             let mesh_id = msg.uid
             this.logger.warn("Need mesh confirm")
-            this.send(client, state_machine.entities.get(mesh_id)?.serialize())
+            this.send(client, state_machine.entities.get(mesh_id!)!.serialize())
             break
           case "DropItem":
             this.world.dropItem(msg.payload[0].item, msg.payload[0].position)

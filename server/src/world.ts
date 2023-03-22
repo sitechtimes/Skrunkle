@@ -98,7 +98,5 @@ export class World{
 
     public dropItem(item: Item, position: Vector3) {
         this._generator.GENERATE.ENTITY(item, position)
-    }
-
-    
+    }    
 }

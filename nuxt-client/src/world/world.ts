@@ -622,27 +622,28 @@ export class World {
         //             }
         //         })
         //     }
+        let item = this._scene.getMeshByUniqueId(this._itemchosen);
+        console.log(item)
+        if (item?.name.startsWith("(ITEM)")) {
+          item.dispose();
+          // state_machine.delete_entity(item.name)
+          let itemName = item.name.split("-")[1].toLowerCase()
+          console.log(itemName);
+          this._hotbar.add(
+            new PlayerItem(
+              // @ts-expect-error this works no worries
+              Items[itemName],
+              this._player!,
+              this._hotbar,
+              this._socket
+            )
+          );
+        }
+
         if (this._pickedup == true) {
           let ray = this._playerCamera!.getForwardRay();
           let item = this._scene.getMeshByUniqueId(this._itemchosen);
-          console.log(item)
-          if (item?.name.startsWith("(ITEM)")) {
-            item.dispose();
-            // state_machine.delete_entity(item.name)
-            let itemName = item.name.split("-")[1].toLowerCase()
-            console.log(itemName);
-            this._hotbar.add(
-              new PlayerItem(
-                // @ts-expect-error this works no worries
-                Items[itemName],
-                this._player!,
-                this._hotbar,
-                this._socket
-              )
-            );
-          } else {
-            item!.position = ray.origin.clone().add(ray.direction.scale(10));
-          }
+          item!.position = ray.origin.clone().add(ray.direction.scale(10));
         }
         break;
       case "Mesh":
