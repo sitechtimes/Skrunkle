@@ -175,8 +175,8 @@ export class World {
     );
     window.addEventListener("keydown", function (evt) {
       // Press space key to fire
-      if (evt.key === "w") {
-        steps.play();
+      if (["w", "a", "s", "d"].includes(evt.key)) {
+        if (!steps.isPlaying) steps.play();
       }
     });
 
@@ -185,35 +185,29 @@ export class World {
       `${this.env["CMS"]}/audio/Wind.ogg`,
       this._scene
     );
-    setInterval(() => windOne.play(), 47000);
+    setInterval(() => windOne.play(), Math.random() * 1000 + 30000);
 
     const windTwo = new Sound(
       "wind2",
       `${this.env["CMS"]}/audio/Wind2.ogg`,
       this._scene
     );
-    setInterval(() => windTwo.play(), 70000);
+    setInterval(() => windTwo.play(), Math.random() * 1000 + 62000);
 
     const windThree = new Sound(
       "wind3",
       `${this.env["CMS"]}/audio/Wind3.ogg`,
-      this._scene
-    );
-    setInterval(() => windThree.play(), 1200000);
-
-    // Create and load the sound async
-    /*    var treeRustling = new Sound(
-      "Rustling",y
-      `${this.env["CMS"]}/audio/rustling.mp3`,
       this._scene,
       null,
-      { loop: true, autoplay: true }
+      {
+        volume: volume,
+      }
     );
 
-    // Sound will now follow the mesh position
-    treeRustling.attachToMesh(Generate.Tree1);
- */
-    const volume = 1;
+    setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
+
+    // Create and load the sound async
+    const volume = 0.4;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,

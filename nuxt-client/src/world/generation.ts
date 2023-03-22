@@ -97,6 +97,17 @@ export class Generation {
       parent.metadata = "Tree1";
       parent.receiveShadows = true;
 
+      var treeRustling = new Sound(
+        "Rustling",
+        `${this.env["CMS"]}/audio/rustling.mp3`,
+        this._scene,
+        null,
+        { loop: true, autoplay: true }
+      );
+
+      // Sound will now follow the mesh position
+      treeRustling.attachToMesh(parent);
+
       // this._scene.createDefaultEnvironment()
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
       // parent.scaling = new Vector3(0.25, 0.25, 0.25)
