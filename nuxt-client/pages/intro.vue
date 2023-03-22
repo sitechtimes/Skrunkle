@@ -1,11 +1,16 @@
 <template>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap"
+    rel="stylesheet"
+  />
   <div class="wrap">
     <div class="container">
       <video id="background-video" autoplay loop muted>
         <source src="~/assets/tree2.mp4" type="video/mp4" />
       </video>
       <div class="viewport-header">
-        <img src="~/assets/skrunkleWord.png" alt="skrunk logo" class="logo" />
+        <h1 class="title">Skrunkle</h1>
+        <!-- <img src="~/assets/skrunkleWord.png" alt="skrunk logo" class="logo" /> -->
         <h2 class="slogan">GO GETEM'</h2>
         <router-link to="/details" class="buttonsty">play now</router-link>
       </div>
@@ -40,11 +45,22 @@ body {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+
+.viewport-header {
+  font-family: "Bungee Shade", cursive;
+  align-items: center;
+}
+
 .slogan {
   font-size: 3rem;
-  margin: 0rem 0rem 3rem 0rem;
+  margin-top: -5%;
   padding: 0;
 }
+
+.title {
+  margin-top: -15%;
+}
+
 .logo {
   width: 30rem;
 }
