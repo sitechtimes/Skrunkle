@@ -102,7 +102,7 @@ export class World {
   }
 
   private _initCamera(): void {
-    this._playerCamera.position.y = 6;
+    this._playerCamera.position.y = 8;
     this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
     this._playerCamera.checkCollisions = true;
     this._scene.collisionsEnabled = true;
@@ -171,7 +171,9 @@ export class World {
     const steps = new Sound(
       "Walking Steps",
       `${this.env["CMS"]}/audio/step.ogg`,
-      this._scene
+      this._scene,
+      null,
+      {volume: 1.5}
     );
     window.addEventListener("keydown", function (evt) {
       // Press space key to fire
@@ -194,6 +196,7 @@ export class World {
     );
     setInterval(() => windTwo.play(), Math.random() * 1000 + 62000);
 
+    const volume = 0.4;
     const windThree = new Sound(
       "wind3",
       `${this.env["CMS"]}/audio/Wind3.ogg`,
@@ -207,7 +210,6 @@ export class World {
     setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
 
     // Create and load the sound async
-    const volume = 0.4;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
@@ -291,7 +293,7 @@ export class World {
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      this._alpha_time += (0.5 * this._scene.deltaTime) / 1000;
+      this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
       this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
@@ -685,7 +687,7 @@ export class World {
         } else {
           console.log(payload);
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"
           ](payload);
 
           let adjusted_pos: Vector3 = new Vector3(
@@ -699,7 +701,7 @@ export class World {
           let imposter = PhysicsImpostor.BoxImpostor;
           if (payload.metdata == "Cylinder")
             imposter = PhysicsImpostor.CylinderImpostor;
-          else if (payload.metadata.indexOf("Tree") != -1) {
+          else if (["Tree1", "Tree2", "House", "Sheep"].includes(payload.metadata)) {
             mass = 0;
             imposter = PhysicsImpostor.MeshImpostor;
           }

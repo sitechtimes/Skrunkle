@@ -137,7 +137,93 @@ export class Generation {
 
 
       return entity
-    }
+    },
+    House: async (position: Vector3, name?: string): Promise<Entities> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        `${process.env["CMS"]}/meshes/`,
+        "house.glb",
+        this._scene
+      );
+
+      let meshes: Mesh[] = [];
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+          // console.log("problems with: " + m.name);
+        } else {
+          m.scaling = new Vector3(4, 4, 4);
+          m.checkCollisions = true;
+          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m);
+        }
+      });
+
+      let parent: any = Mesh.MergeMeshes(
+        meshes,
+        true,
+        false,
+        undefined,
+        false,
+        true
+      );
+      for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      }
+
+      parent.metadata = "House";
+      parent.name = "House"
+
+      parent.position = position
+
+      let entity: Entities = createEntity(this._scene, "house", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
+      state_machine.add_entity(entity.id, entity)
+
+      return entity
+
+    },
+    Sheep: async (position: Vector3, name?: string): Promise<Entities> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        `${process.env["CMS"]}/meshes/`,
+        "sheep.glb",
+        this._scene
+      );
+
+      let meshes: Mesh[] = [];
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+          // console.log("problems with: " + m.name);
+        } else {
+          // m.scaling = new Vector3(4, 4, 4);
+          m.checkCollisions = true;
+          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m);
+        }
+      });
+
+      let parent: any = Mesh.MergeMeshes(
+        meshes,
+        true,
+        false,
+        undefined,
+        false,
+        true
+      );
+      for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      }
+
+      parent.metadata = "Sheep";
+      parent.name = "Sheep"
+
+      parent.position = position
+
+      let entity: Entities = createEntity(this._scene, "sheep", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
+      state_machine.add_entity(entity.id, entity)
+
+      return entity
+
+    },
   }
 
   public async RANDOMIZE(item: Entities, count: number = 5, squareRange: number = 20) {
@@ -146,7 +232,7 @@ export class Generation {
 
     for (let i = 1; i < count; i++) {
       let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 10, (Math.random()*squareRange) - (squareRange/2))
-      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](pos)
+      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"](pos)
       items.push(newItem)
     }
 

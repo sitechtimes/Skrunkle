@@ -78,7 +78,7 @@ export class World{
 
                 let deltaTime: number = this._scene.getEngine().getDeltaTime();
     
-                this.alpha_time += (0.5 * deltaTime) / 1000;
+                this.alpha_time += (0.05 * deltaTime) / 1000;
 
                 this.alpha_time = this.alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2P
     
@@ -110,7 +110,9 @@ export class World{
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 100)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100)), 100, 1000)
     }
 
     

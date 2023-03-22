@@ -102,7 +102,7 @@ export class Generation {
         `${this.env["CMS"]}/audio/rustling.mp3`,
         this._scene,
         null,
-        { loop: true, autoplay: true }
+        { loop: true, autoplay: true, volume: 0.2 }
       );
 
       // Sound will now follow the mesh position
@@ -152,6 +152,93 @@ export class Generation {
       parent.metadata = "Tree2";
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
       // parent.scaling = new Vector3(0.25, 0.25, 0.25)
+
+      return parent;
+    },
+    House: async (mesh: any): Promise<Mesh> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        `${this.env["CMS"]}/meshes/`,
+        "house.glb",
+        this._scene
+      );
+
+      let meshes: Mesh[] = [];
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+          // console.log("problems with: " + m.name);
+        } else {
+          m.scaling = new Vector3(4, 4, 4);
+          m.checkCollisions = true;
+          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m);
+        }
+      });
+
+      let parent: any = Mesh.MergeMeshes(
+        meshes,
+        true,
+        false,
+        undefined,
+        false,
+        true
+      );
+      for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      }
+
+      parent.position = new Vector3(mesh.position._x, 0, mesh.position._z);
+      parent.metadata = "House";
+      parent.receiveShadows = true;
+
+      return parent;
+    },
+    Sheep: async (mesh: any): Promise<Mesh> => {
+      let bodies: any = await SceneLoader.ImportMeshAsync(
+        "",
+        `${this.env["CMS"]}/meshes/`,
+        "sheep.glb",
+        this._scene
+      );
+
+      let meshes: Mesh[] = [];
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+          // console.log("problems with: " + m.name);
+        } else {
+          // m.scaling = new Vector3(4, 4, 4);
+          m.checkCollisions = true;
+          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
+          meshes.push(m);
+        }
+      });
+
+      let parent: any = Mesh.MergeMeshes(
+        meshes,
+        true,
+        false,
+        undefined,
+        false,
+        true
+      );
+      for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      }
+
+      parent.position = new Vector3(mesh.position._x, 0, mesh.position._z);
+      parent.metadata = "Sheep";
+      parent.receiveShadows = true;
+
+      var whalenSound = new Sound(
+        "Rustling",
+        `${this.env["CMS"]}/audio/whalen.wav`,
+        this._scene,
+        null,
+        { loop: true, autoplay: true, volume: 1 }
+      );
+
+      // Sound will now follow the mesh position
+      whalenSound.attachToMesh(parent);
 
       return parent;
     },
