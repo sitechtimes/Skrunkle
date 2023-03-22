@@ -27,7 +27,7 @@ import {
   AmmoJSPlugin,
   Quaternion,
   CubeTexture,
-  Sound
+  Sound,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -68,14 +68,13 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
-  private _alpha_time: number = 0
+  private _alpha_time: number = 0;
 
   private _skyboxMaterial: StandardMaterial;
   private _day_material: CubeTexture;
   private _night_material: CubeTexture;
 
-  private _ground_size:any = {width: 10000, height: 10000}
-
+  private _ground_size: any = { width: 10000, height: 10000 };
 
   constructor(canvas: HTMLCanvasElement | null, env: any) {
     this.env = env;
@@ -169,7 +168,46 @@ export class World {
 
     ground.material = ground_material;
 
-    const volume = 7;
+    const steps = new Sound(
+      "Walking Steps",
+      `${this.env["CMS"]}/audio/step.ogg`,
+      this._scene
+    );
+    window.addEventListener("keydown", function (evt) {
+      // Press space key to fire
+      if (["w", "a", "s", "d"].includes(evt.key)) {
+        if (!steps.isPlaying) steps.play();
+      }
+    });
+
+    const windOne = new Sound(
+      "wind1",
+      `${this.env["CMS"]}/audio/Wind.ogg`,
+      this._scene
+    );
+    setInterval(() => windOne.play(), Math.random() * 1000 + 30000);
+
+    const windTwo = new Sound(
+      "wind2",
+      `${this.env["CMS"]}/audio/Wind2.ogg`,
+      this._scene
+    );
+    setInterval(() => windTwo.play(), Math.random() * 1000 + 62000);
+
+    const windThree = new Sound(
+      "wind3",
+      `${this.env["CMS"]}/audio/Wind3.ogg`,
+      this._scene,
+      null,
+      {
+        volume: volume,
+      }
+    );
+
+    setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
+
+    // Create and load the sound async
+    const volume = 0.4;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
@@ -182,7 +220,7 @@ export class World {
       }
     );
     music.setVolume(volume);
-    
+
     // Adds the sun and moon
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     sun_light.intensity = 1;
@@ -231,7 +269,8 @@ export class World {
       this._scene
     );
     this._skyboxMaterial.reflectionTexture = this._day_material;
-    this._skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    this._skyboxMaterial.reflectionTexture.coordinatesMode =
+      Texture.SKYBOX_MODE;
     this._skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
     this._skyboxMaterial.specularColor = new Color3(0, 0, 0);
     skybox.material = this._skyboxMaterial;
@@ -256,22 +295,21 @@ export class World {
 
       this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
-      if (Math.cos(this._alpha_time) > 0 && !this._isday){
-        this._isday = true
+      if (Math.cos(this._alpha_time) > 0 && !this._isday) {
+        this._isday = true;
         this._skyboxMaterial.reflectionTexture = this._day_material;
-      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
-        this._isday = false
+      } else if (Math.cos(this._alpha_time) < 0 && this._isday) {
+        this._isday = false;
         this._skyboxMaterial.reflectionTexture = this._night_material;
       }
-
     };
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     // state_machine.applyShadow(ground)
-    
-    await import("@babylonjs/core/Debug/debugLayer")
-    await import("@babylonjs/inspector")
-    const debuglayer = new DebugLayer(this._scene)
+
+    await import("@babylonjs/core/Debug/debugLayer");
+    await import("@babylonjs/inspector");
+    const debuglayer = new DebugLayer(this._scene);
 
     debuglayer.show({
       overlay: true,
@@ -690,15 +728,16 @@ export class World {
         break;
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
-        console.log(playerInfo)
+        console.log(playerInfo);
         if (this._player === undefined) {
           console.log(playerInfo.name);
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
-          this._alpha_time = playerInfo.alpha_time
+          this._alpha_time = playerInfo.alpha_time;
 
-          if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
-          else this._skyboxMaterial.reflectionTexture = this._night_material
+          if (this._isday)
+            this._skyboxMaterial.reflectionTexture = this._day_material;
+          else this._skyboxMaterial.reflectionTexture = this._night_material;
         }
         break;
       case "Close":
