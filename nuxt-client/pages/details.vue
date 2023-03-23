@@ -49,7 +49,7 @@
             class="circle"
             :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
           ></div>
-          <img class="chicken" src="../assets/chicken.png" alt="" />
+          <img class="chicken" src="../assets/chicken2.png" alt="" />
         </div>
         <button
           @click="routePlay"
@@ -109,10 +109,10 @@ export default {
   animation: animatedBackground 30s infinite linear alternate-reverse;
 }
 .light-mode {
-  background-image: url("../assets/pattern.png");
+  background-image: url("../assets/forest day.png");
 }
 .dark-mode {
-  background-image: url("../assets/pattern2.png");
+  background-image: url("../assets/forest night.png");
 }
 .light-mode-color {
   background-color: #fd551b !important;
