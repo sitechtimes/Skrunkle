@@ -92,7 +92,7 @@ export class Generation {
         `${this.env["CMS"]}/audio/${noise_file_name}`,
         this._scene,
         null,
-        { loop: true, autoplay: true, volume: volume }
+        { loop: true, autoplay: true, volume: volume, maxDistance: 20 }
       );
   
       // Sound will now follow the mesh position
@@ -157,7 +157,13 @@ export class Generation {
     Sheep: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
         uid, mesh, 0, "sheep.glb", new Vector3(1, 1, 1),
-        "Sheep", true, "Whalen", "whalen.wav", 1
+        "Sheep", true, "Whalen", "whalen.wav", 0.5
+      )
+    },
+    Slope: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(
+        uid, mesh, 0, "slope.glb", new Vector3(4, 4, 4),
+        "Slope", false
       )
     },
   };

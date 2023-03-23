@@ -104,7 +104,7 @@ export class World {
 
   private _initCamera(): void {
     this._playerCamera.position.y = 8;
-    this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+    this._playerCamera.ellipsoid = new Vector3(1, 3 , 1);
     this._playerCamera.checkCollisions = true;
     this._scene.collisionsEnabled = true;
     this._playerCamera.applyGravity = true;
@@ -686,7 +686,7 @@ export class World {
           state_machine.update_entity(uid, entity);
         } else {
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"
           ](payload, uid);
           
         }

@@ -132,6 +132,12 @@ export class Generation {
         "sheep.glb", new Vector3(1, 1, 1)
       )
     },
+    Slope: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
+      return this.add_custom_mesh(
+        0, 0, 0, position, rotation, "Slope", "Slope",
+        "slope.glb", new Vector3(4, 4, 4)
+      )
+    },
   }
 
   public async RANDOMIZE(item: Entities, count: number = 5, squareRange: number = 20) {
@@ -141,7 +147,7 @@ export class Generation {
     for (let i = 1; i < count; i++) {
       let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 10, (Math.random()*squareRange) - (squareRange/2))
       let rot = new Vector3(0, Math.random() * 2 * Math.PI, 0)
-      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"](pos, rot)
+      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"](pos, rot)
       items.push(newItem)
     }
 
