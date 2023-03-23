@@ -11,7 +11,7 @@
       <div class="viewport-header">
         <h1 class="title">Skrunkle</h1>
         <!-- <img src="~/assets/skrunkleWord.png" alt="skrunk logo" class="logo" /> -->
-        <h2 class="slogan">GO GETEM'</h2>
+        <h2 class="slogan">GO GET EM'</h2>
         <router-link to="/details" class="buttonsty">play now</router-link>
       </div>
     </div>
@@ -52,6 +52,7 @@ body {
 }
 
 .slogan {
+  margin: auto;
   font-size: 3rem;
   margin-top: -5%;
   padding: 0;
