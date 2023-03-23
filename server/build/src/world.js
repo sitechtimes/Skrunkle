@@ -153,18 +153,18 @@ var World = /** @class */ (function () {
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
                         _b = (_a = this._generator).RANDOMIZE;
-                        return [4 /*yield*/, this._generator.GENERATE.Tree1(new babylonjs_1.Vector3(100, 0, 100))];
+                        return [4 /*yield*/, this._generator.GENERATE.Tree1(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 1:
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
                         _b.apply(_a, [_g.sent(), 100, 1000]);
                         _d = (_c = this._generator).RANDOMIZE;
-                        return [4 /*yield*/, this._generator.GENERATE.House(new babylonjs_1.Vector3(100, 0, 100))];
+                        return [4 /*yield*/, this._generator.GENERATE.House(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 2:
                         _d.apply(_c, [_g.sent(), 100, 1000]);
                         _f = (_e = this._generator).RANDOMIZE;
-                        return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100))];
+                        return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 3:
                         _f.apply(_e, [_g.sent(), 100, 1000]);
                         return [2 /*return*/];

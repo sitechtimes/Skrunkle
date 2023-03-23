@@ -58,9 +58,18 @@ export class Entities{
         return this._object.physicsImpostor.getLinearVelocity();
     }
 
-    public get rotation(): Vector3{
-        return this._object.rotation;
+    public get rotation(): Quaternion {
+        return this._object.rotationQuaternion;
     }
+    
+    public set rotation(new_rotation: Quaternion) {
+        if (this._object) {
+          this._object.rotationQuaternion.x = new_rotation._x
+          this._object.rotationQuaternion.y = new_rotation._y
+          this._object.rotationQuaternion.z = new_rotation._z
+          this._object.rotationQuaternion.w = new_rotation._w
+        }
+    } 
 
     public set position(new_position: Vector3){
         if (this._object.position) this._object.position = new_position
@@ -93,7 +102,8 @@ export class Entities{
             {
                 name: this._object.name,
                 metadata: this.metadata,
-                position: this._object.position, 
+                position: this._object.position,
+                rotation: this._object.rotationQuaternion,
                 linearVelocity: this._object.physicsImpostor.getLinearVelocity(), 
                 angularVelocity: this._object.physicsImpostor.getAngularVelocity(),
                 boundingBox: this._object.getBoundingInfo()
