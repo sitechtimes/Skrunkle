@@ -10,6 +10,7 @@ export class PlayerItem {
   public _range?: number;
   public _magnitude: number;
   public _path: string;
+  public _item: Item
   /* the hashtag means private */
   #_player: MainPlayer;
   #_hotbar: Hotbar;
@@ -17,6 +18,7 @@ export class PlayerItem {
 
   constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket) {
     this._name = `(ITEM)-${item.name}-${Math.random() * 100000}`;
+    this._item = item
     this._metadata = item.name;
     this._type = item.type;
     this._range = item.range;
@@ -154,7 +156,7 @@ export const Items = {
   },
 };
 
-interface Item {
+export interface Item {
   name: string;
   type: "Damage" | "Heal" | "Utility";
   magnitude: number;

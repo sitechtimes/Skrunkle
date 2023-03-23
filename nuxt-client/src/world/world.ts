@@ -623,7 +623,7 @@ export class World {
         //         })
         //     }
         let item = this._scene.getMeshByUniqueId(this._itemchosen);
-        console.log(item)
+        // console.log(item)
         if (item?.name.startsWith("(ITEM)")) {
           item.dispose();
           // state_machine.delete_entity(item.name)
@@ -660,9 +660,14 @@ export class World {
           state_machine.update_entity(uid, entity);
         } else {
           console.log(payload);
-          let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
-          ](payload);
+          let structures = ["Cylinder", "Box", "Tree1", "Tree2"]
+          if (structures.includes(payload.metadata)) {
+            let mesh: Mesh = await this._generator.GENERATE[
+              payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
+            ](payload);
+          } else {
+            let mesh: Mesh = await this._generator.GENERATE.ENTITY(Items[payload.metadata.toLowerCase()], payload.position)
+          }
 
           let adjusted_pos: Vector3 = new Vector3(
             this.second_decimal(payload.position._x),

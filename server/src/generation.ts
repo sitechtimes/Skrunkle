@@ -160,7 +160,7 @@ export class Generation {
       parent.name = `${item.name}-${Math.random() * 100}`
       parent.metadata = item.name
       
-      let entity: Entities = createEntity(this._scene, parent.name, position, parent, null, 0, 0)
+      let entity: Entities = createEntity(this._scene, parent.name, position, parent, null, 0, 0, true)
       
       state_machine.add_entity(entity.id, entity)
 

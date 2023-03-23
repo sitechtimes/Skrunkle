@@ -65,7 +65,7 @@ export class Generation {
 
       return box;
     },
-    ENTITY: async (mesh: PlayerItem): Promise<Mesh> => {
+    ENTITY: async (mesh: PlayerItem, position?: Vector3): Promise<Mesh> => {
       // spawn dropped entity
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
@@ -85,9 +85,13 @@ export class Generation {
 
       let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
 
-      parent.position.x = state_machine.client.position.x
-      parent.position.y = state_machine.client.position.y
-      parent.position.z = state_machine.client.position.z
+      if (!position) {
+        parent.position.x = state_machine.client.position.x
+        parent.position.y = state_machine.client.position.y
+        parent.position.z = state_machine.client.position.z
+      } else {
+        parent.position = position
+      }
       /* for (let child of bodies.meshes) {
         child.name = `${mesh._name}-${Math.random() * 100}`;
         child.metadata = mesh._metadata;
@@ -97,6 +101,8 @@ export class Generation {
       return bodies.transformNodes[0] */
       parent.name = `${mesh._name}-${Math.random() * 100}`
       parent.metadata = mesh._metadata
+
+      if (!position) state_machine.dropItem(mesh._item)
       return parent
     },
     Tree1: async(mesh: any): Promise<Mesh> => {
@@ -130,7 +136,7 @@ export class Generation {
       parent.metadata = "Tree1";
       parent.receiveShadows = true;
 
-
+      
 
       // this._scene.createDefaultEnvironment()
       // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)

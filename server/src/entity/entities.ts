@@ -33,12 +33,15 @@ export class Entities{
     private _name: string;
     private _object: any;
     private _id: string;
+    private _item: boolean;
 
-    constructor(name: string, position: Vector3, object: Mesh){
+    constructor(name: string, position: Vector3, object: Mesh, item?: boolean){
         this._name = name;
         this._id = `M-${uuidv4()}`
         this._object = object;
         this._object.position = position;
+        this._item = false
+        if (item) this._item = item
     }
 
     public get metadata(): string{
@@ -89,6 +92,9 @@ export class Entities{
     }
 
     public serialize(): Packet{
+        if (this.metadata.includes("word")) {
+            console.log(this._item)
+        }
         let updatePacket: Packet = new Packet(PacketType.mesh, [
             {
                 name: this._object.name,
@@ -104,11 +110,11 @@ export class Entities{
 
 }
 
-export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number): Entities{
+export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number, item?: boolean): Entities{
     if (imposterType != null){
         let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
         mesh.physicsImpostor = entityImposter
     }
-    let entity: Entities = new Entities(name, position, mesh)
+    let entity: Entities = new Entities(name, position, mesh, item)
     return entity
 }
