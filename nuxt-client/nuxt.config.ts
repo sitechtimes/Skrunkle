@@ -2,7 +2,8 @@
 export default defineNuxtConfig({
     runtimeConfig: {
         public:{
-            CMS: "http://localhost:3001/static"
+            CMS: "http://localhost:3001/static",
+            SOCKET_IP: "localhost"
         }
     },
 });

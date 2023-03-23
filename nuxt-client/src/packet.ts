@@ -5,7 +5,8 @@ export enum PacketType {
   close = "Close",
   interaction = "Interaction",
   chat = "Chat",
-  player_creation = "PlayerCreation"
+  player_creation = "PlayerCreation",
+  request_mesh = "RequestMesh"
 }
 
 export class Packet {

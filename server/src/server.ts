@@ -56,6 +56,7 @@ export class SocketServer {
             // this.send(client, new Packet(PacketType.update, [player]))
             if (player !== null) {
               player.position = this.world.validateEntityPosition(new Vector3(msg.payload[0].position._x, msg.payload[0].position._y, msg.payload[0].position._z))
+              player.rotation = msg.payload[0].rotation
               state_machine.update_player(msg.uid, player)
             }
             break
@@ -81,11 +82,15 @@ export class SocketServer {
               let player = new Player(this.world.scene)
               this.players.set(player.id, player)
               state_machine.add_player(player.id, player)
-              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size }))
+              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time }))
               state_machine.broadcast_entity(true)
-
               this.client_to_uid.set(client, player.id)
             }
+            break
+          case "RequestMesh":
+            let mesh_id = msg.uid
+            this.logger.warn("Need mesh confirm")
+            this.send(client, state_machine.entities.get(mesh_id)?.serialize())
             break
           default:
             this.logger.error(`Unknown socket message from client (${msg.type})`)
@@ -114,10 +119,10 @@ export class SocketServer {
   }
 
   public broadCast(packet: Packet) {
-    this.server.clients.forEach((user) => {
-      if (this.players.get(user) !== null) {
-        this.send(user, packet)
+    this.server.clients.forEach((client)=>{
+      if (this.client_to_uid.get(client) !== null) {
+        this.send(client, packet)
       }
-    });
+    })
   }
 }
