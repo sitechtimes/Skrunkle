@@ -93,6 +93,12 @@ export class World{
                 this._scene.render();
                 this._ticks_elapsed++;
                 state_machine.update();
+
+                // for (let uid of state_machine.entities.keys()){
+                //     let entity: Entities = state_machine.entities.get(uid);
+        
+                //     console.log(entity.object.rotationQuaternion)
+                // }
             })
 
         })

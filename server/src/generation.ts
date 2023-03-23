@@ -69,8 +69,8 @@ export class Generation {
     parent.position.y = y_pos
     
     let entity: Entities = createEntity(this._scene, name, position, parent, PhysicsImpostor.MeshImpostor, mass, restitution)
-    entity.rotation = Quaternion.FromEulerAngles(rotation.x, rotation.y, rotation.z)
-
+    entity.rotation = rotation
+    
     state_machine.add_entity(entity.id, entity)
 
     return entity
@@ -140,7 +140,7 @@ export class Generation {
 
     for (let i = 1; i < count; i++) {
       let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 10, (Math.random()*squareRange) - (squareRange/2))
-      let rot = new Vector3(Math.random()*2*Math.PI, 0, Math.random()*2*Math.PI)
+      let rot = new Vector3(0, Math.random() * 2 * Math.PI, 0)
       let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"](pos, rot)
       items.push(newItem)
     }

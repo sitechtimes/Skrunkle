@@ -150,7 +150,7 @@ export class Generation {
     },
     House: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "house.glb", new Vector3(4, 4, 4,),
+        uid, mesh, 0, "house.glb", new Vector3(4, 4, 4),
         "House", false
       )
     },

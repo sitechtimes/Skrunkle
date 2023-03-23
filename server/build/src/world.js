@@ -140,6 +140,10 @@ var World = /** @class */ (function () {
                                 _this._scene.render();
                                 _this._ticks_elapsed++;
                                 state_machine_1.state_machine.update();
+                                // for (let uid of state_machine.entities.keys()){
+                                //     let entity: Entities = state_machine.entities.get(uid);
+                                //     console.log(entity.object.rotationQuaternion)
+                                // }
                             });
                         });
                         this.logger.interval_logger(this._tick_time, function () {

@@ -103,13 +103,14 @@ export class World {
   }
 
   private _initCamera(): void {
-    this._playerCamera.position.y = 6;
-    this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
+    this._playerCamera.position.y = 8;
+    this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
     this._playerCamera.checkCollisions = true;
     this._scene.collisionsEnabled = true;
     this._playerCamera.applyGravity = true;
     this._playerCamera.speed = 25;
     this._playerCamera.angularSensibility = 1500;
+    // this._playerCamera.debugEllipsoid = true
   }
 
   public async init(): void {
@@ -169,7 +170,7 @@ export class World {
 
     ground.material = ground_material;
 
-    const volume = 7;
+    const volume = 0.4;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
@@ -182,8 +183,46 @@ export class World {
       }
     );
     music.setVolume(volume);
+
+    const steps = new Sound(
+      "Walking Steps",
+      `${this.env["CMS"]}/audio/step.ogg`,
+      this._scene
+    );
+    window.addEventListener("keydown", function (evt) {
+      // Press space key to fire
+      if (["w", "a", "s", "d"].includes(evt.key)) {
+        if (!steps.isPlaying) steps.play();
+      }
+    });
+
+    const windOne = new Sound(
+      "wind1",
+      `${this.env["CMS"]}/audio/Wind.ogg`,
+      this._scene
+    );
+    setInterval(() => windOne.play(), Math.random() * 1000 + 30000);
+
+    const windTwo = new Sound(
+      "wind2",
+      `${this.env["CMS"]}/audio/Wind2.ogg`,
+      this._scene
+    );
+    setInterval(() => windTwo.play(), Math.random() * 1000 + 62000);
+
+    const windThree = new Sound(
+      "wind3",
+      `${this.env["CMS"]}/audio/Wind3.ogg`,
+      this._scene
+    );
+
+    setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
     
     // Adds the sun and moon
+    var ambient_light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this._scene)
+    ambient_light.diffuse = new Color3(0.1, 0.1, 0.1)
+    ambient_light.groundColor = new Color3(0, 0, 0)
+
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     sun_light.intensity = 1;
     var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
@@ -646,7 +685,6 @@ export class World {
           );
           state_machine.update_entity(uid, entity);
         } else {
-          console.log(payload);
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"
           ](payload, uid);
