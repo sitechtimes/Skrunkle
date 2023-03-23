@@ -111,6 +111,13 @@ export class World {
     this._playerCamera.speed = 25;
     this._playerCamera.angularSensibility = 1500;
     // this._playerCamera.debugEllipsoid = true
+
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+        // Apply a vertical impulse to the camera's physics impostor
+        this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+      }
+    });
   }
 
   public async init(): void {
