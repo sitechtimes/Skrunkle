@@ -168,6 +168,21 @@ export class World {
 
     ground.material = ground_material;
 
+    // Create and load the sound async
+    const volume = 0.4;
+    const music = new Sound(
+      "Walking Music",
+      `${this.env["CMS"]}/audio/walking.wav`,
+      this._scene,
+      null,
+      {
+        loop: true,
+        autoplay: true,
+        volume: volume,
+      }
+    );
+    music.setVolume(volume);
+
     const steps = new Sound(
       "Walking Steps",
       `${this.env["CMS"]}/audio/step.ogg`,
@@ -197,29 +212,10 @@ export class World {
     const windThree = new Sound(
       "wind3",
       `${this.env["CMS"]}/audio/Wind3.ogg`,
-      this._scene,
-      null,
-      {
-        volume: volume,
-      }
+      this._scene
     );
 
     setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
-
-    // Create and load the sound async
-    const volume = 0.4;
-    const music = new Sound(
-      "Walking Music",
-      `${this.env["CMS"]}/audio/walking.wav`,
-      this._scene,
-      null,
-      {
-        loop: true,
-        autoplay: true,
-        volume: volume,
-      }
-    );
-    music.setVolume(volume);
 
     // Adds the sun and moon
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);

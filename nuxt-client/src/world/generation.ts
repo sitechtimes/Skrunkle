@@ -97,14 +97,20 @@ export class Generation {
       parent.metadata = "Tree1";
       parent.receiveShadows = true;
 
+      const volume = 0.08;
       var treeRustling = new Sound(
         "Rustling",
         `${this.env["CMS"]}/audio/rustling.mp3`,
         this._scene,
         null,
-        { loop: true, autoplay: true }
+        {
+          loop: true,
+          autoplay: true,
+          volume: volume,
+          maxDistance: 20,
+        }
       );
-
+      treeRustling.setVolume(volume);
       // Sound will now follow the mesh position
       treeRustling.attachToMesh(parent);
 
