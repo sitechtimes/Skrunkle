@@ -33,7 +33,7 @@ export class Generation {
 
   private async add_custom_mesh(
     mass: number = 0, restitution: number = 0, y_pos: number, position: Vector3, rotation: Vector3, name: string, 
-    metadata: string, mesh_file_name: string, scaling: Vector3, 
+    metadata: string, mesh_file_name: string, scaling: Vector3, is_npc: boolean = false
   ): Promise<Entities>{
     let bodies: any = await SceneLoader.ImportMeshAsync(
       "",
@@ -71,7 +71,7 @@ export class Generation {
     let entity: Entities = createEntity(this._scene, name, position, parent, PhysicsImpostor.MeshImpostor, mass, restitution)
     entity.rotation = rotation
     
-    state_machine.add_entity(entity.id, entity)
+    state_machine.add_entity(entity.id, entity, is_npc)
 
     return entity
   }
@@ -128,8 +128,8 @@ export class Generation {
     },
     Sheep: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
       return this.add_custom_mesh(
-        0, 0, 0, position, rotation, "Sheep", "Sheep",
-        "sheep.glb", new Vector3(1, 1, 1)
+        100, 0, 0, position, rotation, "Sheep", "Sheep",
+        "sheep.glb", new Vector3(1, 1, 1), true
       )
     },
     Slope: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {

@@ -1,4 +1,4 @@
-import { Vector3 } from "@babylonjs/core";
+import { Vector3 } from "babylonjs";
 import { Entities } from "./entities"
 
 export class NPC{
@@ -7,16 +7,15 @@ export class NPC{
 
     constructor(entity: Entities){
         this.entity = entity
-        this.random_actions()
+        this._applyForce()
     }
 
-    private _applyforce():void{
-        this.entity.object.physicsImpostor.applyImpulse(new Vector3(), this.entity.object.getAbsolutePosition())
-    }
+    private _applyForce():void{ 
+        let random_impulse: Vector3 = new Vector3(Math.random() * 10, 0, Math.random() * 10)
+        let random_interval:number = Math.random() * 10000
 
-    private random_actions(){
-        this._applyforce();
-        setTimeout(this.random_actions, Math.random() * 1000)
+        this.entity.object.physicsImpostor.applyImpulse(random_impulse, this.entity.object.getAbsolutePosition())
+        setTimeout(()=>{this._applyForce()}, random_interval)
     }
 
 }
