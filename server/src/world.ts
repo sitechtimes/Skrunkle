@@ -29,6 +29,8 @@ export class World{
     private logger: Logger = new Logger('World');
     private worldSize: worldSize = { top: new Vector3(5000, 10000, 5000), bottom: new Vector3(-5000, 0, -5000)};
     public _generator: Generation
+    public isday: boolean = true;
+    public alpha_time: number = 0;
 
     constructor(){
         this._engine = new NullEngine();
@@ -67,14 +69,36 @@ export class World{
         var camera:ArcRotateCamera = new ArcRotateCamera("Camera", 0, 0.8, 100, Vector3.Zero(), this._scene); 
         this._scene.enablePhysics(new Vector3(0, -9.81, 0), new OimoJSPlugin(true, 10, OIMO));
 
+        
         this._scene.executeWhenReady(()=>{
 
             this.logger.progress("Scene is ready, running server side simulation");
+
+            this._scene.beforeRender = () => {
+
+                let deltaTime: number = this._scene.getEngine().getDeltaTime();
+    
+                this.alpha_time += (0.05 * deltaTime) / 1000;
+
+                this.alpha_time = this.alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2P
+    
+                if (Math.cos(this.alpha_time) > 0 && !this.isday){
+                    this.isday = true
+                }else if (Math.cos(this.alpha_time) < 0 && this.isday){
+                    this.isday = false
+                }
+            }
 
             this._engine.runRenderLoop(()=>{
                 this._scene.render();
                 this._ticks_elapsed++;
                 state_machine.update();
+
+                // for (let uid of state_machine.entities.keys()){
+                //     let entity: Entities = state_machine.entities.get(uid);
+        
+                //     console.log(entity.object.rotationQuaternion)
+                // }
             })
 
         })
@@ -92,7 +116,9 @@ export class World{
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
     }
 
     

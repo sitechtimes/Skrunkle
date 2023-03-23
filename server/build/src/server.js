@@ -67,7 +67,7 @@ var SocketServer = /** @class */ (function () {
                             var player_2 = new player_1.Player(_this.world.scene);
                             _this.players.set(player_2.id, player_2);
                             state_machine_1.state_machine.add_player(player_2.id, player_2);
-                            _this.send(client, player_2.serialize(packet_1.PacketType.player_creation, { players: _this.players.size }));
+                            _this.send(client, player_2.serialize(packet_1.PacketType.player_creation, { players: _this.players.size, isday: _this.world.isday, alpha_time: _this.world.alpha_time }));
                             state_machine_1.state_machine.broadcast_entity(true);
                             _this.client_to_uid.set(client, player_2.id);
                         }

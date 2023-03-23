@@ -80,6 +80,8 @@ var World = /** @class */ (function () {
         this._ticks_elapsed = 0;
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(5000, 10000, 5000), bottom: new babylonjs_1.Vector3(-5000, 0, -5000) };
+        this.isday = true;
+        this.alpha_time = 0;
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._scene.useRightHandedSystem = true;
@@ -114,19 +116,34 @@ var World = /** @class */ (function () {
     };
     World.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var camera, _a, _b;
+            var camera, _a, _b, _c, _d, _e, _f;
             var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            return __generator(this, function (_g) {
+                switch (_g.label) {
                     case 0:
                         camera = new babylonjs_1.ArcRotateCamera("Camera", 0, 0.8, 100, babylonjs_1.Vector3.Zero(), this._scene);
                         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.OimoJSPlugin(true, 10, OIMO));
                         this._scene.executeWhenReady(function () {
                             _this.logger.progress("Scene is ready, running server side simulation");
+                            _this._scene.beforeRender = function () {
+                                var deltaTime = _this._scene.getEngine().getDeltaTime();
+                                _this.alpha_time += (0.05 * deltaTime) / 1000;
+                                _this.alpha_time = _this.alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2P
+                                if (Math.cos(_this.alpha_time) > 0 && !_this.isday) {
+                                    _this.isday = true;
+                                }
+                                else if (Math.cos(_this.alpha_time) < 0 && _this.isday) {
+                                    _this.isday = false;
+                                }
+                            };
                             _this._engine.runRenderLoop(function () {
                                 _this._scene.render();
                                 _this._ticks_elapsed++;
                                 state_machine_1.state_machine.update();
+                                // for (let uid of state_machine.entities.keys()){
+                                //     let entity: Entities = state_machine.entities.get(uid);
+                                //     console.log(entity.object.rotationQuaternion)
+                                // }
                             });
                         });
                         this.logger.interval_logger(this._tick_time, function () {
@@ -140,12 +157,20 @@ var World = /** @class */ (function () {
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
                         _b = (_a = this._generator).RANDOMIZE;
-                        return [4 /*yield*/, this._generator.GENERATE.Tree1(new babylonjs_1.Vector3(0, 0, 0))];
+                        return [4 /*yield*/, this._generator.GENERATE.Tree1(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 1:
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
-                        _b.apply(_a, [_c.sent(), 100, 1000]);
+                        _b.apply(_a, [_g.sent(), 100, 1000]);
+                        _d = (_c = this._generator).RANDOMIZE;
+                        return [4 /*yield*/, this._generator.GENERATE.House(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
+                    case 2:
+                        _d.apply(_c, [_g.sent(), 100, 1000]);
+                        _f = (_e = this._generator).RANDOMIZE;
+                        return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
+                    case 3:
+                        _f.apply(_e, [_g.sent(), 100, 1000]);
                         return [2 /*return*/];
                 }
             });

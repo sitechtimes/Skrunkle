@@ -77,6 +77,7 @@ class State_machine{
                 this.socket_ref.broadCast(entity.serialize())
                 cnt++;
             }
+
         }
     }
 

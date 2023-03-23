@@ -1,4 +1,4 @@
-import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3, SceneLoader, VertexBuffer, Matrix } from "babylonjs"
+import { MeshBuilder, StandardMaterial, Color3, Scene, Mesh, PhysicsImpostor, Vector2, Vector3, SceneLoader, VertexBuffer, Matrix, Quaternion } from "babylonjs"
 import { World } from "./world"
 import { state_machine } from "./state_machine"
 import { Entities, createEntity } from "./entity/entities"
@@ -31,8 +31,53 @@ export class Generation {
     this.logger = new Logger("Generation")
   }
 
+  private async add_custom_mesh(
+    mass: number = 0, restitution: number = 0, y_pos: number, position: Vector3, rotation: Vector3, name: string, 
+    metadata: string, mesh_file_name: string, scaling: Vector3, 
+  ): Promise<Entities>{
+    let bodies: any = await SceneLoader.ImportMeshAsync(
+      "",
+      `${process.env["CMS"]}/meshes/`,
+      mesh_file_name,
+      this._scene
+    );
+
+    let meshes: Mesh[] = [];
+    bodies.meshes.forEach((m: any) => {
+      if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+        // ignore and dont add
+      } else {
+        m.scaling = scaling;
+        m.checkCollisions = true;
+        meshes.push(m);
+      }
+    });
+
+    let parent: any = Mesh.MergeMeshes(
+      meshes,
+      true,
+      false,
+      undefined,
+      false,
+      true
+    );
+ 
+    parent.metadata = metadata;
+    parent.name = name
+
+    parent.position = position
+    parent.position.y = y_pos
+    
+    let entity: Entities = createEntity(this._scene, name, position, parent, PhysicsImpostor.MeshImpostor, mass, restitution)
+    entity.rotation = rotation
+    
+    state_machine.add_entity(entity.id, entity)
+
+    return entity
+  }
+
   public GENERATE = {
-    Cylinder: (position: Vector3, name?: string): Entities => {
+    Cylinder: (position: Vector3, rotation: Vector3, name?: string): Entities => {
       let item = MeshBuilder.CreateCylinder(`${name ?? "Cylinder"}-${Math.random()*100000}` ?? `Cylinder-${Math.random()*100000}`, { height: 5, diameter: 3 }, this._scene);
       item.position = position
       item.metadata = "Cylinder"
@@ -48,7 +93,7 @@ export class Generation {
 
       return entity
     }, 
-    Box: (position: Vector3, name?: string): Entities => {
+    Box: (position: Vector3, rotation: Vector3, name?: string): Entities => {
       let item = MeshBuilder.CreateBox(`${name ?? "Box"}-${Math.random()*100000}` ?? `Box-${Math.random()*100000}`, { size: 2, height: 2, width: 2}, this._scene)
       item.position = position
       item.metadata = "Box"
@@ -63,81 +108,30 @@ export class Generation {
 
       return entity
     },
-    Tree1: async(position: Vector3, name?: string): Promise<Entities> => {
-
-      position.y = 0
-
-      let bodies: any = await SceneLoader.ImportMeshAsync(
-        "",
-        `${process.env["CMS"]}/meshes/`,
-        "tree1.glb",
-        this._scene
-      );
-      
-      let meshes: Mesh[] = []
-      bodies.meshes.forEach((m: any)=>{
-        if (!m.getVerticesData(VertexBuffer.PositionKind)){
-          // console.log("problems with: " + m.name);
-        }else{
-          m.metadata = "Tree1"
-          m.name = "Tree1Part"
-          // m.position.y = 0
-          m.scaling = new Vector3(2.5, 2.5, 2.5)
-          m.checkCollisions = true
-          // m.position = position
-          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 10000, restitution: 0 }, this._scene)
-          meshes.push(m)
-        }
-      })
-
-      let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
-      parent.metadata = "Tree1";
-      parent.name = "Tree1"
-
-      parent.position = position
-
-      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
-      state_machine.add_entity(entity.id, entity)
-
-      return entity
+    Tree1: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
+      return this.add_custom_mesh(
+        0, 0, 0, position, rotation, "Tree1", "Tree1",
+        "tree1.glb", new Vector3(2.5, 2.5, 2.5)
+      )
     },
-    Tree2: async(position: Vector3, name?: string): Promise<Entities> => {
-
-      position.y = 0
-
-      let bodies: any = await SceneLoader.ImportMeshAsync(
-        "",
-        `${process.env["CMS"]}/meshes/`,
-        "tree2.glb",
-        this._scene
-      );
-      
-      let meshes: Mesh[] = []
-      bodies.meshes.forEach((m: any)=>{
-        if (!m.getVerticesData(VertexBuffer.PositionKind)){
-          // console.log("problems with: " + m.name);
-        }else{
-          m.metadata = "Tree2"
-          // m.position = position
-          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 10000, restitution: 0 }, this._scene)
-          meshes.push(m)
-        }
-      })
-
-      let parent: Mesh = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
-      parent.metadata = "Tree2";
-
-      // let bbox = parent.getBoundingInfo().boundingBox;
-      // parent.setPivotMatrix(Matrix.Translation(0, - bbox.extendSize.y, 0), false)
-
-      parent.position = position
-
-      let entity: Entities = createEntity(this._scene, "tree", position, parent, PhysicsImpostor.MeshImpostor, 0, 0)
-      state_machine.add_entity(entity.id, entity)
-
-
-      return entity
-    }
+    Tree2: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
+      return this.add_custom_mesh(
+        0, 0, 0, position, rotation, "Tree2", "Tree2",
+        "tree2.glb", new Vector3(2.5, 2.5, 2.5)
+      )
+    },
+    House: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
+      return this.add_custom_mesh(
+        0, 0, 0, position, rotation, "House", "House",
+        "house.glb", new Vector3(4, 4, 4)
+      )
+    },
+    Sheep: async (position: Vector3, rotation: Vector3, name?: string): Promise<Entities> => {
+      return this.add_custom_mesh(
+        0, 0, 0, position, rotation, "Sheep", "Sheep",
+        "sheep.glb", new Vector3(1, 1, 1)
+      )
+    },
   }
 
   public async RANDOMIZE(item: Entities, count: number = 5, squareRange: number = 20) {
@@ -146,7 +140,8 @@ export class Generation {
 
     for (let i = 1; i < count; i++) {
       let pos = new Vector3((Math.random()*squareRange) - (squareRange/2), 10, (Math.random()*squareRange) - (squareRange/2))
-      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"](pos)
+      let rot = new Vector3(0, Math.random() * 2 * Math.PI, 0)
+      let newItem: Entities = await this.GENERATE[item.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep"](pos, rot)
       items.push(newItem)
     }
 
