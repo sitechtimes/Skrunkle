@@ -75,12 +75,18 @@ export class World {
   private _night_material: CubeTexture;
 
   private _ground_size:any = {width: 10000, height: 10000}
-
+  
+  // loading & process
   private _processing_mesh: Map<string, boolean> = new Map();
+  private _total_meshes: number = 1e10;
+  private _current_meshes: number = 0;
+
+  private _load_callback: any;
 
 
-  constructor(canvas: HTMLCanvasElement | null, env: any) {
+  constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
+    this._load_callback = call_back
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
@@ -684,11 +690,13 @@ export class World {
           state_machine.update_entity(uid, entity);
         } else {
           if (this._processing_mesh.get(uid)) return
-          console.log("Created new entity: " + uid)
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"
           ](payload, uid);
+          this._current_meshes++;
+          this._processing_mesh.delete(uid)
+          this._load_callback(this._current_meshes, this._total_meshes, "meshes")
         }
         break;
 
@@ -698,15 +706,16 @@ export class World {
         break;
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
-        console.log(playerInfo)
         if (this._player === undefined) {
-          console.log(playerInfo.name);
+          this._total_meshes = playerInfo.total_mesh
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
 
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
+
+          this._load_callback(this._current_meshes, this._total_meshes, "server")
         }
         break;
       case "Close":

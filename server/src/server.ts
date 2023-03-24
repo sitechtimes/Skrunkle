@@ -82,7 +82,7 @@ export class SocketServer {
               let player = new Player(this.world.scene)
               this.players.set(player.id, player)
               state_machine.add_player(player.id, player)
-              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time }))
+              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time, total_mesh: state_machine.entities.size }))
               state_machine.broadcast_entity(true)
               this.client_to_uid.set(client, player.id)
             }
