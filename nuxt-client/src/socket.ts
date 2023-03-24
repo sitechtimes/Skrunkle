@@ -11,7 +11,7 @@ export class Socket {
   constructor(world: World, env: any) {
     this.worldReference = world;
     this.env = env
-    this.url = `ws://${this.env.SOCKET_ADDR}`
+    this.url = this.env.SOCKET_ADDR
   }
   
   private connect(): Promise<WebSocket>{
