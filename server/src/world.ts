@@ -119,12 +119,22 @@ export class World{
         // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Slope(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 10)
         
-        // BASIC WORLD
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
-        
-        // this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 10)
+        /*BASIC WORLD */
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 100, 1000)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+
+        /* MEDIUM WORLD */
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 500)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 50, 500)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 500)
+
+        /* SMALL WORLD */
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 5, 100)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 5, 100)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 5, 100)
+
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 10)
     }
 
     
