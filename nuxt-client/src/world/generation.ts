@@ -30,7 +30,7 @@ export class Generation {
   }
 
   private async add_custom_mesh(
-    uid: string, mesh: any, y_pos: number = 0, mesh_file_name: string, scaling: Vector3, 
+    uid: string, mesh: any, mass: number, restitution: number, y_pos: number = 0, mesh_file_name: string, scaling: Vector3, 
     metadata: string, use_noise: boolean = false, noise_name?: string,
     noise_file_name?: string, volume?: number
   ): Promise<Mesh>{
@@ -75,8 +75,8 @@ export class Generation {
       mesh.position,
       parent,
       PhysicsImpostor.MeshImpostor,
-      0,
-      0
+      mass,
+      restitution
     );
     entity.update(
       mesh.linearVelocity,
@@ -92,7 +92,7 @@ export class Generation {
         `${this.env["CMS"]}/audio/${noise_file_name}`,
         this._scene,
         null,
-        { loop: true, autoplay: true, volume: volume, maxDistance: 20 }
+        { loop: true, autoplay: true, volume: volume, maxDistance: 100 }
       );
   
       // Sound will now follow the mesh position
@@ -138,31 +138,31 @@ export class Generation {
     },
     Tree1: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "tree1.glb", new Vector3(2.5, 2.5, 2.5),
+        uid, mesh,0, 0, 0, "tree1.glb", new Vector3(2.5, 2.5, 2.5),
         "Tree1", true, "Rustling", "rustling.mp3", 0.2
       )
     },
     Tree2: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "tree2.glb", new Vector3(1, 1, 1), "Tree2",
+        uid, mesh,0, 0, 0, "tree2.glb", new Vector3(1, 1, 1), "Tree2",
         true, "Rustling", "rustling.mp3", 0.2
       )
     },
     House: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "house.glb", new Vector3(4, 4, 4),
+        uid, mesh,0, 0, 0, "house.glb", new Vector3(4, 4, 4),
         "House", false
       )
     },
     Sheep: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "sheep.glb", new Vector3(1, 1, 1),
-        "Sheep", true, "Whalen", "whalen.wav", 0.5
+        uid, mesh, 100, 0, 0, "sheep.glb", new Vector3(1, 1, 1),
+        "Sheep", true, "Whalen", "whalen.wav", 0.2
       )
     },
     Slope: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh, 0, "slope.glb", new Vector3(4, 4, 4),
+        uid, mesh,0, 0, 0, "slope.glb", new Vector3(4, 4, 4),
         "Slope", false
       )
     },

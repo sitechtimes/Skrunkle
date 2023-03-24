@@ -61,7 +61,7 @@ class State_machine{
             
             if (!passed) {
                 // request for position of mesh to server
-                this.socket_ref.send(new Packet(PacketType.request_mesh, [], entity.id))
+                // this.socket_ref.send(new Packet(PacketType.request_mesh, [], entity.id))
             }
         }
     }

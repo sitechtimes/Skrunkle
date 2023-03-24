@@ -75,10 +75,18 @@ export class World {
   private _night_material: CubeTexture;
 
   private _ground_size:any = {width: 10000, height: 10000}
+  
+  // loading & process
+  private _processing_mesh: Map<string, boolean> = new Map();
+  private _total_meshes: number = 1e10;
+  private _current_meshes: number = 0;
+
+  private _load_callback: any;
 
 
-  constructor(canvas: HTMLCanvasElement | null, env: any) {
+  constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
+    this._load_callback = call_back
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
@@ -104,13 +112,20 @@ export class World {
 
   private _initCamera(): void {
     this._playerCamera.position.y = 8;
-    this._playerCamera.ellipsoid = new Vector3(1, 3 , 1);
+    this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
     this._playerCamera.checkCollisions = true;
     this._scene.collisionsEnabled = true;
     this._playerCamera.applyGravity = true;
     this._playerCamera.speed = 25;
     this._playerCamera.angularSensibility = 1500;
     // this._playerCamera.debugEllipsoid = true
+
+    document.addEventListener('keydown', (event) => {
+      if (event.code === 'Space') {
+        // Apply a vertical impulse to the camera's physics impostor
+        this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+      }
+    });
   }
 
   public async init(): void {
@@ -291,7 +306,7 @@ export class World {
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      this._alpha_time += (0.5 * this._scene.deltaTime) / 1000;
+      this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
       this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
@@ -320,18 +335,7 @@ export class World {
       parentElement: document.body,
       initialTab: "Physics", // <-- This enables the Physics tab
     });
-
-    // this._scene.debugLayer.select(ground_material, "DEBUG");
-
-    //   this._scene.onPointerObservable.add((pointerInfo) => {
-    //     switch (pointerInfo.type) {
-    //       case PointerEventTypes.POINTERWHEEL:
-    //         this._castRay();
-
-    //         break;
-    //     }
-
-    //   });
+    
     this._scene.onKeyboardObservable.add((kbInfo) => {
       switch (kbInfo.type) {
         case KeyboardEventTypes.KEYDOWN:
@@ -685,10 +689,14 @@ export class World {
           );
           state_machine.update_entity(uid, entity);
         } else {
+          if (this._processing_mesh.get(uid)) return
+          this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"
           ](payload, uid);
-          
+          this._current_meshes++;
+          this._processing_mesh.delete(uid)
+          this._load_callback(this._current_meshes, this._total_meshes, "meshes")
         }
         break;
 
@@ -698,15 +706,16 @@ export class World {
         break;
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
-        console.log(playerInfo)
         if (this._player === undefined) {
-          console.log(playerInfo.name);
+          this._total_meshes = playerInfo.total_mesh
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
 
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
+
+          this._load_callback(this._current_meshes, this._total_meshes, "server")
         }
         break;
       case "Close":
