@@ -1,13 +1,19 @@
 <template>
   <div class="body" :class="[darkMode ? 'dark-mode' : 'light-mode']">
     <div class="wrap">
-      <div class="wordLogo">
+      <!-- <div class="wordLogo">
         <img
           :class="[darkMode ? 'dark-mode-color-logo' : 'light-mode-color-logo']"
           src="~/assets/skrunkleWord.png"
           alt="Skrunkle"
         />
-      </div>
+      </div> -->
+      <h1
+        class="title"
+        :class="[darkMode ? 'dark-mode-color-logo' : 'light-mode-color-logo']"
+      >
+        Skrunkle
+      </h1>
       <label class="switch">
         <input type="checkbox" @click="toggleDark" />
         <span class="slider round"></span>
@@ -92,6 +98,7 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Titan+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap");
 * {
   overflow: hidden;
   padding: 0;
@@ -99,8 +106,10 @@ export default {
   font-family: "Titan One", cursive;
   box-sizing: border-box;
 }
-.wordLogo {
-  margin-top: 3rem;
+.title {
+  font-family: "Bungee Shade", cursive;
+  font-size: 6rem;
+  margin-top: 2rem;
   text-align: center;
 }
 .body {
@@ -109,10 +118,10 @@ export default {
   animation: animatedBackground 30s infinite linear alternate-reverse;
 }
 .light-mode {
-  background-image: url("../assets/forest day.png");
+  background-image: url("../assets/forest(day).png");
 }
 .dark-mode {
-  background-image: url("../assets/forest night.png");
+  background-image: url("../assets/forest(night).png");
 }
 .light-mode-color {
   background-color: #fd551b !important;
@@ -134,7 +143,7 @@ export default {
   filter: hue-rotate(0deg);
 }
 .dark-mode-color-logo {
-  filter: hue-rotate(23deg);
+  filter: hue-rotate(180deg);
 }
 @keyframes animatedBackground {
   0% {

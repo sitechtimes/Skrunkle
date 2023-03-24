@@ -59,7 +59,8 @@ body {
 }
 
 .title {
-  margin-top: -15%;
+  font-size: 6rem;
+  /* margin-top: -15%; */
 }
 
 .logo {
