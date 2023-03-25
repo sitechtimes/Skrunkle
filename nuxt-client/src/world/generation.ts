@@ -13,26 +13,59 @@ import {
   VertexBuffer,
   Matrix,
   Sound,
-  Texture
+  Texture,
+  AbstractMesh
 } from "@babylonjs/core";
 import { Entities, createEntity } from "../entity/entities";
 import { state_machine } from "../state_machine";
+
+class SoundLoader{
+  private env: any;
+  private _scene: Scene
+  private _whalen: Sound;
+  private _tree: Sound;
+
+  constructor(env: any, scene: Scene){
+    this.env = env
+    this._scene = scene
+    
+    this._whalen =  new Sound("Whalen", `${this.env["CMS"]}/audio/whalen.wav`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 });
+    this._tree = new Sound("Rustling", `${this.env["CMS"]}/audio/rustling.mp3`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 });
+  }
+
+  public get whalen(): Sound {
+    let newSound = this._whalen.clone()
+    newSound?.play()
+    return newSound
+  }
+
+  public get tree(): Sound {
+    let newSound = this._tree.clone()
+    newSound?.play()
+    return newSound
+  }
+
+}
 
 export class Generation {
   private _world: World;
   private _scene: Scene;
   private env: any;
+  private soundLoader;
 
   constructor(world: World, scene: Scene, env: any) {
     this._world = world;
     this._scene = scene;
     this.env = env;
+  
+    this.soundLoader = new SoundLoader(this.env, this._scene)
+    // Sound will now follow the mesh position
+    
   }
 
   private async add_custom_mesh(
     uid: string, mesh: any, mass: number, restitution: number, y_pos: number = 0, mesh_file_name: string, scaling: Vector3, 
-    metadata: string, use_noise: boolean = false, noise_name?: string,
-    noise_file_name?: string, volume?: number
+    metadata: string, noise: Sound | undefined = undefined
   ): Promise<Mesh>{
     let bodies: any = await SceneLoader.ImportMeshAsync(
       "",
@@ -61,8 +94,15 @@ export class Generation {
       true
     );
 
-    for (let i = 0; i < parent.material.subMaterials.length; i++) {
-      parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+    if (parent.material){
+       for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      } 
+    }
+
+    if (mass === 0) {
+      parent.freezeWorldMatrix()
+      parent.cullingStrategy = AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
     }
 
     parent.position = new Vector3(mesh.position._x, y_pos, mesh.position._z);
@@ -86,16 +126,7 @@ export class Generation {
     );
     state_machine.add_entity(uid, entity);
 
-    if (use_noise){
-      let noise = new Sound(
-        noise_name || "",
-        `${this.env["CMS"]}/audio/${noise_file_name}`,
-        this._scene,
-        null,
-        { loop: true, autoplay: true, volume: volume, maxDistance: 100 }
-      );
-  
-      // Sound will now follow the mesh position
+    if (noise){
       noise.attachToMesh(parent);
     }
 
@@ -139,31 +170,49 @@ export class Generation {
     Tree1: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
         uid, mesh,0, 0, 0, "tree1.glb", new Vector3(2.5, 2.5, 2.5),
-        "Tree1", true, "Rustling", "rustling.mp3", 0.2
+        "Tree1", this.soundLoader.tree
       )
     },
     Tree2: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
-        uid, mesh,0, 0, 0, "tree2.glb", new Vector3(1, 1, 1), "Tree2",
-        true, "Rustling", "rustling.mp3", 0.2
+        uid, mesh,0, 0, 0, "tree2.glb", new Vector3(1, 1, 1), "Tree2", 
+        this.soundLoader.tree
       )
     },
     House: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
         uid, mesh,0, 0, 0, "house.glb", new Vector3(4, 4, 4),
-        "House", false
+        "House"
+      )
+    },
+    House2: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(
+        uid, mesh,0, 0, 0, "house2.glb", new Vector3(2, 2, 2),
+        "House2"
       )
     },
     Sheep: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
         uid, mesh, 100, 0, 0, "sheep.glb", new Vector3(1, 1, 1),
-        "Sheep", true, "Whalen", "whalen.wav", 0.2
+        "Sheep", this.soundLoader.whalen
       )
     },
     Slope: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(
         uid, mesh,0, 0, 0, "slope.glb", new Vector3(4, 4, 4),
-        "Slope", false
+        "Slope"
+      )
+    },
+    Fountain: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(
+        uid, mesh,0, 0, 0, "fountain.glb", new Vector3(3, 3, 3),
+        "Fountain"
+      )
+    },
+    Crate: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(
+        uid, mesh,0, 0, 0, "crate.glb", new Vector3(3, 3, 3),
+        "Crate"
       )
     },
   };

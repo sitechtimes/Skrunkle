@@ -25,9 +25,7 @@ import {
   Mesh,
   OimoJSPlugin,
   AmmoJSPlugin,
-  Quaternion,
-  CubeTexture,
-  Sound
+  Quaternion
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -111,21 +109,22 @@ export class World {
   }
 
   private _initCamera(): void {
-    this._playerCamera.position.y = 8;
-    this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
     this._playerCamera.checkCollisions = true;
     this._scene.collisionsEnabled = true;
     this._playerCamera.applyGravity = true;
-    this._playerCamera.speed = 25;
+    this._playerCamera.speed = 15;
     this._playerCamera.angularSensibility = 1500;
-    // this._playerCamera.debugEllipsoid = true
+    
+    this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+    this._playerCamera.maxZ = 1000
+    
 
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Space') {
-        // Apply a vertical impulse to the camera's physics impostor
-        this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
-      }
-    });
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.code === 'Space') {
+    //     // Apply a vertical impulse to the camera's physics impostor
+    //     this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+    //   }
+    // });
   }
 
   public async init(): void {
@@ -333,7 +332,7 @@ export class World {
       overlayCanvas: true,
       embedMode: true,
       parentElement: document.body,
-      initialTab: "Physics", // <-- This enables the Physics tab
+      initialTab: "Physics", // <-- This enables the Physics tab,
     });
     
     this._scene.onKeyboardObservable.add((kbInfo) => {
@@ -692,7 +691,7 @@ export class World {
           if (this._processing_mesh.get(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
           ](payload, uid);
           this._current_meshes++;
           this._processing_mesh.delete(uid)
