@@ -184,7 +184,7 @@ var World = /** @class */ (function () {
                         _k = (_j = this._generator).RANDOMIZE;
                         return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 5:
-                        _k.apply(_j, [_o.sent(), 50, 1000]);
+                        _k.apply(_j, [_o.sent(), 5, 50]);
                         _m = (_l = this._generator).RANDOMIZE;
                         return [4 /*yield*/, this._generator.GENERATE.Fountain(new babylonjs_1.Vector3(50, 0, 50), new babylonjs_1.Vector3(0, 0, 0))];
                     case 6:

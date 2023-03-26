@@ -1,7 +1,7 @@
 <template>
   <div>
     <LoadingBar class="loading" :percent="percent" :loadtext="loadtext"/>
-    <div id="debug">
+    <!-- <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
       <p id="pcount"></p>
@@ -26,7 +26,7 @@
         <input type="text" id="chat-box" v-model="chatMessage" required />
         <button id="chat-send">Send</button>
       </form>
-    </div>
+    </div> -->
 
     <canvas
       id="renderCanvas"

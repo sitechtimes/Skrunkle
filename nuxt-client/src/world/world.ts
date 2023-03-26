@@ -4,7 +4,6 @@ import {
   Vector3,
   MeshBuilder,
   HemisphericLight,
-  DirectionalLight,
   Sound,
   CubeTexture,
   FreeCamera,
@@ -12,20 +11,17 @@ import {
   Matrix,
   KeyboardEventTypes,
   AbstractMesh,
-  CannonJSPlugin,
-  SceneLoader,
   PhysicsImpostor,
   Color3,
   Texture,
-  PBRMaterial,
   DebugLayer,
-  IInspectorOptions,
-  DebugLayerTab,
   PointLight,
   Mesh,
   OimoJSPlugin,
-  AmmoJSPlugin,
-  Quaternion
+  Quaternion,
+  SceneOptimizerOptions,
+  HardwareScalingOptimization,
+  SceneOptimizer  
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -47,6 +43,7 @@ export class World {
   private env: any;
   private _engine: Engine;
   private _scene: Scene;
+  private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
   private _playerCamera: FreeCamera | null = null;
   private _entities: any[] = [];
@@ -105,6 +102,13 @@ export class World {
       new Vector3(0, -9.81, 0),
       new OimoJSPlugin(true, 10, OIMO)
     );
+
+    let options = new SceneOptimizerOptions(60, 500);
+    SceneOptimizerOptions.LowDegradationAllowed(60)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
@@ -116,7 +120,6 @@ export class World {
     this._playerCamera.angularSensibility = 1500;
     
     this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
-    this._playerCamera.maxZ = 1000
     
 
     // document.addEventListener('keydown', (event) => {
