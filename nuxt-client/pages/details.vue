@@ -43,10 +43,10 @@
           </button>
           <button class="signInButton">Sign In</button>
         </div>
-        <div
+        <!-- <div
           class="box2"
           :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
-        ></div>
+        ></div> -->
       </div>
 
       <div class="main-middle">
@@ -68,12 +68,12 @@
           Join
         </button>
       </div>
-      <div class="main-right">
+      <!-- <div class="main-right">
         <div
           class="box3"
           :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
         ></div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -124,12 +124,12 @@ export default {
   background-image: url("../assets/forest(night).png");
 }
 .light-mode-color {
-  background-color: #fd551b !important;
-  border: solid rgb(247, 247, 247) 5px;
+  background-color: #fe9c2f !important;
+  border: solid white 5px;
 }
 .dark-mode-color {
-  background-color: #9b713a !important;
-  border: solid rgb(214, 194, 128) 5px !important;
+  background-color: rgb(176 78 30) !important;
+  border: solid rgb(251 187 141) 5px !important;
 }
 .light-mode-color-button {
   border: solid #fff2d8 5px !important;
@@ -144,6 +144,7 @@ export default {
 }
 .dark-mode-color-logo {
   filter: hue-rotate(180deg);
+  color: white;
 }
 @keyframes animatedBackground {
   0% {
@@ -182,7 +183,7 @@ export default {
   margin-bottom: 1rem;
   border: solid rgb(247, 247, 247) 5px;
 }
-.box2 {
+/* .box2 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
@@ -191,8 +192,8 @@ export default {
   flex-direction: column;
   justify-content: center;
   border: solid rgb(247, 247, 247) 5px;
-}
-.box3 {
+} */
+/* .box3 {
   background-color: #fd551b;
   width: 100%;
   border-radius: 35px;
@@ -201,7 +202,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   border: solid rgb(247, 247, 247) 5px;
-}
+} */
 .enterName {
   background-color: #feefdd;
   border-radius: 35px;
@@ -300,7 +301,7 @@ export default {
   transition: 0.4s;
 }
 input:checked + .slider {
-  background-color: #9b713a;
+  background-color: rgb(176 78 30);
 }
 input:focus + .slider {
   box-shadow: 0 0 1px #9b713a;
