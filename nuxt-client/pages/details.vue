@@ -172,6 +172,13 @@ export default {
   width: 25%;
   margin-right: 4rem;
 }
+
+.characterCircle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* position: relative; */
+}
 .box1 {
   background-color: #fd551b;
   width: 100%;
@@ -238,9 +245,9 @@ export default {
   width: 20rem;
   border-radius: 35px;
   height: 7rem;
-  margin: 2rem;
-  margin-bottom: 0rem;
-  margin-left: 5rem;
+  margin: -3rem;
+  margin-bottom: 3rem;
+  margin-left: auto;
   background-color: #fd551b;
   font-size: 4rem;
   border: solid rgb(247, 247, 247) 5px;
@@ -253,14 +260,21 @@ export default {
   height: 32rem;
   width: 32rem;
   border-radius: 50%;
-  position: relative;
-  margin-right: 8rem;
+  /* position: absolute;
+  top: 50%;
+  left: 50%; */
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
 }
+
 .chicken {
   height: 30rem;
   position: absolute;
-  top: 35%;
-  right: 38%;
+  align-self: center;
+
+  /* top: 35%;
+  right: 38%; */
 }
 /* The switch - the box around the slider */
 .switch {
