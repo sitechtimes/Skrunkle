@@ -22,6 +22,21 @@
 
     <div class="main">
       <div class="main-left">
+        <div class="characterCircle">
+          <div
+            class="circle"
+            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+          ></div>
+          <img class="chicken" src="../assets/chicken2.png" alt="" />
+        </div>
+
+        <!-- <div
+          class="box2"
+          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
+        ></div> -->
+      </div>
+
+      <div class="main-right">
         <div
           class="box1"
           :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
@@ -42,20 +57,6 @@
             Customize
           </button>
           <button class="signInButton">Sign In</button>
-        </div>
-        <!-- <div
-          class="box2"
-          :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
-        ></div> -->
-      </div>
-
-      <div class="main-middle">
-        <div class="characterCircle">
-          <div
-            class="circle"
-            :class="[darkMode ? 'dark-mode-color' : 'light-mode-color']"
-          ></div>
-          <img class="chicken" src="../assets/chicken2.png" alt="" />
         </div>
         <button
           @click="routePlay"
@@ -109,7 +110,6 @@ export default {
 .title {
   font-family: "Bungee Shade", cursive;
   font-size: 6rem;
-  margin-top: 2rem;
   text-align: center;
 }
 .body {
@@ -160,14 +160,13 @@ export default {
   margin-top: 4rem;
 }
 .main-left {
-  width: 25%;
+  width: 30%;
   margin-left: 4rem;
-  margin-right: 15rem;
+  margin-right: 25rem;
 }
-.main-middle {
+/* .main-middle {
   width: 40%;
-  margin-right: 15rem;
-}
+} */
 .main-right {
   width: 25%;
   margin-right: 4rem;
@@ -187,7 +186,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 10rem;
   border: solid rgb(247, 247, 247) 5px;
 }
 /* .box2 {
@@ -251,9 +250,11 @@ export default {
   background-color: #fd551b;
   font-size: 4rem;
   border: solid rgb(247, 247, 247) 5px;
+  margin-left: 9rem;
 }
 .play {
   width: 3rem;
+  margin: auto;
 }
 .circle {
   background-color: #fd551b;
