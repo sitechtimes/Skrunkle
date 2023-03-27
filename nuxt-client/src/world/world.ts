@@ -21,7 +21,9 @@ import {
   Quaternion,
   SceneOptimizerOptions,
   HardwareScalingOptimization,
-  SceneOptimizer  
+  SceneOptimizer,
+  WebXRSessionManager,
+  WebXRCamera,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -45,7 +47,7 @@ export class World {
   private _scene: Scene;
   private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
-  private _playerCamera: FreeCamera | null = null;
+  private _playerCamera: FreeCamera | WebXRCamera | null = null;
   private _entities: any[] = [];
   private _socket: Socket;
   private _player: MainPlayer | undefined;
@@ -78,6 +80,9 @@ export class World {
 
   private _load_callback: any;
 
+  /* VR INTEGRATION */
+  private _sessionManager: WebXRSessionManager;
+  private _vr: boolean = false;
 
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
@@ -103,23 +108,68 @@ export class World {
       new OimoJSPlugin(true, 10, OIMO)
     );
 
-    let options = new SceneOptimizerOptions(60, 500);
-    SceneOptimizerOptions.LowDegradationAllowed(60)
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
     options.addOptimization(new HardwareScalingOptimization(0, 1))
     this._optimizer = new SceneOptimizer(this._scene, options)
     SceneOptimizer.OptimizeAsync(this._scene)
 
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
-  private _initCamera(): void {
-    this._playerCamera.checkCollisions = true;
-    this._scene.collisionsEnabled = true;
-    this._playerCamera.applyGravity = true;
-    this._playerCamera.speed = 15;
-    this._playerCamera.angularSensibility = 1500;
-    
-    this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+  public resize(): void{
+    this._engine.resize()
+  }
+
+  private _renderLoop(): void{
+    if (this._vr){
+      this._sessionManager.runXRRenderLoop()
+    }else{
+      console.log("Scene rendered")
+      this._scene.render()
+    }
+  }
+
+  private async _initCamera(): Promise<void> {
+
+    const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
+    if (supported) {
+      // xr available, session supported
+      console.log("Is VR")
+      this._vr = true;
+
+      await this._sessionManager.initializeAsync()
+      await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
+      const referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+      const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+      const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+
+      this._sessionManager.runXRRenderLoop();
+
+      this._playerCamera = new WebXRCamera("player camera", this._scene, this._sessionManager);
+      const userHeight = this._playerCamera.realWorldHeight;
+
+      this._playerCamera.position.y = userHeight
+
+
+    }else{
+      console.log("Not VR")
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
+      this._playerCamera.checkCollisions = true;
+      this._scene.collisionsEnabled = true;
+      this._playerCamera.applyGravity = true;
+      this._playerCamera.speed = 15;
+      this._playerCamera.angularSensibility = 1500;
+      
+      this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+    }
+
     
 
     // document.addEventListener('keydown', (event) => {
@@ -133,11 +183,6 @@ export class World {
   public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-    this._playerCamera = new FreeCamera(
-      "FreeCamera",
-      new Vector3(0, 6, 0),
-      this._scene
-    );
     var ground = MeshBuilder.CreateGround(
       "ground",
       { width: this._ground_size.width, height: this._ground_size.height },
@@ -372,48 +417,50 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
+      await this._initCamera();
 
-      this._engine.runRenderLoop(() => {
-        state_machine.check_entity();
+      this._engine.runRenderLoop(()=>{this._renderLoop})
 
-        this._initCamera();
+      // this._engine.runRenderLoop(() => {
+      //   state_machine.check_entity();
 
-        state_machine.check_entity();
 
-        this._scene.render();
-        if (this._player) {
-          this._socket?.send(
-            new Packet(
-              PacketType.movement,
-              [
-                {
-                  id: this._player.id,
-                  name: this._player.name,
-                  position: this._player.position,
-                  rotation: Quaternion.FromEulerAngles(
-                    this._player.rotation.x,
-                    this._player.rotation.y,
-                    this._player.rotation.z
-                  ),
-                  current: this._hotbar.current,
-                },
-              ],
-              this._player.id
-            )
-          );
-          if (this._debug) {
-            document.getElementById(
-              "x"
-            )!.innerText = `X: ${this._player.position.x}`;
-            document.getElementById(
-              "y"
-            )!.innerText = `Y: ${this._player.position.y}`;
-            document.getElementById(
-              "z"
-            )!.innerText = `Z: ${this._player.position.z}`;
-          }
-        }
-      });
+      //   state_machine.check_entity();
+
+      //   this._scene.render();
+      //   if (this._player) {
+      //     this._socket?.send(
+      //       new Packet(
+      //         PacketType.movement,
+      //         [
+      //           {
+      //             id: this._player.id,
+      //             name: this._player.name,
+      //             position: this._player.position,
+      //             rotation: Quaternion.FromEulerAngles(
+      //               this._player.rotation.x,
+      //               this._player.rotation.y,
+      //               this._player.rotation.z
+      //             ),
+      //             current: this._hotbar.current,
+      //           },
+      //         ],
+      //         this._player.id
+      //       )
+      //     );
+      //     if (this._debug) {
+      //       document.getElementById(
+      //         "x"
+      //       )!.innerText = `X: ${this._player.position.x}`;
+      //       document.getElementById(
+      //         "y"
+      //       )!.innerText = `Y: ${this._player.position.y}`;
+      //       document.getElementById(
+      //         "z"
+      //       )!.innerText = `Z: ${this._player.position.z}`;
+      //     }
+      //   }
+      // });
     });
 
     onclick = () => {
