@@ -5,7 +5,7 @@ import { Packet, PacketType } from "./packet";
 import { Player } from "./entity/player";
 import { MainPlayer } from "./entity/mainPlayer";
 import { Vector3, ShadowGenerator, Light, IShadowLight, PointLight, Mesh } from "@babylonjs/core";
-import type { Item } from "./gui/items";
+import type { Item, PlayerItem } from "./gui/items";
 
 const smallest_pos_change: number = 0.01;
 const smallest_angle_change: number = 0.01;
@@ -119,7 +119,7 @@ class State_machine {
     return this._client
   }
 
-  public dropItem(item: Item) {
+  public dropItem(item: PlayerItem) {
     this.socket_ref.send(new Packet(PacketType.drop_item, [{ item: item, position: this._client.position }]))
   }
 }

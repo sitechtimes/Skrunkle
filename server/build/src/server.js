@@ -77,7 +77,11 @@ var SocketServer = /** @class */ (function () {
                         _this.send(client, state_machine_1.state_machine.entities.get(mesh_id).serialize());
                         break;
                     case "DropItem":
-                        _this.world.dropItem(msg.payload[0].item, msg.payload[0].position);
+                        // this.world.dropItem(msg.payload[0].item, msg.payload[0].position)
+                        _this.broadCast(new packet_1.Packet(packet_1.PacketType.drop_item, [{
+                                item: msg.payload[0].item,
+                                position: msg.payload[0].position
+                            }], msg.payload[0].item.name));
                         break;
                     case "PickupItem":
                         var mesh_id = msg.payload[0];

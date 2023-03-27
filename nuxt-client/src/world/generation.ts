@@ -102,7 +102,7 @@ export class Generation {
       parent.name = `${mesh._name}-${Math.random() * 100}`
       parent.metadata = mesh._metadata
 
-      if (!position) state_machine.dropItem(mesh._item)
+      if (!position) state_machine.dropItem(mesh)
       return parent
     },
     Tree1: async(mesh: any): Promise<Mesh> => {

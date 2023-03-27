@@ -95,22 +95,33 @@ export class Entities{
         if (this.metadata.includes("word")) {
             console.log(this._item)
         }
-        let updatePacket: Packet = new Packet(PacketType.mesh, [
-            {
-                name: this._object.name,
-                metadata: this.metadata,
-                position: this._object.position, 
-                linearVelocity: this._object.physicsImpostor.getLinearVelocity(), 
-                angularVelocity: this._object.physicsImpostor.getAngularVelocity(),
-                boundingBox: this._object.getBoundingInfo()
-            }
-        ], this._id)
-        return updatePacket
+        if (!this._item) {
+            let updatePacket: Packet = new Packet(PacketType.mesh, [
+                {
+                    name: this._object.name,
+                    metadata: this.metadata,
+                    position: this._object.position, 
+                    linearVelocity: this._object.physicsImpostor.getLinearVelocity(), 
+                    angularVelocity: this._object.physicsImpostor.getAngularVelocity(),
+                    boundingBox: this._object.getBoundingInfo()
+                }
+            ], this._id)
+            return updatePacket
+        } else {
+            let updatePacket: Packet = new Packet(PacketType.mesh, [
+                {
+                    name: this._object.name,
+                    metadata: this.metadata,
+                    position: this._object.position
+                }
+            ], this._id)
+            return updatePacket
+        }
     }
 
 }
 
-export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number, item?: boolean): Entities{
+export function createEntity(scene: Scene, name: string, position: Vector3, mesh: Mesh, imposterType: number | null, mass: number, restitution: number, item: boolean = false): Entities{
     if (imposterType != null){
         let entityImposter: PhysicsImpostor = new PhysicsImpostor(mesh, imposterType, { mass: mass, restitution: restitution }, scene);
         mesh.physicsImpostor = entityImposter

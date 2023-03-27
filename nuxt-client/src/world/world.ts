@@ -665,8 +665,8 @@ export class World {
             let mesh: Mesh = await this._generator.GENERATE[
               payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
             ](payload);
-          } else {
-            let mesh: Mesh = await this._generator.GENERATE.ENTITY(Items[payload.metadata.toLowerCase()], payload.position)
+          } else { 
+            let mesh: Mesh = await this._generator.GENERATE.ENTITY(payload.item, payload.position)
           }
 
           let adjusted_pos: Vector3 = new Vector3(
