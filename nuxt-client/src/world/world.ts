@@ -124,12 +124,7 @@ export class World {
   }
 
   private _renderLoop(): void{
-    if (this._vr){
-      this._sessionManager.runXRRenderLoop()
-    }else{
-      console.log("Scene rendered")
-      this._scene.render()
-    }
+    this._scene.render()
   }
 
   private async _initCamera(): Promise<void> {
@@ -146,12 +141,17 @@ export class World {
       const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
       const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
 
-      this._sessionManager.runXRRenderLoop();
+      this._playerCamera = new WebXRCamera("PlayerCamera", this._scene, this._sessionManager);
+      const xrHelper = await this._scene.createDefaultXRExperienceAsync({
+        optionalFeatures: true,
+      });
+      
+      // this._playerCamera = xrHelper.baseExperience.camera;
 
-      this._playerCamera = new WebXRCamera("player camera", this._scene, this._sessionManager);
       const userHeight = this._playerCamera.realWorldHeight;
-
       this._playerCamera.position.y = userHeight
+
+      this._sessionManager.runXRRenderLoop()
 
 
     }else{
@@ -419,7 +419,9 @@ export class World {
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
       await this._initCamera();
 
-      this._engine.runRenderLoop(()=>{this._renderLoop})
+      this._engine.runRenderLoop(()=>{
+        this._renderLoop()
+      })
 
       // this._engine.runRenderLoop(() => {
       //   state_machine.check_entity();
