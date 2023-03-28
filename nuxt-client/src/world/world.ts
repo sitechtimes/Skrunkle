@@ -196,6 +196,8 @@ export class World {
       "local-floor", 
       this._renderTarget
     )
+
+    this._scene.activeCamera = this._playerCamera
   }
 
   private async _initCamera(): Promise<void> {
@@ -205,6 +207,13 @@ export class World {
       // xr available, session supported
       console.log("Is VR, waiting for user activation")
       this._vr = true;
+
+      // TEMPORARY CAMERA
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
 
     }else{
       console.log("Not VR")
@@ -223,6 +232,7 @@ export class World {
     }
 
     document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
+
 
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
@@ -469,8 +479,7 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
-      await this._initCamera();
-
+      await this._initCamera()
       this._engine.runRenderLoop(()=>{
         this._renderLoop()
       })
