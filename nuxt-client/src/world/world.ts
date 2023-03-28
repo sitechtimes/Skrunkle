@@ -189,7 +189,7 @@ export class World {
       // xr available, session supported
       console.log("Is VR")
       this._vr = true;
-
+      const session = navigator.xr?.requestSession("immersive-vr")
       await this._sessionManager.initializeAsync()
       await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
       this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
