@@ -97,14 +97,12 @@
         percent: Number,
         loadtext: String
     },
-    watch: {
-      percent(val){
-        if (val >= 1){
-          gsap.to(this.$refs['load'],{
+    methods:{
+      load(){
+        gsap.to(this.$refs['load'],{
             x: this.$refs['load'].offsetWidth,
             duration: 2
           })
-        }
       }
     }
   }

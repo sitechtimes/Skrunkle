@@ -24,7 +24,8 @@ import {
   SceneOptimizer,
   WebXRSessionManager,
   WebXRCamera,
-  WebXRExperienceHelper
+  WebXRExperienceHelper,
+  WebXRDefaultExperience,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -41,7 +42,6 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
-import { GroundMesh } from "babylonjs";
 
 export class World {
   private env: any;
@@ -86,6 +86,9 @@ export class World {
   /* VR INTEGRATION */
   private _sessionManager: WebXRSessionManager;
   private _vr: boolean = false;
+  private _vrExperience: WebXRDefaultExperience;
+  private _renderTarget: WebXRRenderTarget;
+  private _referenceSpace: XRReferenceSpace;
 
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
@@ -167,6 +170,14 @@ export class World {
     this._scene.render()
   }
 
+  public enterVR(): void{
+    this._vrExperience.baseExperience.enterXRAsync(
+      "immersive-vr", 
+      "local-floor", 
+      this._renderTarget
+    )
+  }
+
   private async _initCamera(): Promise<void> {
 
     const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
@@ -177,20 +188,16 @@ export class World {
 
       await this._sessionManager.initializeAsync()
       await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
-      const referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
-      const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
-      const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+      this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+      this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+      const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
 
-      const defaultExperience = await this._scene.createDefaultXRExperienceAsync({
+      this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
         optionalFeatures: true,
         floorMeshes: [this._ground],
       });
 
-      defaultExperience.baseExperience.enterXRAsync("immersive-vr", referenceSpace, renderTarget)
-
-      console.log(defaultExperience)
-
-      this._playerCamera = defaultExperience.baseExperience.camera;
+      this._playerCamera = this._vrExperience.baseExperience.camera;
       this._playerCamera.position = new Vector3(0, 6, 0)
 
       this._sessionManager.runXRRenderLoop()

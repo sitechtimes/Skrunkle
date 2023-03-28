@@ -1,6 +1,7 @@
 <template>
   <div>
-    <LoadingBar class="loading" :percent="percent" :loadtext="loadtext"/>
+    <LoadingBar class="loading" :percent="percent" :loadtext="loadtext" ref="load"/>
+    <button class="play" onclick="this.requestVR">PLAY</button>
     <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
@@ -78,12 +79,27 @@ export default {
         this.loadtext = `Creating Meshes (${loaded}/${total})`
       }
 
+    },
+    requestVR(){
+      console.log("Reuqested")
+      this.$refs['load'].load()
+      this.world.enterVR()
     }
   },
 };
 </script>
 
 <style>
+
+.play{
+  position: absolute;
+  z-index: 1000;
+  left: 40%;
+  top: 80%;
+  width: 30rem;
+  height: 10rem;
+}
+
 * {
   overflow: hidden;
   padding: 0;
@@ -101,7 +117,7 @@ canvas{
   width: 100vw;
   height: 100vh;
   background-color: #ffb238;
-  z-index: 1000;
+  z-index: 800;
   position: absolute;
   top: 0;
   left: 0;
