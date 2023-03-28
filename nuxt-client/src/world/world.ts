@@ -170,12 +170,12 @@ export class World {
   }
 
   private _renderLoop(): void{
+    if (!this._playerCamera) console.log("Waiting for camera to init")
     this._updateRender()
     this._scene.render()
   }
 
   public async enterVR(): Promise<void>{
-    await this._sessionManager.initializeAsync()
     await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
     this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
     this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
