@@ -24,6 +24,7 @@ import {
   SceneOptimizer,
   WebXRSessionManager,
   WebXRCamera,
+  WebXRExperienceHelper
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -40,6 +41,7 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
+import { GroundMesh } from "babylonjs";
 
 export class World {
   private env: any;
@@ -53,6 +55,7 @@ export class World {
   private _player: MainPlayer | undefined;
   private _players: Map<string, Player>;
   private _GUI: GUI;
+  private _ground: Mesh;
   // @ts-expect-error
   private _hotbar: Hotbar;
   private _debug: boolean = true;
@@ -178,18 +181,19 @@ export class World {
       const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
       const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
 
-      this._playerCamera = new WebXRCamera("PlayerCamera", this._scene, this._sessionManager);
-      const xrHelper = await this._scene.createDefaultXRExperienceAsync({
+      const defaultExperience = await this._scene.createDefaultXRExperienceAsync({
         optionalFeatures: true,
+        floorMeshes: [this._ground],
       });
-      
-      // this._playerCamera = xrHelper.baseExperience.camera;
 
-      const userHeight = this._playerCamera.realWorldHeight;
-      this._playerCamera.position.y = userHeight
+      defaultExperience.baseExperience.enterXRAsync("immersive-vr", referenceSpace, renderTarget)
+
+      console.log(defaultExperience)
+
+      this._playerCamera = defaultExperience.baseExperience.camera;
+      this._playerCamera.position = new Vector3(0, 6, 0)
 
       this._sessionManager.runXRRenderLoop()
-
 
     }else{
       console.log("Not VR")
@@ -220,20 +224,20 @@ export class World {
   public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-    var ground = MeshBuilder.CreateGround(
+    this._ground = MeshBuilder.CreateGround(
       "ground",
       { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
     );
-    ground.position = new Vector3(0, 0, 0);
-    ground.physicsImpostor = new PhysicsImpostor(
-      ground,
+    this._ground.position = new Vector3(0, 0, 0);
+    this._ground.physicsImpostor = new PhysicsImpostor(
+      this._ground,
       PhysicsImpostor.BoxImpostor,
       { mass: 0, restitution: 0 },
       this._scene
     );
-    ground.checkCollisions = true;
-    ground.receiveShadows = true;
+    this._ground.checkCollisions = true;
+    this._ground.receiveShadows = true;
 
     let ground_material = new StandardMaterial("ground", this._scene);
     // ground_material.albedoColor = new Color3(1, 0 ,0)
@@ -267,7 +271,7 @@ export class World {
     // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
     // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
 
-    ground.material = ground_material;
+    this._ground.material = ground_material;
 
     const volume = 0.4;
     const music = new Sound(
