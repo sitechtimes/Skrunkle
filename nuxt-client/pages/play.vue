@@ -1,7 +1,7 @@
 <template>
   <div>
     <LoadingBar class="loading" :percent="percent" :loadtext="loadtext"/>
-    <!-- <div id="debug">
+    <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
       <p id="pcount"></p>
@@ -10,9 +10,10 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
+      <p id="vr"></p>
     </div>
 
-    <div id="chatIcon">
+    <!-- <div id="chatIcon">
       <img src="~/assets/chat.png" alt="" class="chatIcon" />
     </div>
 
@@ -31,8 +32,6 @@
     <canvas
       id="renderCanvas"
       ref="renderCanvas"
-      height="1080"
-      width="1920"
     ></canvas>
   </div>
 </template>
@@ -49,13 +48,20 @@ export default {
       loadtext: "Loading..."
     };
   },
-  mounted() {
+  mounted() { 
+    
     const canvas = this.$refs.renderCanvas;
     const world = new World(<HTMLCanvasElement>canvas, this.$config.public, this.update_loading);
     world.init();
     this.world = world;
+
+    window.addEventListener("resize", this.resize)
+    window.addEventListener("click", ()=>{canvas.requestFullscreen()}, {once: true})
   },
   methods: {
+    resize(){
+      this.world.resize()
+    },
     sendChat() {
       let chat = this.world.chat;
       console.log("register send")
@@ -85,6 +91,11 @@ export default {
 }
 canvas{
   z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .customLoadingScreenDiv {
   width: 100vw;

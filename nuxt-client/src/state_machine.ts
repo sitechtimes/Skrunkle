@@ -72,7 +72,7 @@ class State_machine{
     }
 
     public setShadowGenerator(light: IShadowLight, sun_light: PointLight, moon_light: PointLight): void{
-        this.shadowGenerator = new ShadowGenerator(512, light);
+        this.shadowGenerator = new ShadowGenerator(1024, light);
         this.sun_light = sun_light;
         this.moon_light = moon_light
 
@@ -80,10 +80,10 @@ class State_machine{
 
         // this.shadowGenerator.useCloseExponentialShadowMap = true; // 20 FPS
         // this.shadowGenerator.useExponentialShadowMap = true; // 20 FPS
-        // this.shadowGenerator.useBlurExponentialShadowMap = true; // 21 FPS
-        this.shadowGenerator.usePoissonSampling = true; // 21 FPS
-        this.shadowGenerator.blurScale = 2;
-        this.shadowGenerator.bias = 0.0005;
+        this.shadowGenerator.useBlurExponentialShadowMap = true; // 21 FPS
+        // this.shadowGenerator.usePoissonSampling = true; // 21 FPS
+        // this.shadowGenerator.blurScale = 2;
+        // this.shadowGenerator.bias = 0.0005;
 
     }
 
