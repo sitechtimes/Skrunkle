@@ -174,7 +174,23 @@ export class World {
     this._scene.render()
   }
 
-  public enterVR(): void{
+  public async enterVR(): Promise<void>{
+    await this._sessionManager.initializeAsync()
+    await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
+    this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+    this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+    const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+
+    this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
+      optionalFeatures: true,
+      floorMeshes: [this._ground],
+    });
+
+    this._playerCamera = this._vrExperience.baseExperience.camera;
+    this._playerCamera.position = new Vector3(0, 6, 0)
+
+    this._sessionManager.runXRRenderLoop()
+
     this._vrExperience.baseExperience.enterXRAsync(
       "immersive-vr", 
       "local-floor", 
@@ -187,24 +203,8 @@ export class World {
     const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
     if (supported) {
       // xr available, session supported
-      console.log("Is VR")
+      console.log("Is VR, waiting for user activation")
       this._vr = true;
-      const session = navigator.xr?.requestSession("immersive-vr")
-      await this._sessionManager.initializeAsync()
-      await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
-      this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
-      this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
-      const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
-
-      this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
-        optionalFeatures: true,
-        floorMeshes: [this._ground],
-      });
-
-      this._playerCamera = this._vrExperience.baseExperience.camera;
-      this._playerCamera.position = new Vector3(0, 6, 0)
-
-      this._sessionManager.runXRRenderLoop()
 
     }else{
       console.log("Not VR")
