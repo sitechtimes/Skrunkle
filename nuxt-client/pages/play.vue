@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="outer">
     <LoadingBar class="loading" :percent="percent" :loadtext="loadtext" ref="load"/>
-    <button class="play" onclick="this.requestVR">PLAY</button>
+    <button v-if="vr" class="play" @click="play()">Enter VR Mode</button>
     <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
@@ -46,7 +46,8 @@ export default {
       chatMessage: undefined,
       world: undefined,
       percent: 0,
-      loadtext: "Loading..."
+      loadtext: "Loading...",
+      vr: false
     };
   },
   mounted() { 
@@ -79,11 +80,15 @@ export default {
         this.loadtext = `Creating Meshes (${loaded}/${total})`
       }
 
+      if (this.percent == 1) {
+        this.vr = this.world.vr
+        if (!this.vr) this.play()
+      }
+
     },
-    requestVR(){
-      console.log("Reuqested")
+    play(){
       this.$refs['load'].load()
-      this.world.enterVR()
+      if (this.vr) this.world.enterVR()
     }
   },
 };
@@ -91,13 +96,19 @@ export default {
 
 <style>
 
+.outer{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
 .play{
-  position: absolute;
   z-index: 1000;
-  left: 40%;
-  top: 80%;
-  width: 30rem;
-  height: 10rem;
+  width: 20rem;
+  height: 5rem;
+  border-radius: 15px;
 }
 
 * {

@@ -129,6 +129,10 @@ export class World {
     this._engine.resize()
   }
 
+  public get vr(): boolean{
+    return this._vr
+  }
+
   private _updateRender(): void{
       state_machine.check_entity();
       if (this._player) {
