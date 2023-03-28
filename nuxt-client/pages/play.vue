@@ -10,6 +10,7 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
+      <p id="vr"></p>
     </div>
 
     <!-- <div id="chatIcon">

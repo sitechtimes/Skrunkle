@@ -55,7 +55,7 @@ export class World {
   private _GUI: GUI;
   // @ts-expect-error
   private _hotbar: Hotbar;
-  private _debug: boolean = false;
+  private _debug: boolean = true;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
@@ -123,7 +123,44 @@ export class World {
     this._engine.resize()
   }
 
+  private _updateRender(): void{
+      state_machine.check_entity();
+      if (this._player) {
+        this._socket?.send(
+          new Packet(
+            PacketType.movement,
+            [
+              {
+                id: this._player.id,
+                name: this._player.name,
+                position: this._player.position,
+                rotation: Quaternion.FromEulerAngles(
+                  this._player.rotation.x,
+                  this._player.rotation.y,
+                  this._player.rotation.z
+                ),
+                current: this._hotbar.current,
+              },
+            ],
+            this._player.id
+          )
+        );
+        if (this._debug) {
+          document.getElementById(
+            "x"
+          )!.innerText = `X: ${this._player.position.x}`;
+          document.getElementById(
+            "y"
+          )!.innerText = `Y: ${this._player.position.y}`;
+          document.getElementById(
+            "z"
+          )!.innerText = `Z: ${this._player.position.z}`;
+        }
+      }
+  }
+
   private _renderLoop(): void{
+    this._updateRender()
     this._scene.render()
   }
 
@@ -170,7 +207,7 @@ export class World {
       this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
     }
 
-    
+    document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
 
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
