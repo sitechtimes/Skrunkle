@@ -116,10 +116,32 @@ export class World{
         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
         // this._generator.RANDOMIZE(this._generator.GENERATE.Box(new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
-        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
-    }
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Slope(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 10)
+        
+        /*BASIC WORLD */
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 50, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.House2(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Crate(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 5, 50)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.Fountain(new Vector3(50, 0, 50), new Vector3(0, 0, 0)), 0, 0)
+
+        /* MEDIUM WORLD */
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 500)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 50, 500)
+        // this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 500)
+
+        /* SMALL WORLD */
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 5, 1000)
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.House2(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 2, 1000)
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 5, 1000)
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.Fountain(new Vector3(50, 0, 0), new Vector3(0, 0, 0)), 0, 0)
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.Crate(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+
+    //     this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 10, 100)
+    // }
 
     
 }

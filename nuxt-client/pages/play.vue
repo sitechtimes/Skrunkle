@@ -1,11 +1,7 @@
 <template>
   <div>
-    <div class="customLoadingScreenDiv">
-      <img class="chicken" src="~/assets/skrunkler.gif" alt="logo" />
-      <div class="load"></div>
-    </div>
-
-    <!-- <div id="debug">
+    <LoadingBar class="loading" :percent="percent" :loadtext="loadtext"/>
+    <div id="debug">
       <p id="name"></p>
       <p id="id"></p>
       <p id="pcount"></p>
@@ -14,7 +10,8 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
-    </div> -->
+      <p id="vr"></p>
+    </div>
 
     <!-- <div id="chatIcon">
       <img src="~/assets/chat.png" alt="" class="chatIcon" />
@@ -35,8 +32,6 @@
     <canvas
       id="renderCanvas"
       ref="renderCanvas"
-      height="1080"
-      width="1920"
     ></canvas>
   </div>
 </template>
@@ -49,21 +44,41 @@ export default {
     return {
       chatMessage: undefined,
       world: undefined,
+      percent: 0,
+      loadtext: "Loading..."
     };
   },
-  mounted() {
+  mounted() { 
+    
     const canvas = this.$refs.renderCanvas;
-    const world = new World(<HTMLCanvasElement>canvas, this.$config.public);
+    const world = new World(<HTMLCanvasElement>canvas, this.$config.public, this.update_loading);
     world.init();
     this.world = world;
+
+    window.addEventListener("resize", this.resize)
+    window.addEventListener("click", ()=>{canvas.requestFullscreen()}, {once: true})
   },
   methods: {
+    resize(){
+      this.world.resize()
+    },
     sendChat() {
       let chat = this.world.chat;
       console.log("register send")
       chat.sendMessage(this.chatMessage);
       this.chatMessage = undefined;
     },
+    update_loading(loaded, total, message){
+
+      if (message == "server"){
+        this.percent = 0
+        this.loadtext = "Fetching Server"
+      } else if (message == "meshes"){
+        this.percent = loaded/total
+        this.loadtext = `Creating Meshes (${loaded}/${total})`
+      }
+
+    }
   },
 };
 </script>
@@ -73,6 +88,14 @@ export default {
   overflow: hidden;
   padding: 0;
   margin: 0;
+}
+canvas{
+  z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .customLoadingScreenDiv {
   width: 100vw;
@@ -84,38 +107,13 @@ export default {
   left: 0;
   display: none;
 }
-.hello {
-  width: 100vw;
-  height: 100vh;
-  background-color: #ffb238;
-  z-index: 1000;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-.chicken {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 35%;
-  height: auto;
-}
-.load {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 65rem;
-  height: 3rem;
-  background: linear-gradient(#fabc3c, #f55536);
-  border: solid black 5px;
-  box-shadow: 8px 10px black;
-}
+
 #chat {
   background-color: rgba(245, 85, 54, 0.2);
   display: flex;
   height: 500px;
   width: 500px;
-  z-index: 100;
+  z-index: 0;
   position: absolute;
   right: 0;
 }
@@ -143,4 +141,5 @@ export default {
   padding: 1rem;
   border-radius: 4rem;
 }
+
 </style>

@@ -5,6 +5,7 @@ import { SocketServer } from "./server";
 import { Packet, PacketType } from "./packet"
 import { Player } from "./entity/player";
 import { Vector3 } from "@babylonjs/core";
+import { NPC } from "./entity/npc";
 
 const smallest_pos_change: number = 0.001;
 const smallest_angle_change: number = 0.001;
@@ -14,6 +15,7 @@ class State_machine{
     public players: Map<string, Player> = new Map();
     public entities: Map<string, Entities> = new Map(); 
     public old_entities: Map<string, Old_Entity> = new Map(); 
+    private npc: Map<string, NPC> = new Map();
 
     private logger: Logger = new Logger("STATE_MACHINE");
     private socket_ref: SocketServer;
@@ -73,7 +75,7 @@ class State_machine{
             let entity_old: Old_Entity = this.old_entities.get(uid)
 
             let passed: boolean = this.pass_changes(entity, entity_old) // if changes very little dont broadcast
-            if (passed || info) {
+            if (passed || info || this.npc.get(uid)) {
                 this.socket_ref.broadCast(entity.serialize())
                 cnt++;
             }
@@ -100,9 +102,10 @@ class State_machine{
         this.players.set(uid, player);
     }
 
-    public add_entity(uid: string, entity: Entities){
+    public add_entity(uid: string, entity: Entities, is_npc:boolean = false){
         this.entities.set(uid, entity);
         this.old_entities.set(uid, new Old_Entity(entity))
+        if (is_npc) this.npc.set(uid, new NPC(entity));
     }
 
     public delete_player(uid: string){
@@ -112,6 +115,7 @@ class State_machine{
     public delete_entity(uid: string){
         this.entities.delete(uid)
         this.old_entities.delete(uid)
+        if (this.npc.get(uid)) this.npc.delete(uid)
     }
 
     public has_player(uid: string): boolean{
