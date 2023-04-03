@@ -13,15 +13,29 @@ Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, 
 Three different servers are required to run this project. The project requires you to have nodeJS preinstalled. To run the project,
 
 1. Change the directory to nuxt-client folder in the first terminal
-   ![cd nuxt](img/nuxt.png)
+   ```linux
+    C:\Users\Projects\Skrunkle> cd nuxt-client
+   ```
 2. Install dependencies with “npm i”
-   ![npm i](img/npmi.png)
+   <br/>
+   ```linux
+    C:\Users\Projects\Skrunkle\nuxt-client> npm i
+   ```
 3. Run server with “npm run dev”
-   ![npm run dev](img/dev.png)
+   ```linux
+   C:\Users\Projects\Skrunkle\nuxt-client> npm run dev
+   ```
 4. Open two more terminals with directories “cms” and “server”. Repeat steps 2 and 3
-   ![cd cms](img/cms.png)
-   ![cd server](img/server.png)
+   ```linux
+    C:\Users\Projects\Skrunkle> cd cms
+   ```
+   ```linux
+    C:\Users\Projects\Skrunkle> cd server
+   ```
 5. To build project, use “npm run build”
+   ```linux
+   C:\Users\Projects\Skrunkle> npm run build
+   ```
 
 # Credits
 
