@@ -123,6 +123,7 @@ export class World{
         this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
         this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 100, 1000)
         this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 100, 1000)
+        this._generator.RANDOMIZE(await this._generator.GENERATE.ClosedChest(new Vector3(100,0,100), new Vector3(0,0,0)))
         
         // this._generator.RANDOMIZE(await this._generator.GENERATE.Sheep(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 10)
     }

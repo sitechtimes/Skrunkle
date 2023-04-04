@@ -166,6 +166,12 @@ export class Generation {
         "Slope", false
       )
     },
+    ClosedChest: async(mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(
+        uid, mesh,0,0,0, "closedchest.glb", new Vector3(1,1,1),
+        "ClosedChest", false
+      )
+    }
   };
 
 }
