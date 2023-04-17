@@ -649,6 +649,7 @@ export class World {
       case "Mesh":
         let uid = data.uid;
         let payload = data.payload[0];
+        console.log(data)
 
         if (state_machine.entities.has(uid)) {
           let entity: Entities = state_machine.entities.get(uid);
@@ -660,14 +661,9 @@ export class World {
           state_machine.update_entity(uid, entity);
         } else {
           console.log(payload);
-          let structures = ["Cylinder", "Box", "Tree1", "Tree2"]
-          if (structures.includes(payload.metadata)) {
-            let mesh: Mesh = await this._generator.GENERATE[
-              payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
-            ](payload);
-          } else { 
-            let mesh: Mesh = await this._generator.GENERATE.ENTITY(payload.item, payload.position)
-          }
+          let mesh: Mesh = await this._generator.GENERATE[
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
+          ](payload);
 
           let adjusted_pos: Vector3 = new Vector3(
             this.second_decimal(payload.position._x),
@@ -744,6 +740,10 @@ export class World {
       case "Chat":
         this._chat?.receiveMessage(data.payload);
         break;
+      case "DropItem":
+        console.log(payload)
+        // let mesh: Mesh = await this._generator.GENERATE.ENTITY(payload.item, payload.position)
+        break
       default:
         // throw some error
         break;

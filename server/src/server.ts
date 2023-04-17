@@ -94,6 +94,7 @@ export class SocketServer {
             break
           case "DropItem":
             // this.world.dropItem(msg.payload[0].item, msg.payload[0].position)
+            this.logger.log("Item dropped")
             this.broadCast(new Packet(PacketType.drop_item, [{
               item: msg.payload[0].item,
               position: msg.payload[0].position

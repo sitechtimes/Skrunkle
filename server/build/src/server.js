@@ -78,6 +78,7 @@ var SocketServer = /** @class */ (function () {
                         break;
                     case "DropItem":
                         // this.world.dropItem(msg.payload[0].item, msg.payload[0].position)
+                        _this.logger.log("Item dropped");
                         _this.broadCast(new packet_1.Packet(packet_1.PacketType.drop_item, [{
                                 item: msg.payload[0].item,
                                 position: msg.payload[0].position
