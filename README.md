@@ -36,7 +36,8 @@ Three different servers are required to run this project. The project requires y
    C:\Users\Projects\Skrunkle> npm run build
    ```
 
-#Functionality
+# Functionality
+
 ![skrunkle innerWorkings](img/Skrunkle.svg)
 
 # Credits
