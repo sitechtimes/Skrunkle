@@ -37,7 +37,7 @@ Three different servers are required to run this project. The project requires y
    ```
 
 #Functionality
-![skrunkle innerWorkings](img/skrunkle.svg)
+![skrunkle innerWorkings](img/skrunkle.jpeg)
 
 # Credits
 
