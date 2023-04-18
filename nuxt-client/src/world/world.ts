@@ -741,8 +741,7 @@ export class World {
         this._chat?.receiveMessage(data.payload);
         break;
       case "DropItem":
-        console.log(payload)
-        // let mesh: Mesh = await this._generator.GENERATE.ENTITY(payload.item, payload.position)
+        let mesh: Mesh = await this._generator.GENERATE.ENTITY(data.payload[0].item, data.payload[0].position)
         break
       default:
         // throw some error
