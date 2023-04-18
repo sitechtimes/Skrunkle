@@ -1,10 +1,7 @@
 # Skrunkle
 
 Skrunkle is an online game developed by high school students. The premise of Skrunkle is to stay alive for as long as possible with the given tools. This project includes VR integration.
-<video width="320" height="240" controls>
 
-  <source src="img/good.mp4" type="video/mp4">
-</video>
 # Description
 
 Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, and NuxtJS. The game has many different features which includes immersive audio, realistic physics applications, day/night cycles, random generation of structures, and entity pickup and drop. We hope to continue to grow this application with features such as authentication of specific users and saving progress.
@@ -38,6 +35,9 @@ Three different servers are required to run this project. The project requires y
    ```linux
    C:\Users\Projects\Skrunkle> npm run build
    ```
+
+#Functionality
+![skrunkle innerWorkings](img/skrunkle.svg)
 
 # Credits
 
