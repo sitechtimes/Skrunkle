@@ -136,7 +136,7 @@ export class World {
       { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
     );
-    subground.position = new Vector3(0, -10, 0);
+    subground.position = new Vector3(0, -1, 0);
     subground.receiveShadows = true;
     // ground_material.albedoColor = new Color3(1, 0 ,0)
 
