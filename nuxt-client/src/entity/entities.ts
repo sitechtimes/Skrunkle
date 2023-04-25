@@ -1,4 +1,4 @@
-import { Scene, Mesh, PhysicsImpostor, Vector3 } from "@babylonjs/core"
+import { Scene, Mesh, PhysicsImpostor, Vector3, Quaternion } from "@babylonjs/core"
 
 export class Old_Entity{
 
@@ -79,6 +79,30 @@ export class Entities{
         this._position = this._object.position
     }
 
+    public get rotationQuaternion(): Quaternion {
+        return this._object.rotationQuaternion;
+    }
+
+    public get rotation(): Vector3 {
+        return this._object.rotation
+    }
+    
+    public set rotationQuaternion(new_rotation: Quaternion) {
+        if (this._object) {
+          this._object.rotationQuaternion.x = new_rotation._x
+          this._object.rotationQuaternion.y = new_rotation._y
+          this._object.rotationQuaternion.z = new_rotation._z
+          this._object.rotationQuaternion.w = new_rotation._w
+        }
+    } 
+
+    public set rotation(new_rotation: Vector3) {
+        if (this._object) {
+            this._object.rotation = new Vector3(new_rotation._x, new_rotation._y, new_rotation._z)
+        }
+    } 
+    
+
     public get name(): string{
         return this._name;
     }
@@ -99,10 +123,11 @@ export class Entities{
         this._object = new_object
     }
 
-    public update(linearVelocity: Vector3, angularVelocity: Vector3, position: Vector3){
+    public update(linearVelocity: Vector3, angularVelocity: Vector3, position: Vector3, rotation: Vector3){
         this._object.physicsImpostor.setAngularVelocity(new Vector3(angularVelocity._x, angularVelocity._y, angularVelocity._z));
         this._object.physicsImpostor.setLinearVelocity(new Vector3(linearVelocity._x, linearVelocity._y, linearVelocity._z));
         this._object.position = position;
+        this.rotation = rotation
     }
 
 }

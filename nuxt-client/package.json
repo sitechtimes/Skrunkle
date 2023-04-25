@@ -25,6 +25,7 @@
     "babylonjs-loaders": "^5.42.0",
     "cannon-es": "^0.20.0",
     "dotenv": "^16.0.3",
+    "gsap": "^3.11.5",
     "oimo": "^1.0.9",
     "oimophysics": "^1.2.2"
   }

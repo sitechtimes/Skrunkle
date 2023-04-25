@@ -6,29 +6,164 @@ import {
   Scene,
   Mesh,
   SceneLoader,
-  TransformNode,
   Vector3,
   PhysicsImpostor,
-  PhysicsJoint,
   VertexBuffer,
-  Matrix,
   Sound,
+  Texture,
+  AbstractMesh
 } from "@babylonjs/core";
-import { Texture } from "babylonjs";
+import { Entities, createEntity } from "../entity/entities";
+import { state_machine } from "../state_machine";
+
+class SoundLoader{
+  private _sounds: Map<string, Sound> = new Map()
+
+  public add_sound(name: string, sound: Sound){
+    this._sounds.set(name, sound)
+  }
+
+  public get_sound(name: string): Sound | undefined{
+    let sound: Sound = this._sounds.get(name)?.clone()
+    sound.play()
+    return sound
+  }
+
+}
+
+class MeshLoader{
+  private _meshes: Map<string, Mesh> = new Map()
+  private env: any;
+
+  constructor(env: any){
+    this.env = env
+  }
+
+  public async add_mesh(name: string, mass: number, metadata: string, mesh_file_name: string, scaling: Vector3){
+    let bodies: any = await SceneLoader.ImportMeshAsync(
+      "",
+      `${this.env["CMS"]}/meshes/`,
+      mesh_file_name,
+    );
+
+    let meshes: Mesh[] = [];
+    bodies.meshes.forEach((m: any) => {
+      if (!m.getVerticesData(VertexBuffer.PositionKind)) {
+        // dont add this mesh
+      } else {
+        m.scaling = scaling;
+        m.checkCollisions = true;
+        meshes.push(m);
+      }
+    });
+
+    let parent: any = Mesh.MergeMeshes(
+      meshes,
+      true,
+      false,
+      undefined,
+      false,
+      true
+    );
+
+    if (parent.material){
+       for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      } 
+    }
+
+    if (mass === 0) {
+      parent.freezeWorldMatrix()
+      parent.cullingStrategy = AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+    }
+    parent.metadata = metadata;
+    parent.receiveShadows = true;
+    parent.name = name
+    parent.position = new Vector3(0, -1000, 0)
+    this._meshes.set(name, parent)
+  }
+
+  public get_meshes(name: string): Mesh | undefined{
+    let mesh: Mesh = this._meshes.get(name)?.clone(name)
+    return mesh
+  }
+
+}
+
 
 export class Generation {
   private _world: World;
   private _scene: Scene;
   private env: any;
+  private soundLoader;
+  private meshLoader;
 
   constructor(world: World, scene: Scene, env: any) {
     this._world = world;
     this._scene = scene;
     this.env = env;
+  
+
+    this.soundLoader = new SoundLoader()
+
+    // add sounds
+    this.soundLoader.add_sound(
+      "whalen",
+      new Sound("Whalen", `${this.env["CMS"]}/audio/whalen.wav`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 })
+    )
+
+    this.soundLoader.add_sound(
+      "rustling",
+      new Sound("Rustling", `${this.env["CMS"]}/audio/rustling.mp3`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 })
+    )
+
+    this.meshLoader = new MeshLoader(this.env)
+
+    this.meshLoader.add_mesh("Tree1", 0, "Tree1", "tree1.glb", new Vector3(2.5, 2.5, 2.5))
+    this.meshLoader.add_mesh("Tree2", 0, "Tree1", "tree2.glb", new Vector3(2.5, 2.5, 2.5))
+    this.meshLoader.add_mesh("House", 0, "House", "house.glb", new Vector3(4, 4, 4))
+    this.meshLoader.add_mesh("House2", 0, "Tree1", "house2.glb", new Vector3(2, 2, 2))
+    this.meshLoader.add_mesh("Sheep", 0, "Sheep", "sheep.glb", new Vector3(1, 1, 1))
+    this.meshLoader.add_mesh("Slope", 0, "Slope", "slope.glb", new Vector3(4, 4, 4))
+    this.meshLoader.add_mesh("Fountain", 0, "Fountain", "fountain.glb", new Vector3(3, 3, 3))
+    this.meshLoader.add_mesh("Crate", 0, "Crate", "crate.glb", new Vector3(3, 3, 3))
+
+  }
+
+  private async add_custom_mesh(
+    uid: string, mesh: any, loaded_mesh: Mesh, y_pos: number, mass: number, restitution: number, noise: Sound | undefined = undefined
+  ): Promise<Mesh>{
+    
+    loaded_mesh.position = new Vector3(mesh.position._x, y_pos, mesh.position._z);
+    this._scene.addMesh(loaded_mesh)
+    
+    let entity: Entities = createEntity(
+      this._scene,
+      uid,
+      mesh.name,
+      mesh.position,
+      loaded_mesh,
+      PhysicsImpostor.MeshImpostor,
+      mass,
+      restitution
+    );
+    entity.update(
+      mesh.linearVelocity,
+      mesh.angularVelocity,
+      mesh.position,
+      mesh.rotation
+    );
+    state_machine.add_entity(uid, entity);
+
+    if (noise){
+      noise.attachToMesh(loaded_mesh);
+    }
+
+    return loaded_mesh;
   }
 
   public GENERATE = {
-    Cylinder: (mesh: any): Mesh => {
+    Cylinder: (mesh: any, uid: string): Mesh => {
       let item = MeshBuilder.CreateCylinder(mesh.name, {
         height: 5,
         diameter: 3,
@@ -44,7 +179,7 @@ export class Generation {
 
       return item;
     },
-    Box: (mesh: any): Mesh => {
+    Box: (mesh: any, uid: string): Mesh => {
       var material = new StandardMaterial("box_texture", this._scene);
       material.diffuseTexture = new Texture(
         `${this.env["CMS"]}/textures/whalen/whalen.jpg`,
@@ -61,93 +196,30 @@ export class Generation {
 
       return box;
     },
-    Tree1: async (mesh: any): Promise<Mesh> => {
-      let bodies: any = await SceneLoader.ImportMeshAsync(
-        "",
-        `${this.env["CMS"]}/meshes/`,
-        "tree1.glb",
-        this._scene
-      );
-
-      let meshes: Mesh[] = [];
-      bodies.meshes.forEach((m: any) => {
-        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
-          // console.log("problems with: " + m.name);
-        }else{
-          m.scaling = new Vector3(2.5, 2.5, 2.5)
-          m.checkCollisions = true
-          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
-          meshes.push(m);
-        }
-      })
-    
-      let parent: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
-      for (let i = 0 ; i < parent.material.subMaterials.length; i ++){
-        parent.material.subMaterials[i].usePhysicalLightFalloff = false
-      }
-
-
-      parent.position = new Vector3(mesh.position._x, 0, mesh.position._z);
-      parent.metadata = "Tree1";
-      parent.receiveShadows = true;
-
-
-
-      // this._scene.createDefaultEnvironment()
-      // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
-      // parent.scaling = new Vector3(0.25, 0.25, 0.25)
-
-      return parent;
+    Tree1: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Tree1"), 0, 0, 0, this.soundLoader.get_sound("rustling"))
     },
-    Tree2: async (mesh: any): Promise<Mesh> => {
-      let bodies: any = await SceneLoader.ImportMeshAsync(
-        "",
-        `${this.env["CMS"]}/meshes/`,
-        "tree2.glb",
-        this._scene
-      );
-
-      let meshes: Mesh[] = [];
-      bodies.meshes.forEach((m: any) => {
-        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
-          // console.log("problems with: " + m.name);
-        } else {
-          m.position.y = 0;
-          // m.physicsImpostor = new PhysicsImpostor(m, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0 }, this._scene)
-          meshes.push(m);
-        }
-      });
-
-      let parent: any = Mesh.MergeMeshes(
-        meshes,
-        true,
-        false,
-        undefined,
-        false,
-        true
-      );
-
-      parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
-
-      // parent.setPivotPoint(new Vector3(0, -parent.getBoundingInfo().boundingBox.extendSize.y, 0));
-      // parent.computeWorldMatrix(true);
-
-      // parent.position = new Vector3(mesh.position.x, 0, mesh.position.z);
-
-      parent.metadata = "Tree2";
-      // parent.rotation = new Vector3(Math.PI / 2, Math.PI, 0)
-      // parent.scaling = new Vector3(0.25, 0.25, 0.25)
-
-      return parent;
+    Tree2: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Tree2"), 0, 0, 0, this.soundLoader.get_sound("rustling"))
+    },
+    House: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("House"), 0, 0, 0)
+    },
+    House2: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("House2"), 0, 0, 0)
+    },
+    Sheep: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Sheep"), 0, 0, 0, this.soundLoader.get_sound("whalen"))
+    },
+    Slope: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Slope"), 0, 0, 0)
+    },
+    Fountain: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Fountain"), 0, 0, 0)
+    },
+    Crate: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Crate"), 0, 0, 0)
     },
   };
-  public RANDOMIZE(item: Mesh, count: number = 5, squareRange: number = 20) {
-    item.position.x = Math.random() * squareRange - squareRange / 2;
-    item.position.z = Math.random() * squareRange - squareRange / 2;
-    for (let i = 1; i < count; i++) {
-      let newItem = item.clone(`${item.name}-${count}`);
-      newItem.position.x = Math.random() * squareRange - squareRange / 2;
-      newItem.position.z = Math.random() * squareRange - squareRange / 2;
-    }
-  }
+
 }

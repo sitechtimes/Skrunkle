@@ -4,7 +4,6 @@ import {
   Vector3,
   MeshBuilder,
   HemisphericLight,
-  DirectionalLight,
   Sound,
   CubeTexture,
   FreeCamera,
@@ -12,22 +11,21 @@ import {
   Matrix,
   KeyboardEventTypes,
   AbstractMesh,
-  CannonJSPlugin,
-  SceneLoader,
   PhysicsImpostor,
   Color3,
   Texture,
-  PBRMaterial,
   DebugLayer,
-  IInspectorOptions,
-  DebugLayerTab,
   PointLight,
   Mesh,
   OimoJSPlugin,
-  AmmoJSPlugin,
   Quaternion,
-  CubeTexture,
-  Sound
+  SceneOptimizerOptions,
+  HardwareScalingOptimization,
+  SceneOptimizer,
+  WebXRSessionManager,
+  WebXRCamera,
+  WebXRExperienceHelper,
+  WebXRDefaultExperience,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -49,16 +47,18 @@ export class World {
   private env: any;
   private _engine: Engine;
   private _scene: Scene;
+  private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
-  private _playerCamera: FreeCamera | null = null;
+  private _playerCamera: FreeCamera | WebXRCamera | null = null;
   private _entities: any[] = [];
   private _socket: Socket;
   private _player: MainPlayer | undefined;
   private _players: Map<string, Player>;
   private _GUI: GUI;
+  private _ground: Mesh;
   // @ts-expect-error
   private _hotbar: Hotbar;
-  private _debug: boolean = false;
+  private _debug: boolean = true;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
@@ -68,13 +68,31 @@ export class World {
   private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
+  private _alpha_time: number = 0
 
+  private _skyboxMaterial: StandardMaterial;
+  private _day_material: CubeTexture;
+  private _night_material: CubeTexture;
 
   private _ground_size:any = {width: 10000, height: 10000}
+  
+  // loading & process
+  private _processing_mesh: Map<string, boolean> = new Map();
+  private _total_meshes: number = 1e10;
+  private _current_meshes: number = 0;
 
+  private _load_callback: any;
 
-  constructor(canvas: HTMLCanvasElement | null, env: any) {
+  /* VR INTEGRATION */
+  private _sessionManager: WebXRSessionManager;
+  private _vr: boolean = false;
+  private _vrExperience: WebXRDefaultExperience;
+  private _renderTarget: WebXRRenderTarget;
+  private _referenceSpace: XRReferenceSpace;
+
+  constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
+    this._load_callback = call_back
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
@@ -95,48 +113,159 @@ export class World {
       new Vector3(0, -9.81, 0),
       new OimoJSPlugin(true, 10, OIMO)
     );
+
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
-  private _initCamera(): void {
-    this._playerCamera.position.y = 7;
-    this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
-    this._playerCamera.checkCollisions = true;
-    this._scene.collisionsEnabled = true;
-    this._playerCamera.applyGravity = true;
-    this._playerCamera.speed = 25;
-    this._playerCamera.angularSensibility = 1500;
+  public resize(): void{
+    this._engine.resize()
+  }
+
+  public get vr(): boolean{
+    return this._vr
+  }
+
+  private _updateRender(): void{
+      state_machine.check_entity();
+      if (this._player) {
+        this._socket?.send(
+          new Packet(
+            PacketType.movement,
+            [
+              {
+                id: this._player.id,
+                name: this._player.name,
+                position: this._player.position,
+                rotation: Quaternion.FromEulerAngles(
+                  this._player.rotation.x,
+                  this._player.rotation.y,
+                  this._player.rotation.z
+                ),
+                current: this._hotbar.current,
+              },
+            ],
+            this._player.id
+          )
+        );
+        if (this._debug) {
+          document.getElementById(
+            "x"
+          )!.innerText = `X: ${this._player.position.x}`;
+          document.getElementById(
+            "y"
+          )!.innerText = `Y: ${this._player.position.y}`;
+          document.getElementById(
+            "z"
+          )!.innerText = `Z: ${this._player.position.z}`;
+        }
+      }
+  }
+
+  private _renderLoop(): void{
+    this._updateRender()
+    this._scene.render()
+  }
+
+  public async enterVR(): Promise<void>{
+    await this._sessionManager.initializeAsync()
+    await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
+    this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+    this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+    const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+
+    this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
+      optionalFeatures: true,
+      floorMeshes: [this._ground],
+    });
+
+    this._playerCamera = this._vrExperience.baseExperience.camera;
+    this._playerCamera.position = new Vector3(0, 6, 0)
+
+    this._sessionManager.runXRRenderLoop()
+
+    this._vrExperience.baseExperience.enterXRAsync(
+      "immersive-vr", 
+      "local-floor", 
+      this._renderTarget
+    )
+
+    this._scene.activeCamera = this._playerCamera
+  }
+
+  private async _initCamera(): Promise<void> {
+
+    const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
+    if (supported) {
+      // xr available, session supported
+      console.log("Is VR, waiting for user activation")
+      this._vr = true;
+
+      // TEMPORARY CAMERA
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
+
+    }else{
+      console.log("Not VR")
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
+      this._playerCamera.checkCollisions = true;
+      this._scene.collisionsEnabled = true;
+      this._playerCamera.applyGravity = true;
+      this._playerCamera.speed = 15;
+      this._playerCamera.angularSensibility = 1500;
+      
+      this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+    }
+
+    document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
+
+
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.code === 'Space') {
+    //     // Apply a vertical impulse to the camera's physics impostor
+    //     this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+    //   }
+    // });
   }
 
   public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-    this._playerCamera = new FreeCamera(
-      "FreeCamera",
-      new Vector3(0, 6, 0),
-      this._scene
-    );
-    var ground = MeshBuilder.CreateGround(
+    this._ground = MeshBuilder.CreateGround(
       "ground",
       { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
     );
-    ground.position = new Vector3(0, 0, 0);
-    ground.physicsImpostor = new PhysicsImpostor(
-      ground,
+    this._ground.position = new Vector3(0, 0, 0);
+    this._ground.physicsImpostor = new PhysicsImpostor(
+      this._ground,
       PhysicsImpostor.BoxImpostor,
       { mass: 0, restitution: 0 },
       this._scene
     );
-    ground.checkCollisions = true;
-    ground.receiveShadows = true;
+    this._ground.checkCollisions = true;
+    this._ground.receiveShadows = true;
 
     var subground = MeshBuilder.CreateGround(
       "ground",
-      { width: this._ground_size.width, height: this._ground_size.height },
+      { width: this._ground_size.width + 10, height: 10},
       this._scene
     );
-    subground.position = new Vector3(0, -1, 0);
+    subground.position = new Vector3(0, -10, 0);
     subground.receiveShadows = true;
     // ground_material.albedoColor = new Color3(1, 0 ,0)
 
@@ -169,10 +298,10 @@ export class World {
     // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
     // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
 
-    ground.material = ground_material;
     subground.material = ground_material;
+    this._ground.material = ground_material;
 
-    const volume = 7;
+    const volume = 0.4;
     const music = new Sound(
       "Walking Music",
       `${this.env["CMS"]}/audio/walking.wav`,
@@ -185,8 +314,47 @@ export class World {
       }
     );
     music.setVolume(volume);
+
+    const steps = new Sound(
+      "Walking Steps",
+      `${this.env["CMS"]}/audio/step.ogg`,
+      this._scene
+    );
+    window.addEventListener("keydown", function (evt) {
+      // Press space key to fire
+      if (["w", "a", "s", "d"].includes(evt.key)) {
+        if (!steps.isPlaying) steps.play();
+      }
+    });
+
+    const windOne = new Sound(
+      "wind1",
+      `${this.env["CMS"]}/audio/Wind.ogg`,
+      this._scene
+    );
+    setInterval(() => windOne.play(), Math.random() * 1000 + 30000);
+
+    const windTwo = new Sound(
+      "wind2",
+      `${this.env["CMS"]}/audio/Wind2.ogg`,
+      this._scene
+    );
+    setInterval(() => windTwo.play(), Math.random() * 1000 + 62000);
+
+    const windThree = new Sound(
+      "wind3",
+      `${this.env["CMS"]}/audio/Wind3.ogg`,
+      this._scene
+    );
+
+    setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
     
     // Adds the sun and moon
+    var ambient_light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this._scene)
+    ambient_light.diffuse = new Color3(0.1, 0.1, 0.1)
+    ambient_light.groundColor = new Color3(0, 0, 0)
+    ambient_light.intensity = .5
+
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     sun_light.intensity = 1;
     var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
@@ -223,54 +391,58 @@ export class World {
     moon_light.specular = new Color3(31, 30, 30);
 
     var skybox = MeshBuilder.CreateBox("skyBox", { size: 10000 }, this._scene);
-    var skyboxMaterial = new StandardMaterial("skyBox", this._scene);
-    skyboxMaterial.backFaceCulling = false;
-    let day_material: CubeTexture = new CubeTexture(
+    this._skyboxMaterial = new StandardMaterial("skyBox", this._scene);
+    this._skyboxMaterial.backFaceCulling = false;
+    this._day_material = new CubeTexture(
       `${this.env["CMS"]}/sky/TropicalSunnyDay`,
       this._scene
     );
-    let night_material: CubeTexture = new CubeTexture(
+    this._night_material = new CubeTexture(
       `${this.env["CMS"]}/space/space`,
       this._scene
     );
-    skyboxMaterial.reflectionTexture = day_material;
-    skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-    skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    skybox.material = skyboxMaterial;
+    this._skyboxMaterial.reflectionTexture = this._day_material;
+    this._skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    this._skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
+    this._skyboxMaterial.specularColor = new Color3(0, 0, 0);
+    skybox.material = this._skyboxMaterial;
 
     // Animations
-    var alpha = 1;
     this._scene.beforeRender = () => {
       sun_light.position = new Vector3(
-        900 * Math.sin(alpha),
-        900 * Math.cos(alpha),
+        900 * Math.sin(this._alpha_time),
+        900 * Math.cos(this._alpha_time),
         0
       );
       moon_light.position = new Vector3(
-        900 * -Math.sin(alpha),
-        900 * -Math.cos(alpha),
+        900 * -Math.sin(this._alpha_time),
+        900 * -Math.cos(this._alpha_time),
         0
       );
       skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
 
-      alpha += (0.5 * this._scene.deltaTime) / 1000;
+      this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
-      alpha = alpha % (2 * Math.PI); // keeps alpha always between 0 - 2PI
+      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
-      if (Math.cos(alpha) > 0 && !this._isday){
+      if (Math.cos(this._alpha_time) > 0 && !this._isday){
         this._isday = true
-        skyboxMaterial.reflectionTexture = day_material;
-      }else if (Math.cos(alpha) < 0 && this._isday){
+        this._skyboxMaterial.reflectionTexture = this._day_material;
+        moon_light.intensity = 0;
+        sun_light.intensity = 1;
+      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
         this._isday = false
-        skyboxMaterial.reflectionTexture = night_material;
+        this._skyboxMaterial.reflectionTexture = this._night_material;
+        moon_light.intensity = 0.01;
+        sun_light.intensity = 0;
       }
 
     };
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
+    state_machine.applyShadow(subground)
     // state_machine.applyShadow(ground)
     
     await import("@babylonjs/core/Debug/debugLayer")
@@ -283,20 +455,9 @@ export class World {
       overlayCanvas: true,
       embedMode: true,
       parentElement: document.body,
-      initialTab: "Physics", // <-- This enables the Physics tab
+      initialTab: "Physics", // <-- This enables the Physics tab,
     });
-
-    // this._scene.debugLayer.select(ground_material, "DEBUG");
-
-    //   this._scene.onPointerObservable.add((pointerInfo) => {
-    //     switch (pointerInfo.type) {
-    //       case PointerEventTypes.POINTERWHEEL:
-    //         this._castRay();
-
-    //         break;
-    //     }
-
-    //   });
+    
     this._scene.onKeyboardObservable.add((kbInfo) => {
       switch (kbInfo.type) {
         case KeyboardEventTypes.KEYDOWN:
@@ -331,48 +492,51 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
+      await this._initCamera()
+      this._engine.runRenderLoop(()=>{
+        this._renderLoop()
+      })
 
-      this._engine.runRenderLoop(() => {
-        state_machine.check_entity();
+      // this._engine.runRenderLoop(() => {
+      //   state_machine.check_entity();
 
-        this._initCamera();
 
-        state_machine.check_entity();
+      //   state_machine.check_entity();
 
-        this._scene.render();
-        if (this._player) {
-          this._socket?.send(
-            new Packet(
-              PacketType.movement,
-              [
-                {
-                  id: this._player.id,
-                  name: this._player.name,
-                  position: this._player.position,
-                  rotation: Quaternion.FromEulerAngles(
-                    this._player.rotation.x,
-                    this._player.rotation.y,
-                    this._player.rotation.z
-                  ),
-                  current: this._hotbar.current,
-                },
-              ],
-              this._player.id
-            )
-          );
-          if (this._debug) {
-            document.getElementById(
-              "x"
-            )!.innerText = `X: ${this._player.position.x}`;
-            document.getElementById(
-              "y"
-            )!.innerText = `Y: ${this._player.position.y}`;
-            document.getElementById(
-              "z"
-            )!.innerText = `Z: ${this._player.position.z}`;
-          }
-        }
-      });
+      //   this._scene.render();
+      //   if (this._player) {
+      //     this._socket?.send(
+      //       new Packet(
+      //         PacketType.movement,
+      //         [
+      //           {
+      //             id: this._player.id,
+      //             name: this._player.name,
+      //             position: this._player.position,
+      //             rotation: Quaternion.FromEulerAngles(
+      //               this._player.rotation.x,
+      //               this._player.rotation.y,
+      //               this._player.rotation.z
+      //             ),
+      //             current: this._hotbar.current,
+      //           },
+      //         ],
+      //         this._player.id
+      //       )
+      //     );
+      //     if (this._debug) {
+      //       document.getElementById(
+      //         "x"
+      //       )!.innerText = `X: ${this._player.position.x}`;
+      //       document.getElementById(
+      //         "y"
+      //       )!.innerText = `Y: ${this._player.position.y}`;
+      //       document.getElementById(
+      //         "z"
+      //       )!.innerText = `Z: ${this._player.position.z}`;
+      //     }
+      //   }
+      // });
     });
 
     onclick = () => {
@@ -645,46 +809,19 @@ export class World {
           entity.update(
             payload.linearVelocity,
             payload.angularVelocity,
-            payload.position
+            payload.position,
+            payload.rotation
           );
           state_machine.update_entity(uid, entity);
         } else {
-          console.log(payload);
+          if (this._processing_mesh.get(uid)) return
+          this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2"
-          ](payload);
-
-          let adjusted_pos: Vector3 = new Vector3(
-            this.second_decimal(payload.position._x),
-            this.second_decimal(payload.position._y * 2),
-            this.second_decimal(payload.position._z)
-          );
-
-          let mass: number = 90;
-
-          let imposter = PhysicsImpostor.BoxImpostor;
-          if (payload.metdata == "Cylinder")
-            imposter = PhysicsImpostor.CylinderImpostor;
-          else if (payload.metadata.indexOf("Tree") != -1) {
-            mass = 0;
-            imposter = PhysicsImpostor.MeshImpostor;
-          }
-          let entity: Entities = createEntity(
-            this._scene,
-            uid,
-            payload.name,
-            adjusted_pos,
-            mesh,
-            imposter,
-            mass,
-            0
-          );
-          entity.update(
-            payload.linearVelocity,
-            payload.angularVelocity,
-            adjusted_pos
-          );
-          state_machine.add_entity(uid, entity);
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
+          ](payload, uid);
+          this._current_meshes++;
+          this._processing_mesh.delete(uid)
+          this._load_callback(this._current_meshes, this._total_meshes, "meshes")
         }
         break;
 
@@ -695,8 +832,15 @@ export class World {
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
         if (this._player === undefined) {
-          console.log(playerInfo.name);
+          this._total_meshes = playerInfo.total_mesh
           this._initClient(playerInfo.name, data.uid);
+          this._isday = playerInfo.isday;
+          this._alpha_time = playerInfo.alpha_time
+
+          if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
+          else this._skyboxMaterial.reflectionTexture = this._night_material
+
+          this._load_callback(this._current_meshes, this._total_meshes, "server")
         }
         break;
       case "Close":
