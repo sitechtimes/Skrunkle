@@ -134,7 +134,7 @@ class State_machine {
 
     this.items.splice(index, 1)
 
-    // this.socket_ref.send() // make a new packet method for picking up items, same-ish idea to this
+    this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
   }
 }
 

@@ -1,4 +1,29 @@
 "use strict";
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketServer = void 0;
 var ws_1 = require("ws");
@@ -85,7 +110,8 @@ var SocketServer = /** @class */ (function () {
                             }], msg.payload[0].item.name));
                         break;
                     case "PickupItem":
-                        var mesh_id = msg.payload[0];
+                        _this.logger.log("Item picked up");
+                        _this.broadCast(new packet_1.Packet(packet_1.PacketType.pickup_item, [msg.payload[0], __spreadArray([], __read(msg.payload[1]), false)], msg.payload[0].item.name));
                         break;
                     default:
                         _this.logger.error("Unknown socket message from client (".concat(msg.type, ")"));

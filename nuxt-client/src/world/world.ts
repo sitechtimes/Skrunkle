@@ -629,15 +629,15 @@ export class World {
           // state_machine.delete_entity(item.name)
           let itemName = item.name.split("-")[1].toLowerCase()
           console.log(itemName);
-          this._hotbar.add(
-            new PlayerItem(
-              // @ts-expect-error this works no worries
-              Items[itemName],
-              this._player!,
-              this._hotbar,
-              this._socket
-            )
-          );
+          let itemRef = new PlayerItem(
+            // @ts-expect-error this works no worries
+            Items[itemName],
+            this._player!,
+            this._hotbar,
+            this._socket
+          )
+          this._hotbar.add(itemRef);
+          state_machine.pickupItem(itemRef)
         }
 
         if (this._pickedup == true) {
@@ -743,6 +743,8 @@ export class World {
       case "DropItem":
         let mesh: Mesh = await this._generator.GENERATE.ENTITY(data.payload[0].item, data.payload[0].position)
         break
+      case "PickupItem":
+        console.log(data)
       default:
         // throw some error
         break;

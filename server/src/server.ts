@@ -101,7 +101,8 @@ export class SocketServer {
             }], msg.payload[0].item.name))
             break
           case "PickupItem":
-            let mesh_id = msg.payload[0]
+            this.logger.log("Item picked up")
+            this.broadCast(new Packet(PacketType.pickup_item, [msg.payload[0], [...msg.payload[1]]], msg.payload[0].item.name))
             break
           default:
             this.logger.error(`Unknown socket message from client (${msg.type})`)
