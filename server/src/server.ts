@@ -102,7 +102,7 @@ export class SocketServer {
             break
           case "PickupItem":
             this.logger.log("Item picked up")
-            this.broadCast(new Packet(PacketType.pickup_item, [msg.payload[0], [...msg.payload[1]]], msg.payload[0].item.name))
+            this.broadCast(new Packet(PacketType.pickup_item, [msg.payload[0], [...msg.payload[1]]]))
             break
           default:
             this.logger.error(`Unknown socket message from client (${msg.type})`)

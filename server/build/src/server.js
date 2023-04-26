@@ -111,7 +111,7 @@ var SocketServer = /** @class */ (function () {
                         break;
                     case "PickupItem":
                         _this.logger.log("Item picked up");
-                        _this.broadCast(new packet_1.Packet(packet_1.PacketType.pickup_item, [msg.payload[0], __spreadArray([], __read(msg.payload[1]), false)], msg.payload[0].item.name));
+                        _this.broadCast(new packet_1.Packet(packet_1.PacketType.pickup_item, [msg.payload[0], __spreadArray([], __read(msg.payload[1]), false)]));
                         break;
                     default:
                         _this.logger.error("Unknown socket message from client (".concat(msg.type, ")"));
