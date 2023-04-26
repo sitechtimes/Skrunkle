@@ -54,7 +54,6 @@ export default {
     
     const canvas = this.$refs.renderCanvas;
     const world = new World(<HTMLCanvasElement>canvas, this.$config.public, this.update_loading);
-    world.init();
     this.world = world;
 
     window.addEventListener("resize", this.resize)
