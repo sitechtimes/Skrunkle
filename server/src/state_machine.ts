@@ -75,7 +75,8 @@ class State_machine{
             let entity_old: Old_Entity = this.old_entities.get(uid)
 
             let passed: boolean = this.pass_changes(entity, entity_old) // if changes very little dont broadcast
-            if (passed || info || this.npc.get(uid)) {
+            // if (passed || info || this.npc.get(uid)) {
+            if (true) {
                 this.socket_ref.broadCast(entity.serialize())
                 cnt++;
             }
@@ -105,7 +106,7 @@ class State_machine{
     public add_entity(uid: string, entity: Entities, is_npc:boolean = false){
         this.entities.set(uid, entity);
         this.old_entities.set(uid, new Old_Entity(entity))
-        if (is_npc) this.npc.set(uid, new NPC(entity));
+        if (is_npc) this.npc.set(uid, new NPC(entity, this.world_ref.scene));
     }
 
     public delete_player(uid: string){

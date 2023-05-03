@@ -96,39 +96,17 @@ export class World {
     this._load_callback = call_back
 
     this._canvas = canvas;
-    this._engine = new WebGPUEngine(this._canvas);
-    this._engine.initAsync().then((e)=>{
-      console.log("Initing GPU")
-      this._scene = new Scene(this._engine);
-      this._GUI = new GUI(this._scene);
-      this._players = new Map<string, Player>();
-      this._socket = new Socket(this, this.env);
-      this._chat = new Chat(this._socket, this._player!);
-      this._generator = new Generation(this, this._scene, this.env);
-      this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
-      this.chestOpen = false;
-      this._pickup = false;
-      this._pickedup = false;
-      this._itemchosen = 0;
-
-      
-      // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-      this._scene.enablePhysics(
-        new Vector3(0, -9.81, 0),
-        new OimoJSPlugin(true, 10, OIMO)
-      );
-  
-      let options = new SceneOptimizerOptions(120, 500);
-      SceneOptimizerOptions.ModerateDegradationAllowed(120)
-      options.addOptimization(new HardwareScalingOptimization(0, 1))
-      this._optimizer = new SceneOptimizer(this._scene, options)
-      SceneOptimizer.OptimizeAsync(this._scene)
-      
-      this._sessionManager = new WebXRSessionManager(this._scene);
-      
+    this._engine = new Engine(this._canvas);
+    if (WebGPUEngine.IsSupported){
+      this._engine = new WebGPUEngine(this._canvas);
+      this._engine.initAsync().then((e)=>{
+        console.log("Initing GPU")
+        this.init()
+        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
+      });
+    }else{
       this.init()
-      // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
-    });
+    }
 
   }
 
@@ -250,6 +228,33 @@ export class World {
   }
 
   public async init(): void {
+    this._scene = new Scene(this._engine);
+    this._GUI = new GUI(this._scene);
+    this._players = new Map<string, Player>();
+    this._socket = new Socket(this, this.env);
+    this._chat = new Chat(this._socket, this._player!);
+    this._generator = new Generation(this, this._scene, this.env);
+    this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
+    this.chestOpen = false;
+    this._pickup = false;
+    this._pickedup = false;
+    this._itemchosen = 0;
+
+      
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    this._scene.enablePhysics(
+      new Vector3(0, -9.81, 0),
+      new OimoJSPlugin(true, 10, OIMO)
+    );
+  
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+      
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
     this._ground = MeshBuilder.CreateGround(
@@ -807,6 +812,7 @@ export class World {
             payload.rotation
           );
           state_machine.update_entity(uid, entity);
+          console.log(entity.position)
         } else {
           if (this._processing_mesh.get(uid)) return
           this._processing_mesh.set(uid, true)

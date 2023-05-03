@@ -1,21 +1,52 @@
-import { Vector3 } from "babylonjs";
+import { Scene, Vector3 } from "babylonjs";
 import { Entities } from "./entities"
+import { Logger } from "../logger";
+
+const maxX = 5000
+const minX = 5;
+
+const maxZ = 5000;
+const minZ = 5;
 
 export class NPC{
 
     private entity: Entities;
+    private _scene: Scene;
 
-    constructor(entity: Entities){
+    private _logger: Logger = new Logger("NPC")
+
+    constructor(entity: Entities, scene: Scene){
         this.entity = entity
-        this._applyForce()
+        this._scene = scene
+        this._logger.pass("Created NPC")
+        this.wander()
     }
 
-    private _applyForce():void{ 
-        let random_impulse: Vector3 = new Vector3(Math.random() * 10, 0, Math.random() * 10)
-        let random_interval:number = Math.random() * 10000
+    private getRandomDestination(): Vector3{
+        let x: number = Math.random() * (maxX - minX) + minX;
+        let z: number = Math.random() * (maxZ - minZ) + minZ;
+        return new Vector3(x, 0, z)
+    }
 
-        this.entity.object.physicsImpostor.applyImpulse(random_impulse, this.entity.object.getAbsolutePosition())
-        setTimeout(()=>{this._applyForce()}, random_interval)
+    private wander():void{ 
+        let destination: Vector3 = this.getRandomDestination()
+        let direction: Vector3 = destination.subtract(this.entity.position).normalize()
+        let distance: number = this.entity.position.subtract(destination).length();
+
+        this.entity.object.lookAt(destination)
+        // walkanimation.start()
+
+        let random_interval:number = Math.random() * 1000
+
+        this._scene.registerBeforeRender(()=>{
+            if (this.entity.position.subtract(destination).length() > 0.1){
+                this.entity.object.moveWithCollisions(direction.scale(1))
+                this._logger.log(this.entity.position)
+            }else{
+                setTimeout(this.wander, random_interval)
+                this.wander()
+            }
+        })
     }
 
 }
