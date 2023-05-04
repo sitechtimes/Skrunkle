@@ -133,8 +133,12 @@ class State_machine {
     let index = this.items.findIndex((element) => element == rep)
 
     this.items.splice(index, 1)
+    
+    console.log(item)
+    const payload = [rep, [...this.items]]
+    console.log(payload)
 
-    this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
+    this.socket_ref.send(new Packet(PacketType.pickup_item, payload))
   }
 }
 
