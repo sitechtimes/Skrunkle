@@ -353,12 +353,12 @@ export class World {
     var ambient_light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this._scene)
     ambient_light.diffuse = new Color3(0.1, 0.1, 0.1)
     ambient_light.groundColor = new Color3(0, 0, 0)
-    ambient_light.intensity = .5
+    ambient_light.intensity = .25
 
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
-    sun_light.intensity = 1;
+    // sun_light.intensity = 1;
     var moon_light = new PointLight("moon", new Vector3(10, 0, 0), this._scene);
-    moon_light.intensity = 0.01;
+    // moon_light.intensity = 0.01;  
 
     var smooth_material = new StandardMaterial(
       "sun/moon material",
@@ -422,16 +422,18 @@ export class World {
       skybox.rotation.y += 0.0008;
       sun.position = sun_light.position;
       moon.position = moon_light.position;
-
+      moon_light.intensity = 0.01;
+      sun_light.intensity = 1
       this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
-      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
+      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI   
 
       if (Math.cos(this._alpha_time) > 0 && !this._isday){
         this._isday = true
         this._skyboxMaterial.reflectionTexture = this._day_material;
         moon_light.intensity = 0;
-        sun_light.intensity = 1;
+        sun_light.intensity = 1 - (0.01*Math.abs(Math.cos(this._alpha_time)))
+        this._skyboxMaterial.reflectionTexture.level = 0 + (Math.abs(Math.sin(10000 * this._alpha_time)))
       }else if (Math.cos(this._alpha_time) < 0 && this._isday){
         this._isday = false
         this._skyboxMaterial.reflectionTexture = this._night_material;
