@@ -125,14 +125,26 @@ class State_machine {
   public dropItem(item: PlayerItem) {
     let rep = { item: item, position: this._client.position }
     this.items.push(rep)
+    console.log(this.items)
+    // console.log(item._name == this.items[0].item._name)
     this.socket_ref.send(new Packet(PacketType.drop_item, [...this.items]))
   }
 
   public pickupItem(item: PlayerItem) {
-    let rep = this.items.find((element) => element.item._name == item._name)
+    let rep: { item: PlayerItem, position: Vector3 }
+    this.items.forEach((element) => {
+      if(element.item._name == item._name) {
+        console.log("same")
+        rep = element
+      } else {
+        console.log(element.item._name, item._name)
+      }
+    })
     let index = this.items.findIndex((element) => element == rep)
 
+    console.log(rep, index)
     this.items.splice(index, 1)
+    console.log(rep, index)
     
     console.log(item)
     const payload = [rep, [...this.items]]
