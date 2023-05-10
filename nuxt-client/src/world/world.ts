@@ -13,9 +13,7 @@ import {
   AbstractMesh,
   PhysicsImpostor,
   Color3,
-  particleSystems,
-  skeletons,
-  animationGroups,
+  SceneLoader,
   Texture,
   DebugLayer,
   PointLight,
@@ -45,6 +43,7 @@ import { Generation } from "./generation";
 import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
+import { AnimationSubEntryComponent } from "@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/animations/curveEditor/sideBar/animationSubEntryComponent";
 
 export class World {
   private env: any;
@@ -303,12 +302,12 @@ export class World {
     this._ground.material = ground_material;
 
     // Load hero character and play animation
-    BABYLON.SceneLoader.ImportMesh(
-      "player.fbx",
-      "./cms/blender_models/animation",
-      "animation.glb",
+    SceneLoader.ImportMesh(
+      "",
+      "../cms/blender_models/animation",
+      "animations.glb",
       this._scene,
-      function (newMeshes, particleSystems, skeletons, animationGroups) {
+      (newMeshes, particleSystems, skeletons, animationGroups) => {
         var hero = newMeshes[0];
 
         //Scale the model down
@@ -321,7 +320,7 @@ export class World {
         const sambaAnim = this._scene.getAnimationGroupByName("ymca");
 
         //Play the Samba animation
-        sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+        sambaAnim!.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
       }
     );
 
