@@ -99,7 +99,7 @@ export class Generation {
       bodies.transformNodes[0].position = new Vector3(state_machine.client.position.x + 1, state_machine.client.position.y + 1, state_machine.client.position.z + 5)
       state_machine.add_entity(mesh._name, bodies.transformNodes[0])
       return bodies.transformNodes[0] */
-      parent.name = `${mesh._name}-${Math.random() * 100}`
+      parent.name = mesh._name
       parent.metadata = mesh._metadata
 
       if (!position) state_machine.dropItem(mesh)
