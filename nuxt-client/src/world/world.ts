@@ -302,27 +302,6 @@ export class World {
     this._ground.material = ground_material;
 
     // Load hero character and play animation
-    SceneLoader.ImportMesh(
-      "",
-      "../cms/blender_models/animation",
-      "animations.glb",
-      this._scene,
-      (newMeshes, particleSystems, skeletons, animationGroups) => {
-        var hero = newMeshes[0];
-
-        //Scale the model down
-        hero.scaling.scaleInPlace(0.1);
-
-        //Lock camera on the character
-        this._playerCamera.target = hero;
-
-        //Get the Samba animation Group
-        const sambaAnim = this._scene.getAnimationGroupByName("ymca");
-
-        //Play the Samba animation
-        sambaAnim!.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
-      }
-    );
 
     const volume = 0.4;
     const music = new Sound(
@@ -737,6 +716,30 @@ export class World {
 
     console.log("Created Main Player id: " + this._player.id);
     // console.log(this._player.inventory);
+
+    const globalThis = this;
+
+    SceneLoader.ImportMesh(
+      "",
+      `${this.env["CMS"]}/animation/`,
+      "animations.glb",
+      this._scene,
+      function (newMeshes, particleSystems, skeletons, animationGroups) {
+        var hero = newMeshes[0];
+
+        //Scale the model down
+        hero.scaling.scaleInPlace(0.1);
+
+        //Lock camera on the character
+        globalThis._playerCamera.target = hero;
+
+        //Get the Samba animation Group
+        const sambaAnim = globalThis._scene.getAnimationGroupByName("ymca");
+
+        //Play the Samba animation
+        sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+      }
+    );
   }
 
   private _initPlayer(player: Player): void {
