@@ -11,7 +11,7 @@ import {
   Plane,
   StandardMaterial,
   VertexBuffer,
-  Quaternion
+  Quaternion,
 } from "@babylonjs/core";
 import { PhysicsImpostor } from "babylonjs";
 import { PlayerItem } from "../gui/items";
@@ -23,7 +23,7 @@ export class Player {
   private _position: Vector3;
   private _rotation: Vector3;
   private _id: string;
-  public _body: Mesh ;
+  public _body: Mesh;
   private _scene: Scene;
   private _nametag: Mesh;
   private _nametag_y_offset: number = 0.5;
@@ -104,39 +104,57 @@ export class Player {
     if (options.renderBody) {
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
-        `${this.env['CMS']}/meshes/`,
-        "player.babylon"
+        `${this.env["CMS"]}/animation/`,
+        "animations.glb"
       );
-      
-      let meshes: Mesh[] = []
-      bodies.meshes.forEach((m: any)=>{
-        if (!m.getVerticesData(VertexBuffer.PositionKind)){
+
+      const hero = bodies.meshes[0];
+
+      /* hero.scaling.scaleInPlace(1.5); */
+
+      const sambaAnim = this._scene.getAnimationGroupByName("death");
+      sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+
+      let meshes: Mesh[] = [];
+      bodies.meshes.forEach((m: any) => {
+        if (!m.getVerticesData(VertexBuffer.PositionKind)) {
           // console.log("problems with: " + m.name);
-        }else{
-          meshes.push(m)
+        } else {
+          meshes.push(m);
         }
-      })
-    
-      let player_body: any = Mesh.MergeMeshes(meshes, true, false, undefined, false, true)
+      });
 
-      player_body.scaling.x = this.player_body_scale 
-      player_body.scaling.y = this.player_body_scale 
-      player_body.scaling.z = this.player_body_scale 
-      
+      let player_body: any = Mesh.MergeMeshes(
+        meshes,
+        true,
+        false,
+        undefined,
+        false,
+        true
+      );
+
+      player_body.scaling.x = this.player_body_scale;
+      player_body.scaling.y = this.player_body_scale;
+      player_body.scaling.z = this.player_body_scale;
+
       player_body.metadata = "player_body";
-      player_body.name = this._name
-      player_body.physicsImpostor = new PhysicsImpostor(player_body, PhysicsImpostor.MeshImpostor, { mass: 1, restitution: 0 }, this._scene)
+      player_body.name = this._name;
+      player_body.physicsImpostor = new PhysicsImpostor(
+        player_body,
+        PhysicsImpostor.MeshImpostor,
+        { mass: 1, restitution: 0 },
+        this._scene
+      );
 
-      player_body.position = new Vector3(0, 100, 0)
-      for (let i = 0 ; i < player_body.material.subMaterials.length; i ++){
-        player_body.material.subMaterials[i].usePhysicalLightFalloff = false
+      player_body.position = new Vector3(0, 100, 0);
+      for (let i = 0; i < player_body.material.subMaterials.length; i++) {
+        player_body.material.subMaterials[i].usePhysicalLightFalloff = false;
       }
 
-      this._body = player_body
-      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0)
+      this._body = player_body;
+      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0);
     }
   }
-
 
   public get position(): Vector3 {
     return this._position;
@@ -147,11 +165,11 @@ export class Player {
     if (this._body) {
       // this._body.position = this._position;
       // this._body.position = new Vector3(this._position.x, 0, this.position_z);
-      this._body.position.x = new_position._x
+      this._body.position.x = new_position._x;
       // this._body.position.y = 0
-      this._body.position.z = new_position._z
+      this._body.position.z = new_position._z;
 
-      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0)
+      this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0);
     }
     if (this._nametag) {
       this._nametag.position = new Vector3(
@@ -168,10 +186,10 @@ export class Player {
 
   public set rotation(new_rotation: Quaternion) {
     if (this._body) {
-      this._body.rotationQuaternion.x = new_rotation._x
-      this._body.rotationQuaternion.y = new_rotation._y
-      this._body.rotationQuaternion.z = new_rotation._z
-      this._body.rotationQuaternion.w = new_rotation._w
+      this._body.rotationQuaternion.x = new_rotation._x;
+      this._body.rotationQuaternion.y = new_rotation._y;
+      this._body.rotationQuaternion.z = new_rotation._z;
+      this._body.rotationQuaternion.w = new_rotation._w;
     }
   }
 
@@ -237,6 +255,6 @@ export class Player {
   }
 
   public get body(): Mesh {
-    return this._body
+    return this._body;
   }
 }

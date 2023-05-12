@@ -719,27 +719,28 @@ export class World {
 
     const globalThis = this;
 
-    SceneLoader.ImportMesh(
-      "",
-      `${this.env["CMS"]}/animation/`,
-      "animations.glb",
-      this._scene,
-      function (newMeshes, particleSystems, skeletons, animationGroups) {
-        var hero = newMeshes[0];
+    // SceneLoader.ImportMesh(
+    //   "",
+    //   `${this.env["CMS"]}/animation/`,
+    //   "animation2.glb",
+    //   this._scene,
+    //   function (newMeshes, particleSystems, skeletons, animationGroups) {
+    //     var hero = newMeshes[0];
+    //     console.log(newMeshes);
 
-        //Scale the model down
-        hero.scaling.scaleInPlace(0.1);
+    //     //Scale the model down
+    //     hero.scaling.scaleInPlace(1.5);
 
-        //Lock camera on the character
-        globalThis._playerCamera.target = hero;
+    //     //Lock camera on the character
+    //     /*   globalThis._playerCamera.target = hero;
+    //      */
+    //     //Get the Samba animation Group
+    //     const sambaAnim = globalThis._scene.getAnimationGroupByName("death");
 
-        //Get the Samba animation Group
-        const sambaAnim = globalThis._scene.getAnimationGroupByName("ymca");
-
-        //Play the Samba animation
-        sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
-      }
-    );
+    //     //Play the Samba animation
+    //     sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+    //   }
+    // );
   }
 
   private _initPlayer(player: Player): void {
