@@ -405,6 +405,7 @@ export class World {
     this._skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
     this._skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
     this._skyboxMaterial.specularColor = new Color3(0, 0, 0);
+
     skybox.material = this._skyboxMaterial;
 
     // Animations
@@ -427,22 +428,18 @@ export class World {
       this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
       this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI   
-
       if (Math.cos(this._alpha_time) > 0 && !this._isday){
         this._isday = true
         this._skyboxMaterial.reflectionTexture = this._day_material;
         moon_light.intensity = 0;
         sun_light.intensity = 1 - (0.01*Math.abs(Math.cos(this._alpha_time)))
-        this._skyboxMaterial.reflectionTexture.level = 0 + (Math.abs(Math.sin(10000 * this._alpha_time)))
-      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
+      }else if (Math.cos(Math.PI* this._alpha_time) < 0 && this._isday){
         this._isday = false
         this._skyboxMaterial.reflectionTexture = this._night_material;
         moon_light.intensity = 0.01;
         sun_light.intensity = 0;
-      }
-
-    };
-
+      }  
+  }
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     state_machine.applyShadow(subground)
     // state_machine.applyShadow(ground)
@@ -838,7 +835,6 @@ export class World {
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
-
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
 
