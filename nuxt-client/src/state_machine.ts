@@ -131,7 +131,7 @@ class State_machine {
   }
 
   public pickupItem(item: PlayerItem) {
-    let rep: { item: PlayerItem, position: Vector3 }
+    /* let rep: { item: PlayerItem, position: Vector3 }
     this.items.forEach((element) => {
       if(element.item._name == item._name) {
         console.log("same")
@@ -150,7 +150,31 @@ class State_machine {
     const payload = [rep, [...this.items]]
     console.log(payload)
 
-    this.socket_ref.send(new Packet(PacketType.pickup_item, payload))
+    this.socket_ref.send(new Packet(PacketType.pickup_item, payload)) */
+    // I hate this I'm just gonna do position based instead
+
+    let rep: { item: PlayerItem, position: Vector3 }
+    let matches = this.items.filter((element) => element.item._metadata == item._metadata)
+
+    if (matches.length > 1) {
+      let closest: { item: PlayerItem, position: Vector3 }
+      // Math.max() returns infinity I love that
+      let closestDistance = Math.max()
+      matches.forEach((element) => {
+        let x = this._client.position.x - element.position.x
+        let y = this._client.position.y - element.position.y
+        let z = this._client.position.z - element.position.z
+        let distance = Math.sqrt((x*x) + (y*y) + (z+z))
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closest = element
+        }
+      })
+    } else {
+      rep = matches[0]
+      console.log(rep, matches)
+      // this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, ...this.items]))
+    }
   }
 }
 
