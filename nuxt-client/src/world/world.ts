@@ -742,6 +742,7 @@ export class World {
         break;
       case "DropItem":
         let mesh: Mesh = await this._generator.GENERATE.ENTITY(data.payload[0].item, data.payload[0].position)
+        state_machine.pushItem(data.payload[0].item, data.payload[0].position)
         break
       case "PickupItem":
         console.log(data)

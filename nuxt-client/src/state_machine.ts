@@ -130,31 +130,15 @@ class State_machine {
     this.socket_ref.send(new Packet(PacketType.drop_item, [...this.items]))
   }
 
+  public pushItem(item: PlayerItem, position: Vector3) {
+    this.items.push({ item: item, position: position })
+  }
+
   public pickupItem(item: PlayerItem) {
-    /* let rep: { item: PlayerItem, position: Vector3 }
-    this.items.forEach((element) => {
-      if(element.item._name == item._name) {
-        console.log("same")
-        rep = element
-      } else {
-        console.log(element.item._name, item._name)
-      }
-    })
-    let index = this.items.findIndex((element) => element == rep)
-
-    console.log(rep, index)
-    this.items.splice(index, 1)
-    console.log(rep, index)
-    
-    console.log(item)
-    const payload = [rep, [...this.items]]
-    console.log(payload)
-
-    this.socket_ref.send(new Packet(PacketType.pickup_item, payload)) */
-    // I hate this I'm just gonna do position based instead
-
     let rep: { item: PlayerItem, position: Vector3 }
     let matches = this.items.filter((element) => element.item._metadata == item._metadata)
+
+    console.log("matches: ", matches, "items: ", this.items)
 
     if (matches.length > 1) {
       let closest: { item: PlayerItem, position: Vector3 }
@@ -164,16 +148,16 @@ class State_machine {
         let x = this._client.position.x - element.position.x
         let y = this._client.position.y - element.position.y
         let z = this._client.position.z - element.position.z
-        let distance = Math.sqrt((x*x) + (y*y) + (z+z))
+        let distance = Math.sqrt((x*x) + (y*y) + (z*z))
         if (distance < closestDistance) {
           closestDistance = distance
           closest = element
         }
       })
+      // SEND THE DATA
     } else {
       rep = matches[0]
       console.log(rep, matches)
-      // this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, ...this.items]))
     }
   }
 }
