@@ -745,7 +745,7 @@ export class World {
         state_machine.pushItem(data.payload[0].item, data.payload[0].position)
         break
       case "PickupItem":
-        console.log(data)
+        console.log(data.payload[0])
       default:
         // throw some error
         break;
