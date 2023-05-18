@@ -634,7 +634,8 @@ export class World {
             Items[itemName],
             this._player!,
             this._hotbar,
-            this._socket
+            this._socket,
+            item.name
           )
           this._hotbar.add(itemRef);
           state_machine.pickupItem(itemRef)
@@ -746,6 +747,10 @@ export class World {
         break
       case "PickupItem":
         console.log(data.payload[0])
+        let meshItem = this._scene.getMeshByName(data.payload[0].item._name)
+        meshItem?.dispose()
+        state_machine.removeItem(data.payload[0].item)
+        break
       default:
         // throw some error
         break;

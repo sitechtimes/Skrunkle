@@ -134,7 +134,11 @@ class State_machine {
     this.items.push({ item: item, position: position })
   }
 
-  public pickupItem(item: PlayerItem, receive? = false) {
+  public removeItem(item: PlayerItem) {
+    this.items.splice(this.items.findIndex((e) => e.item == item), 1)
+  }
+
+  public pickupItem(item: PlayerItem) {
     let rep: { item: PlayerItem, position: Vector3 }
     let matches = this.items.filter((element) => element.item._metadata == item._metadata)
 
@@ -157,12 +161,12 @@ class State_machine {
       rep = closest!
       this.items.splice(this.items.findIndex((e) => e == rep), 1)
       // SEND THE DATA
-      if(!receive) this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
+      this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
     } else {
       rep = matches[0]
       console.log(rep, matches)
       this.items.splice(this.items.findIndex((e) => e == rep), 1)
-      if(!receive) this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
+      this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
     }
   }
 }

@@ -16,8 +16,9 @@ export class PlayerItem {
   #_hotbar: Hotbar;
   #_socket: Socket;
 
-  constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket) {
-    this._name = `(ITEM)-${item.name}-${Math.random() * 100000}`;
+  constructor(item: Item, player: MainPlayer, hotbar: Hotbar, socket: Socket, name?: string) {
+    if (!name) this._name = `(ITEM)-${item.name}-${Math.random() * 100000}`;
+    else this._name = name
     this._item = item
     this._metadata = item.name;
     this._type = item.type;
