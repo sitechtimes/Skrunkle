@@ -747,8 +747,10 @@ export class World {
         break
       case "PickupItem":
         console.log(data.payload[0])
+        console.log(data.payload[0].item._name)
+        console.log(this._scene.getMeshByName(data.payload[0].item._name))
         let meshItem = this._scene.getMeshByName(data.payload[0].item._name)
-        meshItem?.dispose()
+        meshItem!.dispose()
         state_machine.removeItem(data.payload[0].item)
         break
       default:
