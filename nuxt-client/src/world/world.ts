@@ -353,7 +353,7 @@ export class World {
     var ambient_light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this._scene)
     ambient_light.diffuse = new Color3(0.1, 0.1, 0.1)
     ambient_light.groundColor = new Color3(0, 0, 0)
-    ambient_light.intensity = .25
+    ambient_light.intensity = .55
 
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     // sun_light.intensity = 1;
@@ -425,21 +425,25 @@ export class World {
       moon.position = moon_light.position;
       moon_light.intensity = 0.01;
       sun_light.intensity = 1
+     
       this._alpha_time += (0.05 * this._scene.deltaTime) / 1000;
 
-      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI   
-      if (Math.cos(this._alpha_time) > 0 && !this._isday){
+      this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
+      // this._alpha_time *= 1.05
+      if (Math.cos(this._alpha_time) > 0){
         this._isday = true
         this._skyboxMaterial.reflectionTexture = this._day_material;
-        moon_light.intensity = 0;
-        sun_light.intensity = 1 - (0.01*Math.abs(Math.cos(this._alpha_time)))
-      }else if (Math.cos(Math.PI* this._alpha_time) < 0 && this._isday){
+        this._skyboxMaterial.reflectionTexture.level = Math.abs(((Math.tan(this._alpha_time + Math.PI/4)+1)/((Math.abs(Math.tan(this._alpha_time+Math.PI/4)))+1)))
+        moon_light.intensity = 0
+        sun_light.intensity = 1
+      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
         this._isday = false
         this._skyboxMaterial.reflectionTexture = this._night_material;
-        moon_light.intensity = 0.01;
-        sun_light.intensity = 0;
-      }  
-  }
+        moon_light.intensity = 0.5
+        sun_light.intensity = 0
+      }
+
+    };
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     state_machine.applyShadow(subground)
     // state_machine.applyShadow(ground)
