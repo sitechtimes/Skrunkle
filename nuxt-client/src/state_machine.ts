@@ -25,7 +25,7 @@ class State_machine {
   // private world_ref: World;
 
   // dealing with consumables
-  private items: Array<{item: PlayerItem, position: Vector3}> = []
+  private items: Map<{item: PlayerItem, position: Vector3}, Mesh> = new Map()
 
   private ready(){
     console.log("Checking status of State Machine")
@@ -122,24 +122,28 @@ class State_machine {
     return this._client
   }
 
-  public dropItem(item: PlayerItem) {
+  public dropItem(item: PlayerItem, mesh: Mesh) {
     let rep = { item: item, position: this._client.position }
-    this.items.push(rep)
+    this.items.set(rep, mesh)
     console.log(this.items)
     // console.log(item._name == this.items[0].item._name)
-    this.socket_ref.send(new Packet(PacketType.drop_item, [...this.items]))
+    let keys = Array.from(this.items.keys())
+    this.socket_ref.send(new Packet(PacketType.drop_item, [keys]))
   }
 
-  public pushItem(item: PlayerItem, position: Vector3) {
-    this.items.push({ item: item, position: position })
+  public pushItem(item: PlayerItem, position: Vector3, mesh: Mesh) {
+    this.items.set({ item: item, position: position }, mesh)
   }
 
-  public removeItem(item: PlayerItem) {
-    this.items.splice(this.items.findIndex((e) => e.item == item), 1)
+  public removeItem(item: PlayerItem, position: Vector3) {
+    this.items.delete({ item: item, position: position })
   }
 
   public pickupItem(item: PlayerItem) {
-    let rep: { item: PlayerItem, position: Vector3 }
+    // use item and posiition to ascertain key to get map to get mesh to get it working
+
+
+    /* let rep: { item: PlayerItem, position: Vector3 }
     let matches = this.items.filter((element) => element.item._metadata == item._metadata)
 
     console.log("matches: ", matches, "items: ", this.items)
@@ -168,7 +172,7 @@ class State_machine {
       this.items.splice(this.items.findIndex((e) => e == rep), 1)
       this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
     }
-  }
+  } */
 }
 
 const state_machine = new State_machine();

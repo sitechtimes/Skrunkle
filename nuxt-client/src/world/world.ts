@@ -743,15 +743,15 @@ export class World {
         break;
       case "DropItem":
         let mesh: Mesh = await this._generator.GENERATE.ENTITY(data.payload[0].item, data.payload[0].position)
-        state_machine.pushItem(data.payload[0].item, data.payload[0].position)
+        state_machine.pushItem(data.payload[0].item, data.payload[0].position, mesh)
         break
       case "PickupItem":
         console.log(data.payload[0])
         console.log(data.payload[0].item._name)
-        console.log(this._scene.getMeshByName(data.payload[0].item._name))
         let meshItem = this._scene.getMeshByName(data.payload[0].item._name)
+        console.log(meshItem)
         meshItem!.dispose()
-        state_machine.removeItem(data.payload[0].item)
+        state_machine.removeItem(data.payload[0].item, data.payload[0].position)
         break
       default:
         // throw some error
