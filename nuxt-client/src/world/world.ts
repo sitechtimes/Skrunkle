@@ -638,7 +638,7 @@ export class World {
             item.name
           )
           this._hotbar.add(itemRef);
-          state_machine.pickupItem(itemRef)
+          state_machine.pickupItem(itemRef, item.position)
         }
 
         if (this._pickedup == true) {
@@ -746,11 +746,6 @@ export class World {
         state_machine.pushItem(data.payload[0].item, data.payload[0].position, mesh)
         break
       case "PickupItem":
-        console.log(data.payload[0])
-        console.log(data.payload[0].item._name)
-        let meshItem = this._scene.getMeshByName(data.payload[0].item._name)
-        console.log(meshItem)
-        meshItem!.dispose()
         state_machine.removeItem(data.payload[0].item, data.payload[0].position)
         break
       default:

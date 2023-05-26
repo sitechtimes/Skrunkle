@@ -136,12 +136,21 @@ class State_machine {
   }
 
   public removeItem(item: PlayerItem, position: Vector3) {
+    let mesh = this.items.get({ item: item, position: position })
+    mesh?.dispose()
     this.items.delete({ item: item, position: position })
   }
 
-  public pickupItem(item: PlayerItem) {
+  public pickupItem(item: PlayerItem, position: Vector3) {
     // use item and posiition to ascertain key to get map to get mesh to get it working
 
+    let rep = { item: item, position: position }
+
+    let mesh = this.items.get(rep)
+
+    this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
+
+    this.items.delete(rep)
 
     /* let rep: { item: PlayerItem, position: Vector3 }
     let matches = this.items.filter((element) => element.item._metadata == item._metadata)
@@ -171,8 +180,8 @@ class State_machine {
       console.log(rep, matches)
       this.items.splice(this.items.findIndex((e) => e == rep), 1)
       this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
-    }
-  } */
+    } */
+  }
 }
 
 const state_machine = new State_machine();
