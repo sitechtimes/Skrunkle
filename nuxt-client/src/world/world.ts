@@ -625,8 +625,8 @@ export class World {
         let item = this._scene.getMeshByUniqueId(this._itemchosen);
         // console.log(item)
         if (item?.name.startsWith("(ITEM)")) {
-          item.dispose();
           // state_machine.delete_entity(item.name)
+          item.dispose();
           let itemName = item.name.split("-")[1].toLowerCase()
           console.log(itemName);
           let itemRef = new PlayerItem(
@@ -639,6 +639,7 @@ export class World {
           )
           this._hotbar.add(itemRef);
           state_machine.pickupItem(itemRef, item.position)
+          
         }
 
         if (this._pickedup == true) {

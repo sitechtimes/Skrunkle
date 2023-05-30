@@ -124,11 +124,11 @@ class State_machine {
 
   public dropItem(item: PlayerItem, mesh: Mesh) {
     let rep = { item: item, position: this._client.position }
-    this.items.set(rep, mesh)
     console.log(this.items)
     // console.log(item._name == this.items[0].item._name)
     let keys = Array.from(this.items.keys())
-    this.socket_ref.send(new Packet(PacketType.drop_item, [keys]))
+    this.socket_ref.send(new Packet(PacketType.drop_item, [rep, ...keys]))
+    this.items.set(rep, mesh)
   }
 
   public pushItem(item: PlayerItem, position: Vector3, mesh: Mesh) {
@@ -136,8 +136,8 @@ class State_machine {
   }
 
   public removeItem(item: PlayerItem, position: Vector3) {
-    let mesh = this.items.get({ item: item, position: position })
-    mesh?.dispose()
+    // let mesh = this.items.get({ item: item, position: position })
+    // mesh?.dispose()
     this.items.delete({ item: item, position: position })
   }
 
