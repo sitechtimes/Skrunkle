@@ -102,18 +102,21 @@ export class Player {
 
   private async _loadBody(options: any) {
     if (options.renderBody) {
+      const globalThis = this;
       let bodies: any = await SceneLoader.ImportMeshAsync(
         "",
         `${this.env["CMS"]}/animation/`,
-        "animations.glb"
+        "animations.glb",
+        globalThis._scene,
+        function (newMeshes, particleSystems, skeletons, animationGroups) {
+          const hero = newMeshes[0];
+
+          /* hero.scaling.scaleInPlace(1.5); */
+
+          const sambaAnim = this._scene.getAnimationGroupByName("death");
+          sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+        }
       );
-
-      const hero = bodies.meshes[0];
-
-      /* hero.scaling.scaleInPlace(1.5); */
-
-      const sambaAnim = this._scene.getAnimationGroupByName("death");
-      sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
 
       let meshes: Mesh[] = [];
       bodies.meshes.forEach((m: any) => {
@@ -153,6 +156,7 @@ export class Player {
 
       this._body = player_body;
       this._body.rotationQuaternion = Quaternion.FromEulerAngles(0, 0, 0);
+      this._body.position = new Vector3(0, 10, 0);
     }
   }
 
