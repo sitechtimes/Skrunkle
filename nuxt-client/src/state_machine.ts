@@ -25,7 +25,8 @@ class State_machine {
   // private world_ref: World;
 
   // dealing with consumables
-  private items: Map<{item: PlayerItem, position: Vector3}, Mesh> = new Map()
+  // private items: Map<{item: PlayerItem, position: Vector3}, Mesh> = new Map()
+  private items: Map<PlayerItem, Mesh> = new Map()
 
   private ready(){
     console.log("Checking status of State Machine")
@@ -128,17 +129,20 @@ class State_machine {
     // console.log(item._name == this.items[0].item._name)
     let keys = Array.from(this.items.keys())
     this.socket_ref.send(new Packet(PacketType.drop_item, [rep, ...keys]))
-    this.items.set(rep, mesh)
+    // this.items.set(rep, mesh)
+    this.items.set(item, mesh)
   }
 
   public pushItem(item: PlayerItem, position: Vector3, mesh: Mesh) {
-    this.items.set({ item: item, position: position }, mesh)
+    // this.items.set({ item: item, position: position }, mesh)
+    this.items.set(item, mesh)
   }
 
   public removeItem(item: PlayerItem, position: Vector3) {
-    // let mesh = this.items.get({ item: item, position: position })
-    // mesh?.dispose()
-    this.items.delete({ item: item, position: position })
+    // // let mesh = this.items.get({ item: item, position: position })
+    // // mesh?.dispose()
+    // this.items.delete({ item: item, position: position })
+    this.items.delete(item)
   }
 
   public pickupItem(item: PlayerItem, position: Vector3) {
@@ -146,11 +150,13 @@ class State_machine {
 
     let rep = { item: item, position: position }
 
-    let mesh = this.items.get(rep)
+    // let mesh = this.items.get(rep)
+    let mesh = this.items.get(item)
 
     this.socket_ref.send(new Packet(PacketType.pickup_item, [rep, [...this.items]]))
 
-    this.items.delete(rep)
+    // this.items.delete(rep)
+    this.items.delete(item)
 
     /* let rep: { item: PlayerItem, position: Vector3 }
     let matches = this.items.filter((element) => element.item._metadata == item._metadata)
