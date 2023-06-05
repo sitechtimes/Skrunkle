@@ -116,10 +116,10 @@ var World = /** @class */ (function () {
     };
     World.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var camera, _a, _b;
+            var camera, _a, _b, _c, _d;
             var _this = this;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         camera = new babylonjs_1.ArcRotateCamera("Camera", 0, 0.8, 100, babylonjs_1.Vector3.Zero(), this._scene);
                         this._scene.enablePhysics(new babylonjs_1.Vector3(0, -9.81, 0), new babylonjs_1.OimoJSPlugin(true, 10, OIMO));
@@ -162,9 +162,8 @@ var World = /** @class */ (function () {
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 50, 1000)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.House2(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
-                        // this._generator.RANDOMIZE(await this._generator.GENERATE.Crate(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 1000)
                         _b = (_a = this._generator).RANDOMIZE;
-                        return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
+                        return [4 /*yield*/, this._generator.GENERATE.Crate(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 1:
                         // this._generator.RANDOMIZE(this._generator.GENERATE.Cylinder(new Vector3(0, 0, 0)), 100, 100)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree2(new Vector3(0, 0, 0)),1, 1)
@@ -175,8 +174,11 @@ var World = /** @class */ (function () {
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.Tree1(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.House(new Vector3(100, 0, 10), new Vector3(0, 0, 0)), 50, 1000)
                         // this._generator.RANDOMIZE(await this._generator.GENERATE.House2(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 50, 1000)
-                        // this._generator.RANDOMIZE(await this._generator.GENERATE.Crate(new Vector3(100, 0, 100), new Vector3(0, 0, 0)), 1, 1000)
-                        _b.apply(_a, [_c.sent(), 1, 10]);
+                        _b.apply(_a, [_e.sent(), 1, 100]);
+                        _d = (_c = this._generator).RANDOMIZE;
+                        return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
+                    case 2:
+                        _d.apply(_c, [_e.sent(), 1, 10]);
                         return [2 /*return*/];
                 }
             });

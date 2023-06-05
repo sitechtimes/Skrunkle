@@ -41,10 +41,9 @@ export class NPC{
         this._scene.registerBeforeRender(()=>{
             if (this.entity.position.subtract(destination).length() > 0.1){
                 this.entity.object.moveWithCollisions(direction.scale(1))
-                this._logger.log(this.entity.position)
+                // this._logger.log(this.entity.position)
             }else{
                 setTimeout(this.wander, random_interval)
-                this.wander()
             }
         })
     }

@@ -800,6 +800,8 @@ export class World {
         }
         break;
       case "Mesh":
+        if (this._player == undefined) break
+
         let uid = data.uid;
         let payload = data.payload[0];
 
