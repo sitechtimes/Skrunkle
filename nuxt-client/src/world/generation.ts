@@ -127,6 +127,7 @@ export class Generation {
     this.meshLoader.add_mesh("Slope", 0, "Slope", "slope.glb", new Vector3(4, 4, 4))
     this.meshLoader.add_mesh("Fountain", 0, "Fountain", "fountain.glb", new Vector3(3, 3, 3))
     this.meshLoader.add_mesh("Crate", 0, "Crate", "crate.glb", new Vector3(3, 3, 3))
+    this.meshLoader.add_mesh("Town", 0, "Town", "town.glb", new Vector3(3, 3, 3))
 
   }
 
@@ -219,6 +220,9 @@ export class Generation {
     },
     Crate: async (mesh: any, uid: string): Promise<Mesh> => {
       return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Crate"), 0, 0, 0)
+    },
+    Town: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Town"), 0, 0, 0)
     },
   };
 

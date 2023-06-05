@@ -820,7 +820,7 @@ export class World {
           if (this._processing_mesh.get(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain" | "Town"
           ](payload, uid);
           this._current_meshes++;
           this._processing_mesh.delete(uid)
