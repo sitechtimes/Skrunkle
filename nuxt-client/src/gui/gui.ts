@@ -15,6 +15,7 @@ export class GUI {
       this._scene
     );
     this._hotbar = new Hotbar(this._mainGUI);
+    this._hotbar.init()
   }
 
   public async createHotbar() {
