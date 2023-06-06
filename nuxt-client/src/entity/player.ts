@@ -14,7 +14,6 @@ import {
   Quaternion
 } from "@babylonjs/core";
 import { PhysicsImpostor } from "babylonjs";
-import { PlayerItem } from "../gui/items";
 
 export class Player {
   private _name: string;
@@ -27,7 +26,6 @@ export class Player {
   private _scene: Scene;
   private _nametag: Mesh;
   private _nametag_y_offset: number = 0.5;
-  private _inventory: Map<number, PlayerItem> = new Map();
 
   private env: any;
   private player_body_scale = 1.75;
@@ -230,10 +228,6 @@ export class Player {
 
   protected get scene(): Scene {
     return this._scene;
-  }
-
-  public get inventory(): Map<number, PlayerItem> {
-    return this._inventory;
   }
 
   public get body(): Mesh {
