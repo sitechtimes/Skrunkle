@@ -10,9 +10,10 @@
       <p id="z"></p>
       <p id="PickupItem"></p>
       <p id="PickedupItem"></p>
+      <p id="vr"></p>
     </div>
 
-    <div id="chatIcon">
+    <!-- <div id="chatIcon">
       <img src="~/assets/chat.png" alt="" class="chatIcon" />
     </div>
 
@@ -26,13 +27,11 @@
         <input type="text" id="chat-box" v-model="chatMessage" required />
         <button id="chat-send">Send</button>
       </form>
-    </div>
+    </div> -->
 
     <canvas
       id="renderCanvas"
       ref="renderCanvas"
-      height="1080"
-      width="1920"
     ></canvas>
   </div>
 </template>
@@ -43,24 +42,24 @@ import { World } from "../src/world/world";
 export default {
   data() {
     return {
-      chatMessage: undefined,
       world: undefined,
       percent: 0,
       loadtext: "Loading..."
     };
   },
-  mounted() {
+  mounted() { 
+    
     const canvas = this.$refs.renderCanvas;
     const world = new World(<HTMLCanvasElement>canvas, this.$config.public, this.update_loading);
     world.init();
     this.world = world;
+
+    window.addEventListener("resize", this.resize)
+    window.addEventListener("click", ()=>{canvas.requestFullscreen()}, {once: true})
   },
   methods: {
-    sendChat() {
-      let chat = this.world.chat;
-      console.log("register send")
-      chat.sendMessage(this.chatMessage);
-      this.chatMessage = undefined;
+    resize(){
+      this.world.resize()
     },
     update_loading(loaded, total, message){
 
@@ -85,6 +84,11 @@ export default {
 }
 canvas{
   z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .customLoadingScreenDiv {
   width: 100vw;

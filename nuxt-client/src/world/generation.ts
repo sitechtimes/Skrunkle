@@ -6,39 +6,44 @@ import {
   Scene,
   Mesh,
   SceneLoader,
-  TransformNode,
   Vector3,
   PhysicsImpostor,
-  PhysicsJoint,
   VertexBuffer,
-  Matrix,
   Sound,
-  Texture
+  Texture,
+  AbstractMesh
 } from "@babylonjs/core";
 import { Entities, createEntity } from "../entity/entities";
 import { state_machine } from "../state_machine";
 
-export class Generation {
-  private _world: World;
-  private _scene: Scene;
-  private env: any;
+class SoundLoader{
+  private _sounds: Map<string, Sound> = new Map()
 
-  constructor(world: World, scene: Scene, env: any) {
-    this._world = world;
-    this._scene = scene;
-    this.env = env;
+  public add_sound(name: string, sound: Sound){
+    this._sounds.set(name, sound)
   }
 
-  private async add_custom_mesh(
-    uid: string, mesh: any, mass: number, restitution: number, y_pos: number = 0, mesh_file_name: string, scaling: Vector3, 
-    metadata: string, use_noise: boolean = false, noise_name?: string,
-    noise_file_name?: string, volume?: number
-  ): Promise<Mesh>{
+  public get_sound(name: string): Sound | undefined{
+    let sound: Sound = this._sounds.get(name)?.clone()
+    sound.play()
+    return sound
+  }
+
+}
+
+class MeshLoader{
+  private _meshes: Map<string, Mesh> = new Map()
+  private env: any;
+
+  constructor(env: any){
+    this.env = env
+  }
+
+  public async add_mesh(name: string, mass: number, metadata: string, mesh_file_name: string, scaling: Vector3){
     let bodies: any = await SceneLoader.ImportMeshAsync(
       "",
       `${this.env["CMS"]}/meshes/`,
       mesh_file_name,
-      this._scene
     );
 
     let meshes: Mesh[] = [];
@@ -61,19 +66,83 @@ export class Generation {
       true
     );
 
-    for (let i = 0; i < parent.material.subMaterials.length; i++) {
-      parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+    if (parent.material){
+       for (let i = 0; i < parent.material.subMaterials.length; i++) {
+        parent.material.subMaterials[i].usePhysicalLightFalloff = false;
+      } 
     }
 
-    parent.position = new Vector3(mesh.position._x, y_pos, mesh.position._z);
+    if (mass === 0) {
+      parent.freezeWorldMatrix()
+      parent.cullingStrategy = AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+    }
     parent.metadata = metadata;
     parent.receiveShadows = true;
+    parent.name = name
+    parent.position = new Vector3(0, -1000, 0)
+    this._meshes.set(name, parent)
+  }
+
+  public get_meshes(name: string): Mesh | undefined{
+    let mesh: Mesh = this._meshes.get(name)?.clone(name)
+    return mesh
+  }
+
+}
+
+
+export class Generation {
+  private _world: World;
+  private _scene: Scene;
+  private env: any;
+  private soundLoader;
+  private meshLoader;
+
+  constructor(world: World, scene: Scene, env: any) {
+    this._world = world;
+    this._scene = scene;
+    this.env = env;
+  
+
+    this.soundLoader = new SoundLoader()
+
+    // add sounds
+    this.soundLoader.add_sound(
+      "whalen",
+      new Sound("Whalen", `${this.env["CMS"]}/audio/whalen.wav`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 })
+    )
+
+    this.soundLoader.add_sound(
+      "rustling",
+      new Sound("Rustling", `${this.env["CMS"]}/audio/rustling.mp3`, this._scene, null, { loop: true, autoplay: false, volume: 0.2, maxDistance: 100 })
+    )
+
+    this.meshLoader = new MeshLoader(this.env)
+
+    this.meshLoader.add_mesh("Tree1", 0, "Tree1", "tree1.glb", new Vector3(2.5, 2.5, 2.5))
+    this.meshLoader.add_mesh("Tree2", 0, "Tree1", "tree2.glb", new Vector3(2.5, 2.5, 2.5))
+    this.meshLoader.add_mesh("House", 0, "House", "house.glb", new Vector3(4, 4, 4))
+    this.meshLoader.add_mesh("House2", 0, "Tree1", "house2.glb", new Vector3(2, 2, 2))
+    this.meshLoader.add_mesh("Sheep", 0, "Sheep", "sheep.glb", new Vector3(1, 1, 1))
+    this.meshLoader.add_mesh("Slope", 0, "Slope", "slope.glb", new Vector3(4, 4, 4))
+    this.meshLoader.add_mesh("Fountain", 0, "Fountain", "fountain.glb", new Vector3(3, 3, 3))
+    this.meshLoader.add_mesh("Crate", 0, "Crate", "crate.glb", new Vector3(3, 3, 3))
+
+  }
+
+  private async add_custom_mesh(
+    uid: string, mesh: any, loaded_mesh: Mesh, y_pos: number, mass: number, restitution: number, noise: Sound | undefined = undefined
+  ): Promise<Mesh>{
+    
+    loaded_mesh.position = new Vector3(mesh.position._x, y_pos, mesh.position._z);
+    this._scene.addMesh(loaded_mesh)
+    
     let entity: Entities = createEntity(
       this._scene,
       uid,
       mesh.name,
       mesh.position,
-      parent,
+      loaded_mesh,
       PhysicsImpostor.MeshImpostor,
       mass,
       restitution
@@ -86,20 +155,11 @@ export class Generation {
     );
     state_machine.add_entity(uid, entity);
 
-    if (use_noise){
-      let noise = new Sound(
-        noise_name || "",
-        `${this.env["CMS"]}/audio/${noise_file_name}`,
-        this._scene,
-        null,
-        { loop: true, autoplay: true, volume: volume, maxDistance: 100 }
-      );
-  
-      // Sound will now follow the mesh position
-      noise.attachToMesh(parent);
+    if (noise){
+      noise.attachToMesh(loaded_mesh);
     }
 
-    return parent;
+    return loaded_mesh;
   }
 
   public GENERATE = {
@@ -137,34 +197,28 @@ export class Generation {
       return box;
     },
     Tree1: async (mesh: any, uid: string): Promise<Mesh> => {
-      return this.add_custom_mesh(
-        uid, mesh,0, 0, 0, "tree1.glb", new Vector3(2.5, 2.5, 2.5),
-        "Tree1", true, "Rustling", "rustling.mp3", 0.2
-      )
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Tree1"), 0, 0, 0, this.soundLoader.get_sound("rustling"))
     },
     Tree2: async (mesh: any, uid: string): Promise<Mesh> => {
-      return this.add_custom_mesh(
-        uid, mesh,0, 0, 0, "tree2.glb", new Vector3(1, 1, 1), "Tree2",
-        true, "Rustling", "rustling.mp3", 0.2
-      )
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Tree2"), 0, 0, 0, this.soundLoader.get_sound("rustling"))
     },
     House: async (mesh: any, uid: string): Promise<Mesh> => {
-      return this.add_custom_mesh(
-        uid, mesh,0, 0, 0, "house.glb", new Vector3(4, 4, 4),
-        "House", false
-      )
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("House"), 0, 0, 0)
+    },
+    House2: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("House2"), 0, 0, 0)
     },
     Sheep: async (mesh: any, uid: string): Promise<Mesh> => {
-      return this.add_custom_mesh(
-        uid, mesh, 100, 0, 0, "sheep.glb", new Vector3(1, 1, 1),
-        "Sheep", true, "Whalen", "whalen.wav", 0.2
-      )
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Sheep"), 0, 0, 0, this.soundLoader.get_sound("whalen"))
     },
     Slope: async (mesh: any, uid: string): Promise<Mesh> => {
-      return this.add_custom_mesh(
-        uid, mesh,0, 0, 0, "slope.glb", new Vector3(4, 4, 4),
-        "Slope", false
-      )
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Slope"), 0, 0, 0)
+    },
+    Fountain: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Fountain"), 0, 0, 0)
+    },
+    Crate: async (mesh: any, uid: string): Promise<Mesh> => {
+      return this.add_custom_mesh(uid, mesh, this.meshLoader.get_meshes("Crate"), 0, 0, 0)
     },
   };
 

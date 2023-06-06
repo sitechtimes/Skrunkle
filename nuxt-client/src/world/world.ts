@@ -4,7 +4,6 @@ import {
   Vector3,
   MeshBuilder,
   HemisphericLight,
-  DirectionalLight,
   Sound,
   CubeTexture,
   FreeCamera,
@@ -12,22 +11,20 @@ import {
   Matrix,
   KeyboardEventTypes,
   AbstractMesh,
-  CannonJSPlugin,
-  SceneLoader,
   PhysicsImpostor,
   Color3,
   Texture,
-  PBRMaterial,
   DebugLayer,
-  IInspectorOptions,
-  DebugLayerTab,
   PointLight,
   Mesh,
   OimoJSPlugin,
-  AmmoJSPlugin,
   Quaternion,
-  CubeTexture,
-  Sound
+  SceneOptimizerOptions,
+  HardwareScalingOptimization,
+  SceneOptimizer,
+  WebXRSessionManager,
+  WebXRCamera,
+  WebXRExperienceHelper
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -41,31 +38,32 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
-import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
+import { GroundMesh } from "babylonjs";
 
 export class World {
   private env: any;
   private _engine: Engine;
   private _scene: Scene;
+  private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
-  private _playerCamera: FreeCamera | null = null;
+  private _playerCamera: FreeCamera | WebXRCamera | null = null;
   private _entities: any[] = [];
   private _socket: Socket;
   private _player: MainPlayer | undefined;
   private _players: Map<string, Player>;
   private _GUI: GUI;
+  private _ground: Mesh;
   // @ts-expect-error
   private _hotbar: Hotbar;
-  private _debug: boolean = false;
+  private _debug: boolean = true;
   public chestOpen: boolean;
   private _pickup: boolean;
   private _pickedup: boolean;
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
-  private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
   private _alpha_time: number = 0
@@ -83,6 +81,9 @@ export class World {
 
   private _load_callback: any;
 
+  /* VR INTEGRATION */
+  private _sessionManager: WebXRSessionManager;
+  private _vr: boolean = false;
 
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
@@ -94,7 +95,6 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this, this.env);
-    this._chat = new Chat(this._socket, this._player!);
     this._generator = new Generation(this, this._scene, this.env);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
@@ -107,49 +107,133 @@ export class World {
       new Vector3(0, -9.81, 0),
       new OimoJSPlugin(true, 10, OIMO)
     );
+
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
-  private _initCamera(): void {
-    this._playerCamera.position.y = 8;
-    this._playerCamera.ellipsoid = new Vector3(1, 3, 1);
-    this._playerCamera.checkCollisions = true;
-    this._scene.collisionsEnabled = true;
-    this._playerCamera.applyGravity = true;
-    this._playerCamera.speed = 25;
-    this._playerCamera.angularSensibility = 1500;
-    // this._playerCamera.debugEllipsoid = true
+  public resize(): void{
+    this._engine.resize()
+  }
 
-    document.addEventListener('keydown', (event) => {
-      if (event.code === 'Space') {
-        // Apply a vertical impulse to the camera's physics impostor
-        this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+  private _updateRender(): void{
+      state_machine.check_entity();
+      if (this._player) {
+        this._socket?.send(
+          new Packet(
+            PacketType.movement,
+            [
+              {
+                id: this._player.id,
+                name: this._player.name,
+                position: this._player.position,
+                rotation: Quaternion.FromEulerAngles(
+                  this._player.rotation.x,
+                  this._player.rotation.y,
+                  this._player.rotation.z
+                ),
+              },
+            ],
+            this._player.id
+          )
+        );
+        if (this._debug) {
+          document.getElementById(
+            "x"
+          )!.innerText = `X: ${this._player.position.x}`;
+          document.getElementById(
+            "y"
+          )!.innerText = `Y: ${this._player.position.y}`;
+          document.getElementById(
+            "z"
+          )!.innerText = `Z: ${this._player.position.z}`;
+        }
       }
-    });
+  }
+
+  private _renderLoop(): void{
+    this._updateRender()
+    this._scene.render()
+  }
+
+  private async _initCamera(): Promise<void> {
+
+    const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
+    if (supported) {
+      // xr available, session supported
+      console.log("Is VR")
+      this._vr = true;
+
+      await this._sessionManager.initializeAsync()
+      await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
+      const referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+      const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+      const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+
+      const defaultExperience = await this._scene.createDefaultXRExperienceAsync({
+        optionalFeatures: true,
+        floorMeshes: [this._ground],
+      });
+
+      defaultExperience.baseExperience.enterXRAsync("immersive-vr", referenceSpace, renderTarget)
+
+      console.log(defaultExperience)
+
+      this._playerCamera = defaultExperience.baseExperience.camera;
+      this._playerCamera.position = new Vector3(0, 6, 0)
+
+      this._sessionManager.runXRRenderLoop()
+
+    }else{
+      console.log("Not VR")
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
+      this._playerCamera.checkCollisions = true;
+      this._scene.collisionsEnabled = true;
+      this._playerCamera.applyGravity = true;
+      this._playerCamera.speed = 15;
+      this._playerCamera.angularSensibility = 1500;
+      
+      this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
+    }
+
+    document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
+
+    // document.addEventListener('keydown', (event) => {
+    //   if (event.code === 'Space') {
+    //     // Apply a vertical impulse to the camera's physics impostor
+    //     this._playerCamera.applyImpulse(new BABYLON.Vector3(0, 20, 0), this._playerCamera.position);
+    //   }
+    // });
   }
 
   public async init(): void {
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
-    this._playerCamera = new FreeCamera(
-      "FreeCamera",
-      new Vector3(0, 6, 0),
-      this._scene
-    );
-    var ground = MeshBuilder.CreateGround(
+    this._ground = MeshBuilder.CreateGround(
       "ground",
       { width: this._ground_size.width, height: this._ground_size.height },
       this._scene
     );
-    ground.position = new Vector3(0, 0, 0);
-    ground.physicsImpostor = new PhysicsImpostor(
-      ground,
+    this._ground.position = new Vector3(0, 0, 0);
+    this._ground.physicsImpostor = new PhysicsImpostor(
+      this._ground,
       PhysicsImpostor.BoxImpostor,
       { mass: 0, restitution: 0 },
       this._scene
     );
-    ground.checkCollisions = true;
-    ground.receiveShadows = true;
+    this._ground.checkCollisions = true;
+    this._ground.receiveShadows = true;
 
     let ground_material = new StandardMaterial("ground", this._scene);
     // ground_material.albedoColor = new Color3(1, 0 ,0)
@@ -183,7 +267,7 @@ export class World {
     // ground_material.microSurfaceTexture.uScale = this._ground_size.width/15
     // ground_material.microSurfaceTexture.vScale = this._ground_size.height/15
 
-    ground.material = ground_material;
+    this._ground.material = ground_material;
 
     const volume = 0.4;
     const music = new Sound(
@@ -333,7 +417,7 @@ export class World {
       overlayCanvas: true,
       embedMode: true,
       parentElement: document.body,
-      initialTab: "Physics", // <-- This enables the Physics tab
+      initialTab: "Physics", // <-- This enables the Physics tab,
     });
     
     this._scene.onKeyboardObservable.add((kbInfo) => {
@@ -353,14 +437,9 @@ export class World {
           break;
       }
     });
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
-    console.log(this._hotbar);
 
     // this._generator.GENERATE.TestCyclinder();
 
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
 
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {
@@ -370,67 +449,53 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
+      await this._initCamera();
 
-      this._engine.runRenderLoop(() => {
-        state_machine.check_entity();
+      this._engine.runRenderLoop(()=>{
+        this._renderLoop()
+      })
 
-        this._initCamera();
+      // this._engine.runRenderLoop(() => {
+      //   state_machine.check_entity();
 
-        state_machine.check_entity();
 
-        this._scene.render();
-        if (this._player) {
-          this._socket?.send(
-            new Packet(
-              PacketType.movement,
-              [
-                {
-                  id: this._player.id,
-                  name: this._player.name,
-                  position: this._player.position,
-                  rotation: Quaternion.FromEulerAngles(
-                    this._player.rotation.x,
-                    this._player.rotation.y,
-                    this._player.rotation.z
-                  ),
-                  current: this._hotbar.current,
-                },
-              ],
-              this._player.id
-            )
-          );
-          if (this._debug) {
-            document.getElementById(
-              "x"
-            )!.innerText = `X: ${this._player.position.x}`;
-            document.getElementById(
-              "y"
-            )!.innerText = `Y: ${this._player.position.y}`;
-            document.getElementById(
-              "z"
-            )!.innerText = `Z: ${this._player.position.z}`;
-          }
-        }
-      });
+      //   state_machine.check_entity();
+
+      //   this._scene.render();
+      //   if (this._player) {
+      //     this._socket?.send(
+      //       new Packet(
+      //         PacketType.movement,
+      //         [
+      //           {
+      //             id: this._player.id,
+      //             name: this._player.name,
+      //             position: this._player.position,
+      //             rotation: Quaternion.FromEulerAngles(
+      //               this._player.rotation.x,
+      //               this._player.rotation.y,
+      //               this._player.rotation.z
+      //             ),
+      //             current: this._hotbar.current,
+      //           },
+      //         ],
+      //         this._player.id
+      //       )
+      //     );
+      //     if (this._debug) {
+      //       document.getElementById(
+      //         "x"
+      //       )!.innerText = `X: ${this._player.position.x}`;
+      //       document.getElementById(
+      //         "y"
+      //       )!.innerText = `Y: ${this._player.position.y}`;
+      //       document.getElementById(
+      //         "z"
+      //       )!.innerText = `Z: ${this._player.position.z}`;
+      //     }
+      //   }
+      // });
     });
-
-    onclick = () => {
-      let dray = this._scene.createPickingRay(
-        960,
-        540,
-        Matrix.Identity(),
-        this._playerCamera
-      );
-      let hit = this._scene.pickWithRay(dray);
-
-      if (
-        this._evaluateDistance(hit!.pickedMesh!) <=
-          this._hotbar.current?._range! ||
-        this._hotbar.current!._type == "Heal"
-      ) {
-        this._hotbar.use(hit?.pickedMesh?.name);
-      }
-    };
 
     this.listen();
   }
@@ -553,42 +618,6 @@ export class World {
       document.getElementById("name")!.innerText = `Name: ${this._player.name}`;
     if (this._debug)
       document.getElementById("id")!.innerText = `UserID: ${this._player.id}`;
-    this._hotbar.inventory = this._player.inventory;
-    /* TEMPORARILY ADDING ITEMS */
-    this._hotbar.add(
-      new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket),
-      1
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.dagger, this._player, this._hotbar, this._socket),
-      2
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.shovel, this._player, this._hotbar, this._socket),
-      3
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.spork, this._player, this._hotbar, this._socket),
-      5
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.slingshot, this._player, this._hotbar, this._socket),
-      6
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.bandage, this._player, this._hotbar, this._socket),
-      10
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket),
-      8
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket),
-      7
-    );
-    /* TEMPORARILY ADDED ITEMS */
-    this._chat = new Chat(this._socket, this._player);
 
     console.log("Created Main Player id: " + this._player.id);
     // console.log(this._player.inventory);
@@ -692,7 +721,7 @@ export class World {
           if (this._processing_mesh.get(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "Sheep" | "Slope"
+            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
           ](payload, uid);
           this._current_meshes++;
           this._processing_mesh.delete(uid)
@@ -723,7 +752,7 @@ export class World {
         if (player) player.delete();
         this._players.delete(data.payload[0].id);
         break;
-      case "Interaction":
+      /* case "Interaction":
         let target: Player | MainPlayer | undefined;
         if (data.payload.target == this._player?.id) {
           target = this._player!;
@@ -747,15 +776,11 @@ export class World {
         break;
       case "Chat":
         this._chat?.receiveMessage(data.payload);
-        break;
+        break; */
       default:
         // throw some error
         break;
     }
-  }
-
-  public get chat(): Chat | undefined {
-    return this._chat;
   }
 
   public second_decimal(n: number): number {
