@@ -26,7 +26,7 @@ import {
   WebXRCamera,
   WebXRExperienceHelper,
   WebXRDefaultExperience,
-  WebGPUEngine
+  WebGPUEngine,
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -67,14 +67,14 @@ export class World {
   private _generator: Generation;
   private _itemchosen: number;
   private _isday: boolean = true;
-  private _alpha_time: number = 0
+  private _alpha_time: number = 0;
 
   private _skyboxMaterial: StandardMaterial;
   private _day_material: CubeTexture;
   private _night_material: CubeTexture;
 
-  private _ground_size:any = {width: 10000, height: 10000}
-  
+  private _ground_size: any = { width: 10000, height: 10000 };
+
   // loading & process
   private _processing_mesh: Map<string, boolean> = new Map();
   private _total_meshes: number = 1e10;
@@ -89,83 +89,104 @@ export class World {
   private _renderTarget: WebXRRenderTarget;
   private _referenceSpace: XRReferenceSpace;
 
-  private _collectedSheepsID: Set<number> = new Set()
-  private _collectedSheepsUID: Set<string> = new Set()
+  private _collectedSheepsID: Set<number> = new Set();
+  private _collectedSheepsUID: Set<string> = new Set();
   private _target_sheep_amt: number;
 
-  constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
+  private _startGame: any;
+  private _endGame: any;
+  private _started: boolean = false
+
+  constructor(
+    canvas: HTMLCanvasElement | null,
+    env: any,
+    call_back: any,
+    startGame: any,
+    endGame: any
+  ) {
     this.env = env;
-    this._load_callback = call_back
+    this._load_callback = call_back;
+    this._startGame = startGame;
+    this._endGame = endGame;
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
-    if (WebGPUEngine.IsSupported){
+    if (WebGPUEngine.IsSupported) {
       this._engine = new WebGPUEngine(this._canvas);
-      this._engine.initAsync().then((e)=>{
-        console.log("Initing GPU")
-        this.init()
+      this._engine.initAsync().then((e) => {
+        console.log("Initing GPU");
+        this.init();
         // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
       });
-    }else{
-      this.init()
+    } else {
+      this.init();
     }
-
   }
 
-  public resize(): void{
-    this._engine.resize()
+  public resize(): void {
+    this._engine.resize();
   }
 
-  public get vr(): boolean{
-    return this._vr
+  public get vr(): boolean {
+    return this._vr;
   }
 
-  private _updateRender(): void{
-      state_machine.check_entity();
-      if (this._player) {
-        this._socket?.send(
-          new Packet(
-            PacketType.movement,
-            [
-              {
-                id: this._player.id,
-                name: this._player.name,
-                position: this._player.position,
-                rotation: Quaternion.FromEulerAngles(
-                  this._player.rotation.x,
-                  this._player.rotation.y,
-                  this._player.rotation.z
-                ),
-              },
-            ],
-            this._player.id
-          )
-        );
-        if (this._debug) {
-          document.getElementById(
-            "x"
-          )!.innerText = `X: ${this._player.position.x}`;
-          document.getElementById(
-            "y"
-          )!.innerText = `Y: ${this._player.position.y}`;
-          document.getElementById(
-            "z"
-          )!.innerText = `Z: ${this._player.position.z}`;
-        }
+  private _updateRender(): void {
+    state_machine.check_entity();
+    if (this._player) {
+      this._socket?.send(
+        new Packet(
+          PacketType.movement,
+          [
+            {
+              id: this._player.id,
+              name: this._player.name,
+              position: this._player.position,
+              rotation: Quaternion.FromEulerAngles(
+                this._player.rotation.x,
+                this._player.rotation.y,
+                this._player.rotation.z
+              ),
+            },
+          ],
+          this._player.id
+        )
+      );
+      if (this._debug) {
+        document.getElementById(
+          "x"
+        )!.innerText = `X: ${this._player.position.x}`;
+        document.getElementById(
+          "y"
+        )!.innerText = `Y: ${this._player.position.y}`;
+        document.getElementById(
+          "z"
+        )!.innerText = `Z: ${this._player.position.z}`;
       }
+    }
   }
 
-  private _renderLoop(): void{
-    this._updateRender()
-    this._scene.render()
+  private _renderLoop(): void {
+    this._updateRender();
+    this._scene.render();
   }
 
-  public async enterVR(): Promise<void>{
-    await this._sessionManager.initializeAsync()
-    await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
-    this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
-    this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
-    const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+  public start_timer(){
+    this._started = true
+  }
+
+  public async enterVR(): Promise<void> {
+    await this._sessionManager.initializeAsync();
+    await this._sessionManager.initializeSessionAsync(
+      "immersive-vr" /*, xrSessionInit */
+    );
+    this._referenceSpace =
+      await this._sessionManager.setReferenceSpaceTypeAsync("local");
+    this._renderTarget =
+      this._sessionManager.getWebXRRenderTarget(/*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/);
+    const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(
+      this._sessionManager.session
+    );
 
     this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
       optionalFeatures: true,
@@ -173,25 +194,26 @@ export class World {
     });
 
     this._playerCamera = this._vrExperience.baseExperience.camera;
-    this._playerCamera.position = new Vector3(0, 6, 0)
+    this._playerCamera.position = new Vector3(0, 6, 0);
 
-    this._sessionManager.runXRRenderLoop()
+    this._sessionManager.runXRRenderLoop();
 
     this._vrExperience.baseExperience.enterXRAsync(
-      "immersive-vr", 
-      "local-floor", 
+      "immersive-vr",
+      "local-floor",
       this._renderTarget
-    )
+    );
 
-    this._scene.activeCamera = this._playerCamera
+    this._scene.activeCamera = this._playerCamera;
   }
 
   private async _initCamera(): Promise<void> {
-
-    const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
+    const supported = await this._sessionManager.isSessionSupportedAsync(
+      "immersive-vr"
+    );
     if (supported) {
       // xr available, session supported
-      console.log("Is VR, waiting for user activation")
+      console.log("Is VR, waiting for user activation");
       this._vr = true;
 
       // TEMPORARY CAMERA
@@ -200,9 +222,8 @@ export class World {
         new Vector3(0, 6, 0),
         this._scene
       );
-
-    }else{
-      console.log("Not VR")
+    } else {
+      console.log("Not VR");
       this._playerCamera = new FreeCamera(
         "FreeCamera",
         new Vector3(0, 6, 0),
@@ -212,42 +233,44 @@ export class World {
       this._playerCamera.applyGravity = true;
       this._playerCamera.speed = 15;
       this._playerCamera.angularSensibility = 1500;
-      
+
       this._playerCamera.ellipsoid = new Vector3(1, 4, 1);
     }
 
-    document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
+    document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`;
 
-    this._playerCamera.checkCollisions = true
+    this._playerCamera.checkCollisions = true;
     let collected_sound = new Sound(
       "Collected a sheep",
       `${this.env["CMS"]}/audio/collected_sheep.mp3`,
       this._scene,
       null,
       {
-        volume: 0.5
+        volume: 0.5,
       }
-    )
-    this._playerCamera.onCollide = (collidedMesh)=>{
-      if (collidedMesh.metadata === "Sheep" && !this._collectedSheepsID.has(collidedMesh.uniqueId)){
+    );
+    this._playerCamera.onCollide = (collidedMesh) => {
+      if (
+        collidedMesh.metadata === "Sheep" &&
+        !this._collectedSheepsID.has(collidedMesh.uniqueId)
+      ) {
+        this._collectedSheepsID.add(collidedMesh.uniqueId);
 
-        this._collectedSheepsID.add(collidedMesh.uniqueId)
-        
-        for (let uid of state_machine.entities.keys()){
+        for (let uid of state_machine.entities.keys()) {
           let entity: Entities = state_machine.entities.get(uid);
-          if (entity.object.uniqueId == collidedMesh.uniqueId){
-            entity.object.attachedSound.stop()
-            entity.object.attachedSound.dispose()
-            state_machine.delete_entity(uid)
-            this._collectedSheepsUID.add(uid)
-            collected_sound.play()
+          if (entity.object.uniqueId == collidedMesh.uniqueId) {
+            entity.object.attachedSound.stop();
+            entity.object.attachedSound.dispose();
+            state_machine.delete_entity(uid);
+            this._collectedSheepsUID.add(uid);
+            collected_sound.play();
           }
         }
 
-        this._hotbar.healthChange(this._collectedSheepsID.size)
-        collidedMesh.dispose()
+        this._hotbar.healthChange(this._collectedSheepsID.size);
+        collidedMesh.dispose();
       }
-    }
+    };
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
     //     // Apply a vertical impulse to the camera's physics impostor
@@ -258,7 +281,7 @@ export class World {
 
   public async init(): void {
     this._scene = new Scene(this._engine);
-    this._GUI = new GUI(this._scene);
+    this._GUI = new GUI(this._scene, this._endGame);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this, this.env);
     this._generator = new Generation(this, this._scene, this.env);
@@ -268,19 +291,19 @@ export class World {
     this._pickedup = false;
     this._itemchosen = 0;
 
-    this._hotbar = this._GUI.hotbar
+    this._hotbar = this._GUI.hotbar;
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
     this._scene.enablePhysics(
       new Vector3(0, -9.81, 0),
       new OimoJSPlugin(true, 10, OIMO)
     );
-  
+
     let options = new SceneOptimizerOptions(120, 500);
-    SceneOptimizerOptions.ModerateDegradationAllowed(120)
-    options.addOptimization(new HardwareScalingOptimization(0, 1))
-    this._optimizer = new SceneOptimizer(this._scene, options)
-    SceneOptimizer.OptimizeAsync(this._scene)
-      
+    SceneOptimizerOptions.ModerateDegradationAllowed(120);
+    options.addOptimization(new HardwareScalingOptimization(0, 1));
+    this._optimizer = new SceneOptimizer(this._scene, options);
+    SceneOptimizer.OptimizeAsync(this._scene);
+
     this._sessionManager = new WebXRSessionManager(this._scene);
 
     this._scene.useRightHandedSystem = true;
@@ -381,11 +404,15 @@ export class World {
     );
 
     setInterval(() => windThree.play(), Math.random() * 1000 + 1000000);
-    
+
     // Adds the sun and moon
-    var ambient_light = new HemisphericLight('ambientLight', new Vector3(0, 1, 0), this._scene)
-    ambient_light.diffuse = new Color3(0.1, 0.1, 0.1)
-    ambient_light.groundColor = new Color3(0, 0, 0)
+    var ambient_light = new HemisphericLight(
+      "ambientLight",
+      new Vector3(0, 1, 0),
+      this._scene
+    );
+    ambient_light.diffuse = new Color3(0.1, 0.1, 0.1);
+    ambient_light.groundColor = new Color3(0, 0, 0);
 
     var sun_light = new PointLight("sun", new Vector3(10, 0, 0), this._scene);
     sun_light.intensity = 1;
@@ -434,17 +461,17 @@ export class World {
       this._scene
     );
     this._skyboxMaterial.reflectionTexture = this._day_material;
-    this._skyboxMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    this._skyboxMaterial.reflectionTexture.coordinatesMode =
+      Texture.SKYBOX_MODE;
     this._skyboxMaterial.diffuseColor = new Color3(0, 0, 0);
     this._skyboxMaterial.specularColor = new Color3(0, 0, 0);
     skybox.material = this._skyboxMaterial;
 
     // Animations
     this._scene.beforeRender = () => {
-
       let deltaTime: number = this._scene.getEngine().getDeltaTime();
 
-      this._hotbar.addtime(deltaTime)
+      if (this._started) this._hotbar.addtime(deltaTime);
 
       sun_light.position = new Vector3(
         900 * Math.sin(this._alpha_time),
@@ -464,22 +491,21 @@ export class World {
 
       this._alpha_time = this._alpha_time % (2 * Math.PI); // keeps alpha always between 0 - 2PI
 
-      if (Math.cos(this._alpha_time) > 0 && !this._isday){
-        this._isday = true
+      if (Math.cos(this._alpha_time) > 0 && !this._isday) {
+        this._isday = true;
         this._skyboxMaterial.reflectionTexture = this._day_material;
-      }else if (Math.cos(this._alpha_time) < 0 && this._isday){
-        this._isday = false
+      } else if (Math.cos(this._alpha_time) < 0 && this._isday) {
+        this._isday = false;
         this._skyboxMaterial.reflectionTexture = this._night_material;
       }
-
     };
 
     state_machine.setShadowGenerator(sun_light, sun_light, moon_light);
     // state_machine.applyShadow(ground)
-    
-    await import("@babylonjs/core/Debug/debugLayer")
-    await import("@babylonjs/inspector")
-    const debuglayer = new DebugLayer(this._scene)
+
+    await import("@babylonjs/core/Debug/debugLayer");
+    await import("@babylonjs/inspector");
+    const debuglayer = new DebugLayer(this._scene);
 
     debuglayer.show({
       overlay: true,
@@ -489,7 +515,7 @@ export class World {
       parentElement: document.body,
       initialTab: "Physics", // <-- This enables the Physics tab,
     });
-    
+
     this._scene.onKeyboardObservable.add((kbInfo) => {
       switch (kbInfo.type) {
         case KeyboardEventTypes.KEYDOWN:
@@ -510,7 +536,6 @@ export class World {
 
     // this._generator.GENERATE.TestCyclinder();
 
-
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {
       await this._socket.init();
@@ -519,14 +544,13 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
-      await this._initCamera()
-      this._engine.runRenderLoop(()=>{
-        this._renderLoop()
-      })
+      await this._initCamera();
+      this._engine.runRenderLoop(() => {
+        this._renderLoop();
+      });
 
       // this._engine.runRenderLoop(() => {
       //   state_machine.check_entity();
-
 
       //   state_machine.check_entity();
 
@@ -774,7 +798,7 @@ export class World {
         }
         break;
       case "Mesh":
-        if (this._player == undefined) break
+        if (this._player == undefined) break;
 
         let uid = data.uid;
         let payload = data.payload[0];
@@ -790,15 +814,28 @@ export class World {
           state_machine.update_entity(uid, entity);
           // console.log(entity.object.position)
         } else {
-          if (this._processing_mesh.get(uid)) return
-          if (this._collectedSheepsUID.has(uid)) return
-          this._processing_mesh.set(uid, true)
+          if (this._processing_mesh.get(uid)) return;
+          if (this._collectedSheepsUID.has(uid)) return;
+          this._processing_mesh.set(uid, true);
           let mesh: Mesh = await this._generator.GENERATE[
-            payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
+            payload.metadata as
+              | "Cylinder"
+              | "Box"
+              | "Tree1"
+              | "Tree2"
+              | "House"
+              | "House2"
+              | "Sheep"
+              | "Slope"
+              | "Fountain"
           ](payload, uid);
           this._current_meshes++;
-          this._processing_mesh.delete(uid)
-          this._load_callback(this._current_meshes, this._total_meshes, "meshes")
+          this._processing_mesh.delete(uid);
+          this._load_callback(
+            this._current_meshes,
+            this._total_meshes,
+            "meshes"
+          );
         }
         break;
 
@@ -809,18 +846,23 @@ export class World {
       case "PlayerCreation":
         let playerInfo: any = data?.payload[0];
         if (this._player === undefined) {
-          this._total_meshes = playerInfo.total_mesh
+          this._total_meshes = playerInfo.total_mesh;
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
-          this._alpha_time = playerInfo.alpha_time
-          this._target_sheep_amt = playerInfo.sheeps
+          this._alpha_time = playerInfo.alpha_time;
+          this._target_sheep_amt = playerInfo.sheeps;
 
-          this._hotbar.target_sheep_amt = this._target_sheep_amt
+          this._hotbar.target_sheep_amt = this._target_sheep_amt;
 
-          if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
-          else this._skyboxMaterial.reflectionTexture = this._night_material
+          if (this._isday)
+            this._skyboxMaterial.reflectionTexture = this._day_material;
+          else this._skyboxMaterial.reflectionTexture = this._night_material;
 
-          this._load_callback(this._current_meshes, this._total_meshes, "server")
+          this._load_callback(
+            this._current_meshes,
+            this._total_meshes,
+            "server"
+          );
         }
         break;
       case "Close":
