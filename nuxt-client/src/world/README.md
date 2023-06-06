@@ -112,6 +112,20 @@ Adds a player to the `this._players` map
 
 ### `onSocketData(data)`
 
-When the socket connection receives a message, this function is called.
+When the socket connection receives a message, this function is called. It contains a switch case for every possible `PacketType`
 
 # Generation
+
+## SoundLoader
+
+Sets and gets sounds
+
+## MeshLoader
+
+Loads meshes using the CMS and caches them. When the meshes are requested by the main Generation class, it sends the mesh.
+
+## Generation
+
+Contains functions that are called to generate meshes.
+
+When a message from the websocket server is received saying to generate a mesh, its respective function is called and the mesh is generated. These functions are called in the World class.
