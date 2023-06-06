@@ -8,8 +8,6 @@ import {
   FreeCamera,
   MeshBuilder,
 } from "@babylonjs/core";
-import type { Hotbar } from "../gui/hotbar";
-import { PlayerItem } from "../gui/items";
 import { Player } from "./player";
 
 export class MainPlayer extends Player {
@@ -82,9 +80,5 @@ export class MainPlayer extends Player {
 
   public get rotation(): Vector3 {
     return this.#camera.rotation;
-  }
-
-  public get inventory(): Map<number, PlayerItem> {
-    return this._inventory;
   }
 }

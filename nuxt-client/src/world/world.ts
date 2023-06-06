@@ -26,6 +26,7 @@ import {
   WebXRCamera,
   WebXRExperienceHelper,
   WebXRDefaultExperience,
+  WebGPUEngine
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -39,13 +40,12 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
-import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 
 export class World {
   private env: any;
-  private _engine: Engine;
+  private _engine: WebGPUEngine | Engine;
   private _scene: Scene;
   private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
@@ -65,7 +65,6 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
-  private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
   private _alpha_time: number = 0
@@ -90,39 +89,27 @@ export class World {
   private _renderTarget: WebXRRenderTarget;
   private _referenceSpace: XRReferenceSpace;
 
+  private _collectedSheepsID: Set<number> = new Set()
+  private _collectedSheepsUID: Set<string> = new Set()
+  private _target_sheep_amt: number;
+
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
     this._load_callback = call_back
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
-    this._scene = new Scene(this._engine);
-    this._GUI = new GUI(this._scene);
-    this._players = new Map<string, Player>();
-    this._socket = new Socket(this, this.env);
-    this._chat = new Chat(this._socket, this._player!);
-    this._generator = new Generation(this, this._scene, this.env);
-    this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
-    this.chestOpen = false;
-    this._pickup = false;
-    this._pickedup = false;
-    this._itemchosen = 0;
+    if (WebGPUEngine.IsSupported){
+      this._engine = new WebGPUEngine(this._canvas);
+      this._engine.initAsync().then((e)=>{
+        console.log("Initing GPU")
+        this.init()
+        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
+      });
+    }else{
+      this.init()
+    }
 
-    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-    this._scene.enablePhysics(
-      new Vector3(0, -9.81, 0),
-      new OimoJSPlugin(true, 10, OIMO)
-    );
-
-    let options = new SceneOptimizerOptions(120, 500);
-    SceneOptimizerOptions.ModerateDegradationAllowed(120)
-    options.addOptimization(new HardwareScalingOptimization(0, 1))
-    this._optimizer = new SceneOptimizer(this._scene, options)
-    SceneOptimizer.OptimizeAsync(this._scene)
-
-    this._sessionManager = new WebXRSessionManager(this._scene);
-
-    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
   public resize(): void{
@@ -149,7 +136,6 @@ export class World {
                   this._player.rotation.y,
                   this._player.rotation.z
                 ),
-                current: this._hotbar.current,
               },
             ],
             this._player.id
@@ -222,7 +208,6 @@ export class World {
         new Vector3(0, 6, 0),
         this._scene
       );
-      this._playerCamera.checkCollisions = true;
       this._scene.collisionsEnabled = true;
       this._playerCamera.applyGravity = true;
       this._playerCamera.speed = 15;
@@ -233,7 +218,36 @@ export class World {
 
     document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
 
+    this._playerCamera.checkCollisions = true
+    let collected_sound = new Sound(
+      "Collected a sheep",
+      `${this.env["CMS"]}/audio/collected_sheep.mp3`,
+      this._scene,
+      null,
+      {
+        volume: 0.5
+      }
+    )
+    this._playerCamera.onCollide = (collidedMesh)=>{
+      if (collidedMesh.metadata === "Sheep" && !this._collectedSheepsID.has(collidedMesh.uniqueId)){
 
+        this._collectedSheepsID.add(collidedMesh.uniqueId)
+        
+        for (let uid of state_machine.entities.keys()){
+          let entity: Entities = state_machine.entities.get(uid);
+          if (entity.object.uniqueId == collidedMesh.uniqueId){
+            entity.object.attachedSound.stop()
+            entity.object.attachedSound.dispose()
+            state_machine.delete_entity(uid)
+            this._collectedSheepsUID.add(uid)
+            collected_sound.play()
+          }
+        }
+
+        this._hotbar.healthChange(this._collectedSheepsID.size)
+        collidedMesh.dispose()
+      }
+    }
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
     //     // Apply a vertical impulse to the camera's physics impostor
@@ -243,6 +257,32 @@ export class World {
   }
 
   public async init(): void {
+    this._scene = new Scene(this._engine);
+    this._GUI = new GUI(this._scene);
+    this._players = new Map<string, Player>();
+    this._socket = new Socket(this, this.env);
+    this._generator = new Generation(this, this._scene, this.env);
+    this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
+    this.chestOpen = false;
+    this._pickup = false;
+    this._pickedup = false;
+    this._itemchosen = 0;
+
+    this._hotbar = this._GUI.hotbar
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    this._scene.enablePhysics(
+      new Vector3(0, -9.81, 0),
+      new OimoJSPlugin(true, 10, OIMO)
+    );
+  
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+      
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
     this._ground = MeshBuilder.CreateGround(
@@ -401,6 +441,11 @@ export class World {
 
     // Animations
     this._scene.beforeRender = () => {
+
+      let deltaTime: number = this._scene.getEngine().getDeltaTime();
+
+      this._hotbar.addtime(deltaTime)
+
       sun_light.position = new Vector3(
         900 * Math.sin(this._alpha_time),
         900 * Math.cos(this._alpha_time),
@@ -462,14 +507,9 @@ export class World {
           break;
       }
     });
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
-    console.log(this._hotbar);
 
     // this._generator.GENERATE.TestCyclinder();
 
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
 
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {
@@ -525,24 +565,6 @@ export class World {
       //   }
       // });
     });
-
-    onclick = () => {
-      let dray = this._scene.createPickingRay(
-        960,
-        540,
-        Matrix.Identity(),
-        this._playerCamera
-      );
-      let hit = this._scene.pickWithRay(dray);
-
-      if (
-        this._evaluateDistance(hit!.pickedMesh!) <=
-          this._hotbar.current?._range! ||
-        this._hotbar.current!._type == "Heal"
-      ) {
-        this._hotbar.use(hit?.pickedMesh?.name);
-      }
-    };
 
     this.listen();
   }
@@ -665,42 +687,6 @@ export class World {
       document.getElementById("name")!.innerText = `Name: ${this._player.name}`;
     if (this._debug)
       document.getElementById("id")!.innerText = `UserID: ${this._player.id}`;
-    this._hotbar.inventory = this._player.inventory;
-    /* TEMPORARILY ADDING ITEMS */
-    this._hotbar.add(
-      new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket),
-      1
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.dagger, this._player, this._hotbar, this._socket),
-      2
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.shovel, this._player, this._hotbar, this._socket),
-      3
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.spork, this._player, this._hotbar, this._socket),
-      5
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.slingshot, this._player, this._hotbar, this._socket),
-      6
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.bandage, this._player, this._hotbar, this._socket),
-      10
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket),
-      8
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket),
-      7
-    );
-    /* TEMPORARILY ADDED ITEMS */
-    this._chat = new Chat(this._socket, this._player);
 
     console.log("Created Main Player id: " + this._player.id);
     // console.log(this._player.inventory);
@@ -788,6 +774,8 @@ export class World {
         }
         break;
       case "Mesh":
+        if (this._player == undefined) break
+
         let uid = data.uid;
         let payload = data.payload[0];
 
@@ -800,8 +788,10 @@ export class World {
             payload.rotation
           );
           state_machine.update_entity(uid, entity);
+          // console.log(entity.object.position)
         } else {
           if (this._processing_mesh.get(uid)) return
+          if (this._collectedSheepsUID.has(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
@@ -823,6 +813,9 @@ export class World {
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
+          this._target_sheep_amt = playerInfo.sheeps
+
+          this._hotbar.target_sheep_amt = this._target_sheep_amt
 
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
@@ -835,7 +828,7 @@ export class World {
         if (player) player.delete();
         this._players.delete(data.payload[0].id);
         break;
-      case "Interaction":
+      /* case "Interaction":
         let target: Player | MainPlayer | undefined;
         if (data.payload.target == this._player?.id) {
           target = this._player!;
@@ -859,15 +852,11 @@ export class World {
         break;
       case "Chat":
         this._chat?.receiveMessage(data.payload);
-        break;
+        break; */
       default:
         // throw some error
         break;
     }
-  }
-
-  public get chat(): Chat | undefined {
-    return this._chat;
   }
 
   public second_decimal(n: number): number {

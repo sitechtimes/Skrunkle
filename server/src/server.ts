@@ -14,11 +14,12 @@ export class SocketServer {
   private logger: Logger
   private players: Map<any, any> // uid, players
   private client_to_uid: Map<any, any> //client to id
+  private _sheeps: number = 10
 
   constructor() {
     this.players = new Map()
     this.client_to_uid = new Map()
-    this.world = new World()
+    this.world = new World(this._sheeps)
     this.logger = new Logger('Socket')
     this.server = new Server({ port: SocketServer.PORT })
 
@@ -82,7 +83,7 @@ export class SocketServer {
               let player = new Player(this.world.scene)
               this.players.set(player.id, player)
               state_machine.add_player(player.id, player)
-              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time, total_mesh: state_machine.entities.size }))
+              this.send(client, player.serialize(PacketType.player_creation, { players: this.players.size, isday: this.world.isday, alpha_time: this.world.alpha_time, total_mesh: state_machine.entities.size, sheeps: this._sheeps }))
               state_machine.broadcast_entity(true)
               this.client_to_uid.set(client, player.id)
             }
