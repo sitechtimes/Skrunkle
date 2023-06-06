@@ -53,9 +53,9 @@ export class Hotbar {
 
     {
       let health = new TextBlock();
-      health.text = "Health: 100";
-      health.name = "health-bar";
-      health.color = "red";
+      health.text = "Sheeps Collected: 0";
+      health.name = "sheeps-collected";
+      health.color = "pink";
       health.fontSize = 20;
       health.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
       health.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
@@ -150,7 +150,7 @@ export class Hotbar {
   }
 
   public healthChange(new_health: number) {
-    this._healthBar!.text = `Health: ${new_health}`;
+    this._healthBar!.text = `Sheeps Collected: ${new_health}`;
   }
 
   public use(id?: string) {

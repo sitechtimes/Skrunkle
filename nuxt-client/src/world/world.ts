@@ -91,6 +91,9 @@ export class World {
   private _renderTarget: WebXRRenderTarget;
   private _referenceSpace: XRReferenceSpace;
 
+  private _collectedSheepsID: Set<number> = new Set()
+  private _collectedSheepsUID: Set<string> = new Set()
+
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
     this._load_callback = call_back
@@ -207,7 +210,6 @@ export class World {
         new Vector3(0, 6, 0),
         this._scene
       );
-      this._playerCamera.checkCollisions = true;
       this._scene.collisionsEnabled = true;
       this._playerCamera.applyGravity = true;
       this._playerCamera.speed = 15;
@@ -218,7 +220,36 @@ export class World {
 
     document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
 
+    this._playerCamera.checkCollisions = true
+    let collected_sound = new Sound(
+      "Collected a sheep",
+      `${this.env["CMS"]}/audio/collected_sheep.mp3`,
+      this._scene,
+      null,
+      {
+        volume: 0.5
+      }
+    )
+    this._playerCamera.onCollide = (collidedMesh)=>{
+      if (collidedMesh.metadata === "Sheep" && !this._collectedSheepsID.has(collidedMesh.uniqueId)){
 
+        this._collectedSheepsID.add(collidedMesh.uniqueId)
+        
+        for (let uid of state_machine.entities.keys()){
+          let entity: Entities = state_machine.entities.get(uid);
+          if (entity.object.uniqueId == collidedMesh.uniqueId){
+            entity.object.attachedSound.stop()
+            entity.object.attachedSound.dispose()
+            state_machine.delete_entity(uid)
+            this._collectedSheepsUID.add(uid)
+            collected_sound.play()
+          }
+        }
+
+        this._hotbar.healthChange(this._collectedSheepsID.size)
+        collidedMesh.dispose()
+      }
+    }
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
     //     // Apply a vertical impulse to the camera's physics impostor
@@ -814,9 +845,10 @@ export class World {
             payload.rotation
           );
           state_machine.update_entity(uid, entity);
-          console.log(entity.position)
+          // console.log(entity.object.position)
         } else {
           if (this._processing_mesh.get(uid)) return
+          if (this._collectedSheepsUID.has(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"

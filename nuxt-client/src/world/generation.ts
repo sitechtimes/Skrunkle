@@ -157,6 +157,7 @@ export class Generation {
 
     if (noise){
       noise.attachToMesh(loaded_mesh);
+      loaded_mesh.attachedSound = noise
     }
 
     return loaded_mesh;

@@ -70,7 +70,6 @@ export default {
       this.chatMessage = undefined;
     },
     update_loading(loaded, total, message){
-      console.log(message)
       if (message == "server"){
         this.percent = 0
         this.loadtext = "Fetching Server"
