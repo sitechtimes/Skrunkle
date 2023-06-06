@@ -18,6 +18,10 @@ export class GUI {
     this._hotbar.init()
   }
 
+  public get hotbar(): Hotbar{
+    return this._hotbar
+  }
+
   public disposeGUI() {
     this._mainGUI.dispose();
   }

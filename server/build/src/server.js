@@ -10,9 +10,10 @@ var logger_1 = require("./logger");
 var state_machine_1 = require("./state_machine");
 var SocketServer = /** @class */ (function () {
     function SocketServer() {
+        this._sheeps = 10;
         this.players = new Map();
         this.client_to_uid = new Map();
-        this.world = new world_1.World();
+        this.world = new world_1.World(this._sheeps);
         this.logger = new logger_1.Logger('Socket');
         this.server = new ws_1.Server({ port: SocketServer.PORT });
         this.init();
@@ -67,7 +68,7 @@ var SocketServer = /** @class */ (function () {
                             var player_2 = new player_1.Player(_this.world.scene);
                             _this.players.set(player_2.id, player_2);
                             state_machine_1.state_machine.add_player(player_2.id, player_2);
-                            _this.send(client, player_2.serialize(packet_1.PacketType.player_creation, { players: _this.players.size, isday: _this.world.isday, alpha_time: _this.world.alpha_time, total_mesh: state_machine_1.state_machine.entities.size }));
+                            _this.send(client, player_2.serialize(packet_1.PacketType.player_creation, { players: _this.players.size, isday: _this.world.isday, alpha_time: _this.world.alpha_time, total_mesh: state_machine_1.state_machine.entities.size, sheeps: _this._sheeps }));
                             state_machine_1.state_machine.broadcast_entity(true);
                             _this.client_to_uid.set(client, player_2.id);
                         }
