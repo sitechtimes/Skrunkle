@@ -40,7 +40,6 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
-import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 
@@ -66,7 +65,6 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
-  private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
   private _alpha_time: number = 0
@@ -93,6 +91,7 @@ export class World {
 
   private _collectedSheepsID: Set<number> = new Set()
   private _collectedSheepsUID: Set<string> = new Set()
+  private _target_sheep_amt: number;
 
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
@@ -137,7 +136,6 @@ export class World {
                   this._player.rotation.y,
                   this._player.rotation.z
                 ),
-                current: this._hotbar.current,
               },
             ],
             this._player.id
@@ -263,7 +261,6 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this, this.env);
-    this._chat = new Chat(this._socket, this._player!);
     this._generator = new Generation(this, this._scene, this.env);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
@@ -271,7 +268,7 @@ export class World {
     this._pickedup = false;
     this._itemchosen = 0;
 
-      
+    this._hotbar = this._GUI.hotbar
     // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
     this._scene.enablePhysics(
       new Vector3(0, -9.81, 0),
@@ -444,6 +441,11 @@ export class World {
 
     // Animations
     this._scene.beforeRender = () => {
+
+      let deltaTime: number = this._scene.getEngine().getDeltaTime();
+
+      this._hotbar.addtime(deltaTime)
+
       sun_light.position = new Vector3(
         900 * Math.sin(this._alpha_time),
         900 * Math.cos(this._alpha_time),
@@ -505,14 +507,9 @@ export class World {
           break;
       }
     });
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
-    console.log(this._hotbar);
 
     // this._generator.GENERATE.TestCyclinder();
 
-    this._GUI.createHotbar();
-    this._hotbar = this._GUI.hotbar;
 
     // setTimeout(this._socket.init(), 10000)
     this._scene.executeWhenReady(async () => {
@@ -568,24 +565,6 @@ export class World {
       //   }
       // });
     });
-
-    onclick = () => {
-      let dray = this._scene.createPickingRay(
-        960,
-        540,
-        Matrix.Identity(),
-        this._playerCamera
-      );
-      let hit = this._scene.pickWithRay(dray);
-
-      if (
-        this._evaluateDistance(hit!.pickedMesh!) <=
-          this._hotbar.current?._range! ||
-        this._hotbar.current!._type == "Heal"
-      ) {
-        this._hotbar.use(hit?.pickedMesh?.name);
-      }
-    };
 
     this.listen();
   }
@@ -708,42 +687,6 @@ export class World {
       document.getElementById("name")!.innerText = `Name: ${this._player.name}`;
     if (this._debug)
       document.getElementById("id")!.innerText = `UserID: ${this._player.id}`;
-    this._hotbar.inventory = this._player.inventory;
-    /* TEMPORARILY ADDING ITEMS */
-    this._hotbar.add(
-      new PlayerItem(Items.hammer, this._player, this._hotbar, this._socket),
-      1
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.dagger, this._player, this._hotbar, this._socket),
-      2
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.shovel, this._player, this._hotbar, this._socket),
-      3
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.spork, this._player, this._hotbar, this._socket),
-      5
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.slingshot, this._player, this._hotbar, this._socket),
-      6
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.bandage, this._player, this._hotbar, this._socket),
-      10
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.medkit, this._player, this._hotbar, this._socket),
-      8
-    );
-    this._hotbar.add(
-      new PlayerItem(Items.skillet, this._player, this._hotbar, this._socket),
-      7
-    );
-    /* TEMPORARILY ADDED ITEMS */
-    this._chat = new Chat(this._socket, this._player);
 
     console.log("Created Main Player id: " + this._player.id);
     // console.log(this._player.inventory);
@@ -870,6 +813,9 @@ export class World {
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
+          this._target_sheep_amt = playerInfo.sheeps
+
+          this._hotbar.target_sheep_amt = this._target_sheep_amt
 
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
@@ -882,7 +828,7 @@ export class World {
         if (player) player.delete();
         this._players.delete(data.payload[0].id);
         break;
-      case "Interaction":
+      /* case "Interaction":
         let target: Player | MainPlayer | undefined;
         if (data.payload.target == this._player?.id) {
           target = this._player!;
@@ -906,15 +852,11 @@ export class World {
         break;
       case "Chat":
         this._chat?.receiveMessage(data.payload);
-        break;
+        break; */
       default:
         // throw some error
         break;
     }
-  }
-
-  public get chat(): Chat | undefined {
-    return this._chat;
   }
 
   public second_decimal(n: number): number {

@@ -75,17 +75,19 @@ var xhr2_1 = __importDefault(require("xhr2"));
 // @ts-ignore
 global.XMLHttpRequest = xhr2_1.default.XMLHttpRequest;
 var World = /** @class */ (function () {
-    function World() {
+    function World(sheeps) {
         this._tick_time = 5000; // in ms
         this._ticks_elapsed = 0;
         this.logger = new logger_1.Logger('World');
         this.worldSize = { top: new babylonjs_1.Vector3(5000, 10000, 5000), bottom: new babylonjs_1.Vector3(-5000, 0, -5000) };
         this.isday = true;
         this.alpha_time = 0;
+        this._sheeps = 0;
         this._engine = new babylonjs_1.NullEngine();
         this._scene = new babylonjs_1.Scene(this._engine);
         this._scene.useRightHandedSystem = true;
         this._generator = new generation_1.Generation(this, this._scene);
+        this._sheeps = sheeps;
         // console.log(this._ground.position)
     }
     Object.defineProperty(World.prototype, "scene", {
@@ -178,7 +180,7 @@ var World = /** @class */ (function () {
                         _d = (_c = this._generator).RANDOMIZE;
                         return [4 /*yield*/, this._generator.GENERATE.Sheep(new babylonjs_1.Vector3(100, 0, 100), new babylonjs_1.Vector3(0, 0, 0))];
                     case 2:
-                        _d.apply(_c, [_e.sent(), 1, 10]);
+                        _d.apply(_c, [_e.sent(), this._sheeps, 100]);
                         return [2 /*return*/];
                 }
             });

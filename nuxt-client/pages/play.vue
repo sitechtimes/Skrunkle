@@ -43,7 +43,6 @@ import { World } from "../src/world/world";
 export default {
   data() {
     return {
-      chatMessage: undefined,
       world: undefined,
       percent: 0,
       loadtext: "Loading...",
@@ -62,12 +61,6 @@ export default {
   methods: {
     resize(){
       this.world.resize()
-    },
-    sendChat() {
-      let chat = this.world.chat;
-      console.log("register send")
-      chat.sendMessage(this.chatMessage);
-      this.chatMessage = undefined;
     },
     update_loading(loaded, total, message){
       if (message == "server"){

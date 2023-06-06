@@ -4,6 +4,7 @@ Skrunkle is an online game developed by high school students. The premise of Skr
 
 # Description
 
+<<<<<<< HEAD
 Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, and NuxtJS. The game has many different features which includes immersive audio, realistic physics applications, day/night cycles, random generation of structures, and entity pickup and drop. We hope to continue to grow this application with features such as authentication of specific users and saving progress.
 ![skrunkle img](img/1image.png)
 ![skrunkle night](img/night.png)
@@ -11,6 +12,15 @@ Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, 
 # Install
 
 Three different servers are required to run this project. The project requires you to have nodeJS preinstalled. To run the project,
+=======
+Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, and NuxtJS. The game has many different features which includes immersive audio, realistic physics applications, day/night cycles, and random generation of structures. We hope to continue to grow this application with features such as authentication of specific users and saving progress.
+![skrunkle img](img/1image.png)
+![skrunkle night](img/night.png)
+
+# Setup and Install
+
+Three different servers are required to run this project. Ensure that you have set the correct URL for the CMS server in `.\nuxt-client\nuxt.config.ts` and `.\server\.env` Ensure that you have set the correct URL for the Websocket in `.\nuxt-client\nuxt.config.ts` Ports for locally hosting the CMS and Websocket servers are displayed on server start. The project requires you to have nodeJS preinstalled. To run the project,
+>>>>>>> 0afae606bbb308387a746b23afb3856bd3889bc5
 
 1. Change the directory to nuxt-client folder in the first terminal
    ```linux
@@ -40,6 +50,11 @@ Three different servers are required to run this project. The project requires y
 
 ![skrunkle innerWorkings](img/Skrunkle.svg)
 
+<<<<<<< HEAD
+=======
+Further documentation is provided throughout the project directory.
+
+>>>>>>> 0afae606bbb308387a746b23afb3856bd3889bc5
 # Credits
 
 [Youwei Zhen](https://youweizhen.com)
