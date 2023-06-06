@@ -75,7 +75,7 @@ export default {
       loadtext: "Loading...",
       vr: false,
       showPopup: false,
-      showPopup2: true,
+      showPopup2: false,
     };
   },
   mounted() {
@@ -83,7 +83,9 @@ export default {
     const world = new World(
       <HTMLCanvasElement>canvas,
       this.$config.public,
-      this.update_loading
+      this.update_loading,
+      this.startGame,
+      this.endGame
     );
     this.world = world;
 

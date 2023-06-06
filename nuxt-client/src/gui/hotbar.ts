@@ -7,12 +7,14 @@ export class Hotbar {
   private _baseSnippet: string = "UW33M7";
   private _healthBar: TextBlock;
   private _timer: TextBlock;
-  private _time_elapsed: number = 0
+  private _time_elapsed: number = 0;
   private _target_sheep_amt: number = -1;
-  private _completed: boolean = false
+  private _completed: boolean = false;
+  private _endGame: any;
 
-  constructor(mainGUI: AdvancedDynamicTexture) {
+  constructor(mainGUI: AdvancedDynamicTexture, endGame: any) {
     this._mainGUI = mainGUI;
+    this._endGame = endGame;
   }
 
   public async init() {
@@ -52,20 +54,23 @@ export class Hotbar {
   }
 
   public healthChange(new_health: number) {
-    this._healthBar!.text = `Sheeps Collected: ${new_health} / ${this._target_sheep_amt}\n${'🐏'.repeat(new_health)}`;
-    if (new_health >= this._target_sheep_amt){
-      this._completed = true
+    this._healthBar!.text = `Sheeps Collected: ${new_health} / ${
+      this._target_sheep_amt
+    }\n${"🐏".repeat(new_health)}`;
+    if (new_health >= this._target_sheep_amt) {
+      this._completed = true;
+      this._endGame();
     }
   }
 
   public addtime(milliseconds: number) {
-    if (this._completed) return
-    this._time_elapsed += milliseconds/1000.0
+    if (this._completed) return;
+    this._time_elapsed += milliseconds / 1000.0;
     this._timer!.text = `Time elasped: ${this._time_elapsed.toFixed(2)}s`;
   }
 
-  public set target_sheep_amt(sheep: number){
-    this._target_sheep_amt = sheep
-    this.healthChange(0)
+  public set target_sheep_amt(sheep: number) {
+    this._target_sheep_amt = sheep;
+    this.healthChange(0);
   }
 }
