@@ -37,7 +37,7 @@
         <h1>You won!</h1>
         <img src="../assets/sheep.png" alt="sheep jumping for joy" />
         <p>Great job collecting!</p>
-        <p>Final time : 40.02 s {{ this._time_elapsed }}</p>
+        <p>Final time : {{ this._time_elapsed }} s</p>
         <button class="button-54" role="button" @click="endGame">
           Play again
         </button>
@@ -85,7 +85,10 @@ export default {
       this.$config.public,
       this.update_loading,
       this.startGame,
-      this.endGame
+      ((time_elapsed)=>{
+        this.showPopup2 = true
+        this._time_elapsed = time_elapsed.toFixed(2)
+      })
     );
     this.world = world;
 
@@ -104,6 +107,7 @@ export default {
     },
     startGame() {
       this.showPopup = false;
+      this.world.start_timer()
     },
     endGame() {
       this.showPopup2 = false;
@@ -120,7 +124,7 @@ export default {
       if (this.percent == 1) {
         this.vr = this.world.vr;
         if (!this.vr) this.play();
-        this.showPopup = true;
+        (()=>{this.showPopup = true})()
       }
     },
     play() {

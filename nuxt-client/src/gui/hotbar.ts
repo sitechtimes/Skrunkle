@@ -59,7 +59,8 @@ export class Hotbar {
     }\n${"🐏".repeat(new_health)}`;
     if (new_health >= this._target_sheep_amt) {
       this._completed = true;
-      this._endGame();
+      this._endGame(this._time_elapsed);
+      document.exitFullscreen()
     }
   }
 

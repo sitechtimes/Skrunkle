@@ -95,6 +95,7 @@ export class World {
 
   private _startGame: any;
   private _endGame: any;
+  private _started: boolean = false
 
   constructor(
     canvas: HTMLCanvasElement | null,
@@ -168,6 +169,10 @@ export class World {
   private _renderLoop(): void {
     this._updateRender();
     this._scene.render();
+  }
+
+  public start_timer(){
+    this._started = true
   }
 
   public async enterVR(): Promise<void> {
@@ -466,7 +471,7 @@ export class World {
     this._scene.beforeRender = () => {
       let deltaTime: number = this._scene.getEngine().getDeltaTime();
 
-      this._hotbar.addtime(deltaTime);
+      if (this._started) this._hotbar.addtime(deltaTime);
 
       sun_light.position = new Vector3(
         900 * Math.sin(this._alpha_time),
