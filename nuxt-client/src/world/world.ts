@@ -38,7 +38,6 @@ import { GUI } from "../gui/gui";
 import { Hotbar } from "../gui/hotbar";
 import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
-import { Chat } from "../chat/chat";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
 import { GroundMesh } from "babylonjs";
@@ -65,7 +64,6 @@ export class World {
   // @ts-expect-error
   private _testMaterial: StandardMaterial;
   private _generator: Generation;
-  private _chat: Chat | undefined;
   private _itemchosen: number;
   private _isday: boolean = true;
   private _alpha_time: number = 0
@@ -97,7 +95,6 @@ export class World {
     this._GUI = new GUI(this._scene);
     this._players = new Map<string, Player>();
     this._socket = new Socket(this, this.env);
-    this._chat = new Chat(this._socket, this._player!);
     this._generator = new Generation(this, this._scene, this.env);
     this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
     this.chestOpen = false;
@@ -440,7 +437,6 @@ export class World {
           break;
       }
     });
-    this._GUI.createHotbar();
 
     // this._generator.GENERATE.TestCyclinder();
 
@@ -785,10 +781,6 @@ export class World {
         // throw some error
         break;
     }
-  }
-
-  public get chat(): Chat | undefined {
-    return this._chat;
   }
 
   public second_decimal(n: number): number {

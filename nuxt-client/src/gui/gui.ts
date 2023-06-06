@@ -18,15 +18,7 @@ export class GUI {
     this._hotbar.init()
   }
 
-  public async createHotbar() {
-    await this._hotbar.init();
-  }
-
   public disposeGUI() {
     this._mainGUI.dispose();
-  }
-
-  public get hotbar() {
-    return this._hotbar;
   }
 }
