@@ -5,7 +5,9 @@ Skrunkle is an online game developed by high school students. The premise of Skr
 # Description
 
 Skrunkle has been developed with frameworks such as BabylonJS, TypeScript, Vue, and NuxtJS. The game has many different features which includes immersive audio, realistic physics applications, day/night cycles, and random generation of structures. We hope to continue to grow this application with features such as authentication of specific users and saving progress.
+\
 ![skrunkle img](img/1image.png)
+
 ![skrunkle night](img/night.png)
 
 # Setup and Install
@@ -42,19 +44,32 @@ Three different servers are required to run this project. Ensure that you have s
 
 Further documentation is provided throughout the project directory.
 
+# Documentation
+
+Navigate through these READMEs to understand the functions and classes we implemented in this project.
+
+**Client:**
+- [Src](/nuxt-client/src/README.md) 
+- [World](/nuxt-client/src/world/README.md)
+- [GUI](/nuxt-client/src/gui/README.md)
+- [Entity](/nuxt-client/src/entity/README.md) 
+
+**Server:**
+To do
+
 # Credits
 
-[Youwei Zhen](https://youweizhen.com)
-https://github.com/AntoDono
+[Youwei Zhen](https://youweizhen.com)\
+*https://github.com/AntoDono*
 
-[Edwin Wright](https://codewright.tech)
-https://github.com/ewright516
+[Edwin Wright](https://codewright.tech)\
+*https://github.com/ewright516*
 
-[Thomas Anderson](https://Thomas-anderson-2024.netlify.app)
-https://github.com/Thomas-Anderson2024
+[Thomas Anderson](https://Thomas-anderson-2024.netlify.app)\
+*https://github.com/Thomas-Anderson2024*
 
-[Ashley Chan](https://ashleyspersonalresume.netlify.app)
-https://github.com/ashleychchan
+[Ashley Chan](https://ashleyspersonalresume.netlify.app)\
+*https://github.com/ashleychchan*
 
-Michelle Chao
-https://github.com/MichelleO3O
+Michelle Chao\
+*https://github.com/MichelleO3O*

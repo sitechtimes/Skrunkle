@@ -24,7 +24,9 @@ import {
   SceneOptimizer,
   WebXRSessionManager,
   WebXRCamera,
-  WebXRExperienceHelper
+  WebXRExperienceHelper,
+  WebXRDefaultExperience,
+  WebGPUEngine
 } from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import { MainPlayer } from "../entity/mainPlayer";
@@ -40,11 +42,10 @@ import { Items, PlayerItem } from "../gui/items";
 import { Generation } from "./generation";
 import { state_machine } from "../state_machine";
 import { createEntity, Entities } from "../entity/entities";
-import { GroundMesh } from "babylonjs";
 
 export class World {
   private env: any;
-  private _engine: Engine;
+  private _engine: WebGPUEngine | Engine;
   private _scene: Scene;
   private _optimizer: SceneOptimizer;
   private _canvas: HTMLCanvasElement | null;
@@ -84,6 +85,13 @@ export class World {
   /* VR INTEGRATION */
   private _sessionManager: WebXRSessionManager;
   private _vr: boolean = false;
+  private _vrExperience: WebXRDefaultExperience;
+  private _renderTarget: WebXRRenderTarget;
+  private _referenceSpace: XRReferenceSpace;
+
+  private _collectedSheepsID: Set<number> = new Set()
+  private _collectedSheepsUID: Set<string> = new Set()
+  private _target_sheep_amt: number;
 
   constructor(canvas: HTMLCanvasElement | null, env: any, call_back: any) {
     this.env = env;
@@ -91,36 +99,25 @@ export class World {
 
     this._canvas = canvas;
     this._engine = new Engine(this._canvas);
-    this._scene = new Scene(this._engine);
-    this._GUI = new GUI(this._scene);
-    this._players = new Map<string, Player>();
-    this._socket = new Socket(this, this.env);
-    this._generator = new Generation(this, this._scene, this.env);
-    this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
-    this.chestOpen = false;
-    this._pickup = false;
-    this._pickedup = false;
-    this._itemchosen = 0;
+    if (WebGPUEngine.IsSupported){
+      this._engine = new WebGPUEngine(this._canvas);
+      this._engine.initAsync().then((e)=>{
+        console.log("Initing GPU")
+        this.init()
+        // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
+      });
+    }else{
+      this.init()
+    }
 
-    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
-    this._scene.enablePhysics(
-      new Vector3(0, -9.81, 0),
-      new OimoJSPlugin(true, 10, OIMO)
-    );
-
-    let options = new SceneOptimizerOptions(120, 500);
-    SceneOptimizerOptions.ModerateDegradationAllowed(120)
-    options.addOptimization(new HardwareScalingOptimization(0, 1))
-    this._optimizer = new SceneOptimizer(this._scene, options)
-    SceneOptimizer.OptimizeAsync(this._scene)
-
-    this._sessionManager = new WebXRSessionManager(this._scene);
-
-    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new AmmoJSPlugin(true, 10, Ammo));
   }
 
   public resize(): void{
     this._engine.resize()
+  }
+
+  public get vr(): boolean{
+    return this._vr
   }
 
   private _updateRender(): void{
@@ -163,33 +160,46 @@ export class World {
     this._scene.render()
   }
 
+  public async enterVR(): Promise<void>{
+    await this._sessionManager.initializeAsync()
+    await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
+    this._referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
+    this._renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
+    const xrWebGLLayer = await this._renderTarget.initializeXRLayerAsync(this._sessionManager.session);
+
+    this._vrExperience = await this._scene.createDefaultXRExperienceAsync({
+      optionalFeatures: true,
+      floorMeshes: [this._ground],
+    });
+
+    this._playerCamera = this._vrExperience.baseExperience.camera;
+    this._playerCamera.position = new Vector3(0, 6, 0)
+
+    this._sessionManager.runXRRenderLoop()
+
+    this._vrExperience.baseExperience.enterXRAsync(
+      "immersive-vr", 
+      "local-floor", 
+      this._renderTarget
+    )
+
+    this._scene.activeCamera = this._playerCamera
+  }
+
   private async _initCamera(): Promise<void> {
 
     const supported = await this._sessionManager.isSessionSupportedAsync('immersive-vr');
     if (supported) {
       // xr available, session supported
-      console.log("Is VR")
+      console.log("Is VR, waiting for user activation")
       this._vr = true;
 
-      await this._sessionManager.initializeAsync()
-      await this._sessionManager.initializeSessionAsync('immersive-vr' /*, xrSessionInit */ );
-      const referenceSpace = await this._sessionManager.setReferenceSpaceTypeAsync('local');
-      const renderTarget = this._sessionManager.getWebXRRenderTarget( /*outputCanvasOptions: WebXRManagedOutputCanvasOptions*/ );
-      const xrWebGLLayer = await renderTarget.initializeXRLayerAsync(this._sessionManager.session);
-
-      const defaultExperience = await this._scene.createDefaultXRExperienceAsync({
-        optionalFeatures: true,
-        floorMeshes: [this._ground],
-      });
-
-      defaultExperience.baseExperience.enterXRAsync("immersive-vr", referenceSpace, renderTarget)
-
-      console.log(defaultExperience)
-
-      this._playerCamera = defaultExperience.baseExperience.camera;
-      this._playerCamera.position = new Vector3(0, 6, 0)
-
-      this._sessionManager.runXRRenderLoop()
+      // TEMPORARY CAMERA
+      this._playerCamera = new FreeCamera(
+        "FreeCamera",
+        new Vector3(0, 6, 0),
+        this._scene
+      );
 
     }else{
       console.log("Not VR")
@@ -198,7 +208,6 @@ export class World {
         new Vector3(0, 6, 0),
         this._scene
       );
-      this._playerCamera.checkCollisions = true;
       this._scene.collisionsEnabled = true;
       this._playerCamera.applyGravity = true;
       this._playerCamera.speed = 15;
@@ -209,6 +218,36 @@ export class World {
 
     document.getElementById("vr")!.innerText = `VR_MODE: ${this._vr}`
 
+    this._playerCamera.checkCollisions = true
+    let collected_sound = new Sound(
+      "Collected a sheep",
+      `${this.env["CMS"]}/audio/collected_sheep.mp3`,
+      this._scene,
+      null,
+      {
+        volume: 0.5
+      }
+    )
+    this._playerCamera.onCollide = (collidedMesh)=>{
+      if (collidedMesh.metadata === "Sheep" && !this._collectedSheepsID.has(collidedMesh.uniqueId)){
+
+        this._collectedSheepsID.add(collidedMesh.uniqueId)
+        
+        for (let uid of state_machine.entities.keys()){
+          let entity: Entities = state_machine.entities.get(uid);
+          if (entity.object.uniqueId == collidedMesh.uniqueId){
+            entity.object.attachedSound.stop()
+            entity.object.attachedSound.dispose()
+            state_machine.delete_entity(uid)
+            this._collectedSheepsUID.add(uid)
+            collected_sound.play()
+          }
+        }
+
+        this._hotbar.healthChange(this._collectedSheepsID.size)
+        collidedMesh.dispose()
+      }
+    }
     // document.addEventListener('keydown', (event) => {
     //   if (event.code === 'Space') {
     //     // Apply a vertical impulse to the camera's physics impostor
@@ -218,6 +257,32 @@ export class World {
   }
 
   public async init(): void {
+    this._scene = new Scene(this._engine);
+    this._GUI = new GUI(this._scene);
+    this._players = new Map<string, Player>();
+    this._socket = new Socket(this, this.env);
+    this._generator = new Generation(this, this._scene, this.env);
+    this._testMaterial = new StandardMaterial("_testMaterial", this._scene);
+    this.chestOpen = false;
+    this._pickup = false;
+    this._pickedup = false;
+    this._itemchosen = 0;
+
+    this._hotbar = this._GUI.hotbar
+    // this._scene.enablePhysics(new Vector3(0, -9.81, 0), new CannonJSPlugin(true, 10, cannon));
+    this._scene.enablePhysics(
+      new Vector3(0, -9.81, 0),
+      new OimoJSPlugin(true, 10, OIMO)
+    );
+  
+    let options = new SceneOptimizerOptions(120, 500);
+    SceneOptimizerOptions.ModerateDegradationAllowed(120)
+    options.addOptimization(new HardwareScalingOptimization(0, 1))
+    this._optimizer = new SceneOptimizer(this._scene, options)
+    SceneOptimizer.OptimizeAsync(this._scene)
+      
+    this._sessionManager = new WebXRSessionManager(this._scene);
+
     this._scene.useRightHandedSystem = true;
     // Camera is absolutely needed, for some reason BabylonJS requires a camera for Server or will crash
     this._ground = MeshBuilder.CreateGround(
@@ -376,6 +441,11 @@ export class World {
 
     // Animations
     this._scene.beforeRender = () => {
+
+      let deltaTime: number = this._scene.getEngine().getDeltaTime();
+
+      this._hotbar.addtime(deltaTime)
+
       sun_light.position = new Vector3(
         900 * Math.sin(this._alpha_time),
         900 * Math.cos(this._alpha_time),
@@ -449,8 +519,7 @@ export class World {
       // TODO: Find out a way to avoid circular JSON error below. This never used to happen
       // let {_scene, ...bodyRef} = this._player!._body
       // this._socket.send(new Packet(PacketType.info, [{id: this._player!.id, _body: bodyRef}], ""));
-      await this._initCamera();
-
+      await this._initCamera()
       this._engine.runRenderLoop(()=>{
         this._renderLoop()
       })
@@ -705,6 +774,8 @@ export class World {
         }
         break;
       case "Mesh":
+        if (this._player == undefined) break
+
         let uid = data.uid;
         let payload = data.payload[0];
 
@@ -717,8 +788,10 @@ export class World {
             payload.rotation
           );
           state_machine.update_entity(uid, entity);
+          // console.log(entity.object.position)
         } else {
           if (this._processing_mesh.get(uid)) return
+          if (this._collectedSheepsUID.has(uid)) return
           this._processing_mesh.set(uid, true)
           let mesh: Mesh = await this._generator.GENERATE[
             payload.metadata as "Cylinder" | "Box" | "Tree1" | "Tree2" | "House" | "House2" | "Sheep" | "Slope" | "Fountain"
@@ -740,6 +813,9 @@ export class World {
           this._initClient(playerInfo.name, data.uid);
           this._isday = playerInfo.isday;
           this._alpha_time = playerInfo.alpha_time
+          this._target_sheep_amt = playerInfo.sheeps
+
+          this._hotbar.target_sheep_amt = this._target_sheep_amt
 
           if (this._isday) this._skyboxMaterial.reflectionTexture = this._day_material
           else this._skyboxMaterial.reflectionTexture = this._night_material
