@@ -34,11 +34,11 @@
         <div class="firework"></div>
         <div class="firework"></div>
         <div class="firework"></div>
-        <div class="firework"></div>
         <h1>You won!</h1>
         <img src="../assets/sheep.png" alt="sheep jumping for joy" />
-        <p>Great job collecting</p>
-        <button class="button-54" role="button" @click="startGame">
+        <p>Great job collecting!</p>
+        <p>Final time : 40.02 s {{ this._time_elapsed }}</p>
+        <button class="button-54" role="button" @click="endGame">
           Play again
         </button>
       </div>
@@ -102,6 +102,8 @@ export default {
     },
     startGame() {
       this.showPopup = false;
+    },
+    endGame() {
       this.showPopup2 = false;
     },
     update_loading(loaded, total, message) {
