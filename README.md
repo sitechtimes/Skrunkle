@@ -55,7 +55,8 @@ Navigate through these READMEs to understand the functions and classes we implem
 - [Entity](/nuxt-client/src/entity/README.md) 
 
 **Server:**
-To do
+- [Src](/server/src/README.md) 
+- [Entity](/server/src/entity/README.md) 
 
 # Credits
 
