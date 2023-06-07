@@ -56,6 +56,7 @@ export class World {
   private _players: Map<string, Player>;
   private _GUI: GUI;
   private _ground: Mesh;
+
   // @ts-expect-error
   private _hotbar: Hotbar;
   private _debug: boolean = true;
@@ -95,7 +96,7 @@ export class World {
 
   private _startGame: any;
   private _endGame: any;
-  private _started: boolean = false
+  private _started: boolean = false;
 
   constructor(
     canvas: HTMLCanvasElement | null,
@@ -171,8 +172,8 @@ export class World {
     this._scene.render();
   }
 
-  public start_timer(){
-    this._started = true
+  public start_timer() {
+    this._started = true;
   }
 
   public async enterVR(): Promise<void> {

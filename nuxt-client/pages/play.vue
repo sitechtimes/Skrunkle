@@ -85,10 +85,10 @@ export default {
       this.$config.public,
       this.update_loading,
       this.startGame,
-      ((time_elapsed)=>{
-        this.showPopup2 = true
-        this._time_elapsed = time_elapsed.toFixed(2)
-      })
+      (time_elapsed) => {
+        this.showPopup2 = true;
+        this._time_elapsed = time_elapsed.toFixed(2);
+      }
     );
     this.world = world;
 
@@ -107,10 +107,18 @@ export default {
     },
     startGame() {
       this.showPopup = false;
-      this.world.start_timer()
+      this.world.start_timer();
+      let unmute = document.querySelector("#babylonUnmuteIconBtn");
+      console.log(document.querySelector("#babylonUnmuteIconBtn"));
+      if (unmute != undefined) {
+        unmute.click();
+      }
+      console.log(this.world._music);
+      this.world._music.play();
     },
     endGame() {
       this.showPopup2 = false;
+      window.location.reload();
     },
     update_loading(loaded, total, message) {
       if (message == "server") {
@@ -124,7 +132,9 @@ export default {
       if (this.percent == 1) {
         this.vr = this.world.vr;
         if (!this.vr) this.play();
-        (()=>{this.showPopup = true})()
+        (() => {
+          this.showPopup = true;
+        })();
       }
     },
     play() {
